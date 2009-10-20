@@ -4,6 +4,7 @@
 package com.bcinfo.wapportal.repository.crawl.job;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -42,7 +43,7 @@ public class DefaultJob implements Job {
 			DaoService daoService = new DaoServiceDefaultImpl();
 			Boolean bln = daoService.saveCrawlResource(folders);
 			
-			log.info("url: "+url+" 共爬取 "+folders.size()+" 条记录,入库操作："+bln);
+			System.out.println(sdf.format(new Date())+"  url: "+url+" 共爬取 "+folders.size()+" 条记录,入库操作："+bln);
 			
 			System.out.println("  程序运行中的内存情况： "+url+" | "+folderId);
 			System.out.println("  Total:"+Runtime.getRuntime().totalMemory()/1024);
