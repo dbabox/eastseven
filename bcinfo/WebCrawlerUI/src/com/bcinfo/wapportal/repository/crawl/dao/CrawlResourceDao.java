@@ -22,13 +22,46 @@ import com.bcinfo.wapportal.repository.crawl.domain.CrawlResource;
  */
 public class CrawlResourceDao {
 
+	public Boolean updateCrawlResourceStatus(String[] resIds){
+		Boolean bln = false;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " update twap_public_crawl_resource a set a.res_status = '1' where a.res_id = ? ";
+		
+		try{
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement(sql);
+			for(int i=0;i<resIds.length;i++){
+				pst.setLong(1, Long.parseLong(resIds[i]));
+				pst.addBatch();
+			}
+			pst.executeBatch();
+			conn.commit();
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			if(conn!=null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}finally{
+			close(conn, pst, rs);
+		}
+		return bln;
+	}
+	
 	public CrawlResource getCrawlResourceDetail(Long resId){
 		CrawlResource resource = null;
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_text,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time,a.res_status from twap_public_crawl_resource a where a.res_id = ? ";
+		String sql = " select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_text,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time,a.res_status,a.res_img_path_set from twap_public_crawl_resource a where a.res_id = ? ";
 		
 		try{
 			conn = JavaOracle.getConn();
@@ -53,6 +86,7 @@ public class CrawlResourceDao {
 				resource.setResId(rs.getLong("res_id"));
 				resource.setStatus(rs.getString("res_status"));
 				resource.setTitle(rs.getString("res_title"));
+				resource.setImgPathSet(rs.getString("res_img_path_set"));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -95,7 +129,7 @@ public class CrawlResourceDao {
 			conn = JavaOracle.getConn();
 			if(channelId != null){
 				title = (title==null||"".equals(title))?" 1=1 ":" a.res_title like '%"+title+"%' ";
-				sql = " select * from (select * from (select a.res_id,a.channel_id,a.res_title,a.res_link,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time,a.res_status,rownum row_num from twap_public_crawl_resource a where a.channel_id = ? and "+title+" and rownum <= ? order by a.res_id desc) b) c where c.row_num >= ? order by c.res_id desc ";
+				sql = " select * from (select * from (select a.res_id,a.channel_id,a.res_title,a.res_link,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time,decode(a.res_status,'0','Œ¥…Û∫À','1','“—…Û∫À') res_status,rownum row_num from twap_public_crawl_resource a where a.channel_id = ? and "+title+" and rownum <= ? order by a.res_id desc) b) c where c.row_num >= ? order by c.res_id desc ";
 				pst = conn.prepareStatement(sql);
 				pst.setLong(1, channelId);
 				pst.setInt(2, end);
