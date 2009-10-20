@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jsp="http://java.sun.com/xml/ns/javaee/jsp"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<display-name>WebCrawlerUI</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<description></description>
+		<display-name>CrawlListServlet</display-name>
+		<servlet-name>CrawlListServlet</servlet-name>
+		<servlet-class>com.bcinfo.wapportal.repository.crawl.ui.servlet.CrawlListServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CrawlListServlet</servlet-name>
+		<url-pattern>/CrawlListServlet</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<description></description>
+		<display-name>CrawlResourceServlet</display-name>
+		<servlet-name>CrawlResourceServlet</servlet-name>
+		<servlet-class>com.bcinfo.wapportal.repository.crawl.ui.servlet.CrawlResourceServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CrawlResourceServlet</servlet-name>
+		<url-pattern>/CrawlResourceServlet</url-pattern>
+	</servlet-mapping>
+	<jsp-config>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
+			<taglib-location>/WEB-INF/tld/c.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://jsptags.com/tags/navigation/pager</taglib-uri>
+			<taglib-location>/WEB-INF/tld/pager-taglib.tld</taglib-location>
+		</taglib>
+	</jsp-config>
+
+	<!-- Set Character Encoding-->
+	<filter>
+		<filter-name>Set Character Encoding</filter-name>
+		<filter-class>com.bcinfo.wapportal.repository.crawl.ui.filter.SetCharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>GBK</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>Set Character Encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- Set Character Encoding-->
+</web-app>
