@@ -27,19 +27,16 @@
 <script type="text/javascript" src="js/json.js"></script>
 
 <script type="text/javascript">
-	/*
-	var title = "";
-	var cnt = "";
-	var link = "";
-	var status = "";
-	*/
+	//height: 530,width: 500
 	var config = { 
 			buttons: { "关闭": function() { $(this).dialog("close"); }
 						//"审核通过": function(){},
 						//"审核未通过": function(){},
 						,"查看原网页": function(){
-							alert($("#dialog_link").html());
+							var link = $("#dialog_link").html();
+							//alert($("#dialog_link").html());
 							//window.location.replace($("#dialog_link").html());
+							window.open(link);
 						}//window.location.replace(link);
 		 	},
 			autoOpen: false,
@@ -49,7 +46,33 @@
 	};
 	
 	$(document).ready(function() {
-		//,height: 530,width: 500
+		
+		//绑定按钮事件
+		$("#sendBtn").bind('click',function(){
+			var channelId = $("#channelId").val();
+			var ids = new Array();
+			var jsonText = '';
+			$(":checkbox").each(function(i){
+				var obj = $(this).attr("checked");
+				
+				if(obj){
+					//alert($(this).val());
+					ids[i] = $(this).val();
+					jsonText += $(this).val()+",";
+				}
+				
+			});
+			//发送ajax请求
+			$.get('./CrawlResourceServlet?method=send',{channelId:channelId,resIds:jsonText},function(data){
+				var json = eval('('+data+')');
+				var msg = json.msg;
+				alert(msg);
+				
+			});
+			for(var i=0;i<ids.length;i++){
+				$("#id_"+ids[i]).attr("checked",false);	
+			}
+		});
 		
 		//初始化
 		$("#dialog").dialog(config);
@@ -59,7 +82,7 @@
 			//初始化dialog中的内容
 			$("#dialog").empty();
 			$("#dialog_link").empty();
-			var res_id = $(this).html();
+			var res_id = $(this).attr("id");
 			
 			//发送ajax请求
 			$.get('./CrawlResourceServlet?method=detail',{resId:res_id},function(data){
@@ -81,7 +104,7 @@
 </head>
 <body>
 <div id="dialog"></div>
-<div id="dialog_link"></div>
+<div id="dialog_link" style="display:none"></div>
 <%
 	String pageSize = (request.getAttribute("pageSize")!=null)?(String)request.getAttribute("pageSize"):"15";
 	String channelId = (String) request.getParameter("channelId");
@@ -90,26 +113,36 @@
 	if(channelId == null || "".equals(channelId)) channelId = (String)request.getAttribute("channelId");
 %>
 <%
-	String method = (String)request.getParameter("method");
 	List<CrawlResource> list = (List<CrawlResource>) request.getAttribute("crawlResourceList");
 	int count = new CrawlResourceDao().getCount(Long.parseLong(channelId));
-	if("init".equals(method)){ 
-		count=0;
-		
-	}
 %>
 
-<form action="./CrawlResourceServlet?method=list" method="post">
-	标题<input type="text" value="<%=title %>" name="title"><input type="submit" value="查询">
-	<input type="text" value="<%=pageSize %>" id="pageSize" name="pageSize">
-	<input type="hidden" id="channelId" name="channelId" value="<%=channelId %>">
+<form id="crawlResourceMainForm" action="./CrawlResourceServlet?method=list" method="post">
+	标题
+	<input type="text" value="<%=title %>" id="title" name="title"/>
+	<input type="submit" value="查询"/>
+	<select name="resStatus">
+		<option value="-1" selected="selected">全部</option>
+		<option value="1">已审</option>
+		<option value="0">未审</option>
+	</select>
+	<input type="text" value="<%=pageSize %>" id="pageSize" name="pageSize"/>
+	
+	<input type="hidden" name="channelId" value="<%=channelId %>"/>
 	<!-- 测试用 -->
-	<input type="text" value="<%=count %>" id="test">
+	<input type="hidden" value="<%=count %>" id="test"/>
 </form>
+
+<form id="tableForm" action="./CrawlResourceServlet?method=update" method="post">
+<input type="submit" value="审核"/>
+<input type="button" id="sendBtn" value="发送"/>
+<input type="hidden" id="channelId" name="channelId" value="<%=channelId %>"/>
 <table>
 	
 	<tr>
+		<td>序号</td>
 		<td>编号</td>
+		<td>操作<input type="hidden" id="checkBox"/></td>
 		<td>状态</td>
 		<td>标题</td>
 		<td>时间</td>
@@ -124,9 +157,12 @@
 	<pg:param name="channelId" value="<%=channelId %>" />
 	<pg:param name="pageSize" value="<%=pageSize %>"/>
 	
-	<c:forEach var="res" items="<%=list %>">
-	<tr id="${res.resId }">
+	
+	<c:forEach var="res" items="<%=list %>" varStatus="status">
+	<tr>
+		<td id="${res.resId }">${status.index+1 }</td>
 		<td>${res.resId }</td>
+		<td><input type="checkbox" id="id_${res.resId }" name="checkStatus" value="${res.resId }"/></td>
 		<td>${res.status }</td>
 		<td>${res.title }</td>
 		<td>${res.createTime }</td>
@@ -152,7 +188,7 @@
 		</pg:next>
 
 		<pg:last>
-			<a href="<%= pageUrl %>&pageNo=<%= pageNumber %>">[末页]</a>
+			<a href="<%= pageUrl %>&pageNo=<%= pageNumber %>">[末页][共<%=count %>条记录]</a>
 		</pg:last>
 
 	</pg:index>
@@ -160,7 +196,7 @@
 </c:if>
 
 </table>
-
+</form>
 
 
 </body>
