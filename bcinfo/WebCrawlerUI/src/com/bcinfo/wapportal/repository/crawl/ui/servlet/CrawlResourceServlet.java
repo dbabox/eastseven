@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bcinfo.wapportal.repository.crawl.dao.CrawlResourceDao;
 import com.bcinfo.wapportal.repository.crawl.domain.CrawlResource;
+import com.bcinfo.wapportal.repository.crawl.service.CrawlResourceService;
+import com.bcinfo.wapportal.repository.crawl.service.impl.CrawlResourceServiceDefaultImpl;
 
 /**
  * 
@@ -23,10 +25,12 @@ public class CrawlResourceServlet extends HttpServlet {
 
 	private String method;
 	private CrawlResourceDao dao;
+	private CrawlResourceService service;
 	
 	public CrawlResourceServlet() {
 		super();
 		dao = new CrawlResourceDao();
+		service = new CrawlResourceServiceDefaultImpl();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -41,12 +45,19 @@ public class CrawlResourceServlet extends HttpServlet {
 		}else if("detail".equals(method)){
 			System.out.println("test ajax:"+request.getParameter("resId"));
 			detail(request, response);
+		}else if("update".equals(method)){
+			update(request, response);
+		}else if("send".equals(method)){
+			System.out.println("频道ID:"+request.getParameter("channelId"));
+			System.out.println("参数：   "+request.getParameter("resIds"));
+			send(request, response);
 		}
 	}
 
 	void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String channelId = request.getParameter("channelId");
+		//String status = request.getParameter("resStatus");
 		String title = request.getParameter("title");
 		String pageSize = request.getParameter("pageSize");
 		String pageNo = (request.getParameter("pageNo")==null)?"1":request.getParameter("pageNo");
@@ -83,20 +94,50 @@ public class CrawlResourceServlet extends HttpServlet {
 		
 		CrawlResource resource = dao.getCrawlResourceDetail(Long.parseLong(resId));
 		
-		String src = resource.getContent();
-		//src = "<img src=E:/usr/local/jboss-3.2.7/server/default/deploy/spcpnew.war/upload/2009/10/19/Img267504345.jpg>";
-		//src = "<img alt=意甲-桑普客场1-1平拉齐奥国米2分优势独居榜首 src=http://i1.sinaimg.cn/ty/g/2009-10-18/U350P6T12D4642992F1286DT20091019030614.jpg border=1 vspace=4 hspace=8>";
+		String cnt = resource.getContent();
+		String status = "审核";
+		if("0".equals(resource.getStatus())) status="未"+status;
+		else if("1".equals(resource.getStatus())) status="已"+status;
 		
 		String json = "{ ";
 		       json+=" title:\""+resource.getTitle()+"\",";
-		       json+=" content:\""+src+"\",";
+		       json+=" content:\""+cnt+"\",";
 		       json+=" link:\""+resource.getLink()+"\",";
-		       json+=" status:\""+resource.getStatus()+"\"";
+		       json+=" status:\""+status+"\"";
 		       json+=" }";
 		response.setContentType("text/html;charset=GBK");
 		PrintWriter out = response.getWriter();
 		out.print(json);
 		System.out.println(json);
+		out.close();
+	}
+	
+	void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String channelId = request.getParameter("channelId");
+		String[] checkStatus = request.getParameterValues("checkStatus");
+		String status = "";
+		for(int i=0;i<checkStatus.length;i++)
+			status += checkStatus[i]+",";
+		boolean bln = dao.updateCrawlResourceStatus(checkStatus);
+		if(bln){
+			System.out.println("审核通过:"+status);
+		}
+		//返回第一页
+		request.setAttribute("channelId", channelId);
+		request.setAttribute("title", "");
+		request.getRequestDispatcher("crawl_resource_list.jsp").forward(request, response);
+	}
+	
+	void send(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String channelId = request.getParameter("channelId");
+		String str = request.getParameter("resIds");
+		str = str.substring(0, str.lastIndexOf(","));
+		String[] ids = str.split(",");
+		
+		boolean bln = service.sendResource(channelId, ids);
+		
+		PrintWriter out = response.getWriter();
+		out.print("{ msg:\""+bln+"\" }");
 		out.close();
 	}
 }
