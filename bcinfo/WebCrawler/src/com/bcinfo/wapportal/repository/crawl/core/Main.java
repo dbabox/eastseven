@@ -70,10 +70,10 @@ public final class Main {
 					job.getJobDataMap().put("url", url);
 					
 					String triName = "t_" + folderId + "_" + index;
-					Trigger trigger = new SimpleTrigger(triName, Scheduler.DEFAULT_GROUP, startTime, null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
+					Trigger trigger = new SimpleTrigger(triName, Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
 					
 					scheduler.scheduleJob(job, trigger);
-					System.out.println(sdf.format(new Date()) + " : " + "一个job将在" + sdf.format(startTime) + "被启动，该job的名称为：" + jobName);
+					System.out.println(sdf.format(new Date()) + " : " + "一个job将在" + sdf.format(new Date()) + "被启动，该job的名称为：" + jobName);
 					System.out.println(" ");
 				}
 				System.out.println( "  Quartz调度运行  ");
