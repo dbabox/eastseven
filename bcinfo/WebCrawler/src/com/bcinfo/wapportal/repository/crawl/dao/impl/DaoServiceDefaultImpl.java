@@ -84,13 +84,14 @@ public class DaoServiceDefaultImpl implements DaoService {
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
-		ResultSet rs = null;//res_content
-		String sql = "insert into twap_public_crawl_resource(res_id,channel_id,res_title,res_link) values(seq_twap_public_crawl_resource.nextval,?,?,?)";
+		ResultSet rs = null;//res_content,RES_IMG_PATH_SET
+		String sql = "insert into twap_public_crawl_resource(res_id,channel_id,res_title,res_link,res_img_path_set) values(seq_twap_public_crawl_resource.nextval,?,?,?,?)";
 		
 		String link = "";
 		String title = "";
 		String channelId = "";
 		String content = "";
+		String imgPathSet="";
 		try{
 			conn = JavaOracle.getConn();
 			conn.setAutoCommit(false);
@@ -100,11 +101,12 @@ public class DaoServiceDefaultImpl implements DaoService {
 				title = folder.getTitle();
 				channelId = folder.getFolderId();
 				content = folder.getContent();
+				imgPathSet = folder.getImgPathSet();
 				log.debug("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
 				pst.setLong(1, Long.valueOf(channelId));
 				pst.setString(2, title);
 				pst.setString(3, link);
-				//pst.setString(4, content);
+				pst.setString(4, imgPathSet);
 				pst.addBatch();
 				//log.info(link+" | "+title+" | ±£´æ³É¹¦");
 			}
