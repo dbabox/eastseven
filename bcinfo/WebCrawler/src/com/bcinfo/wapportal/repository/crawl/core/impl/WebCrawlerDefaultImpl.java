@@ -54,7 +54,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 				String title = folder.getTitle();
 				String link = folder.getLink();
 				String content = parseService.parse(link);
-				
+				String imgPathSet = "";
 				//TODO 记录日志,不管成功与否
 				fileOperation.writeLog(folderId, link);
 				/*
@@ -94,6 +94,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 									String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
 									String localUrl = fileOperation.writeFile(originUrl, fileName);
 									if(localUrl!=null){
+										imgPathSet += localUrl+",";
 										//替换整个IMG标签
 										img = "<img src="+"http://127.0.0.1"+localUrl+">";
 										cnt = cnt.replace(inputHTML, img);
@@ -111,11 +112,12 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 						System.out.println(link+" | "+title);
 						
 						System.out.println("------------------------格式化文本内容-------------------------------");
-						System.out.println(content);
+						System.out.println("内容：                    "+content);
+						System.out.println("图片存放路径："+imgPathSet);
 						System.out.println(" ");
 					}
 					/**/
-					folders.add(new FolderBO(folderId, title, link, content));
+					folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
 				}
 				
 			}
