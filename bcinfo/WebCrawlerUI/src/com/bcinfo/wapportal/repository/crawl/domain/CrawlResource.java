@@ -31,6 +31,7 @@ public class CrawlResource implements Serializable {
 	private String link;
 	private String content;
 	private String text;
+	private String imgPathSet;
 	private String status;
 	private String createTime;
 
@@ -98,12 +99,20 @@ public class CrawlResource implements Serializable {
 		this.status = status;
 	}
 
+	public String getImgPathSet() {
+		return imgPathSet;
+	}
+
+	public void setImgPathSet(String imgPathSet) {
+		this.imgPathSet = imgPathSet;
+	}
+
 	@Override
 	public String toString() {
 		return "CrawlResource [channelId=" + channelId + ", content=" + content
-				+ ", createTime=" + createTime + ", link=" + link + ", resId="
-				+ resId + ", status=" + status + ", text=" + text + ", title="
-				+ title + "]";
+				+ ", createTime=" + createTime + ", imgPathSet=" + imgPathSet
+				+ ", link=" + link + ", resId=" + resId + ", status=" + status
+				+ ", text=" + text + ", title=" + title + "]";
 	}
 
 }
