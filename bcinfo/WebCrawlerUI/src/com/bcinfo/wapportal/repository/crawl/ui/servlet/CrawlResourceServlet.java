@@ -57,7 +57,7 @@ public class CrawlResourceServlet extends HttpServlet {
 	void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String channelId = request.getParameter("channelId");
-		//String status = request.getParameter("resStatus");
+		String status = request.getParameter("resStatus");
 		String title = request.getParameter("title");
 		String pageSize = request.getParameter("pageSize");
 		String pageNo = (request.getParameter("pageNo")==null)?"1":request.getParameter("pageNo");
@@ -72,7 +72,7 @@ public class CrawlResourceServlet extends HttpServlet {
 			end = Integer.parseInt(pageSize);
 		}else{
 			start = (Integer.parseInt(pageNo)-1)* Integer.parseInt(pageSize);
-			end = start + Integer.parseInt(pageSize) - 1;
+			end = start + Integer.parseInt(pageSize);
 		}
 		
 		System.out.println("channelId:"+channelId+" | start:"+start+" | end:"+end+" | pageNo:"+pageNo);
@@ -80,10 +80,11 @@ public class CrawlResourceServlet extends HttpServlet {
 		Long channel_id = null;
 		if(!"".equals(channelId)) channel_id = Long.valueOf(channelId);
 		
-		List<CrawlResource> list = dao.getAllCrawlResources(channel_id,title,start,end);
+		List<CrawlResource> list = dao.getAllCrawlResources(channel_id,title,status,start,end);
 
 		request.setAttribute("channelId", channelId);
 		request.setAttribute("title", title);
+		request.setAttribute("status", status);
 		request.setAttribute("pageSize", pageSize);
 		request.setAttribute("crawlResourceList", list);
 		request.getRequestDispatcher("crawl_resource_list.jsp").forward(request, response);
@@ -129,12 +130,13 @@ public class CrawlResourceServlet extends HttpServlet {
 	}
 	
 	void send(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Long userId = (Long)request.getSession().getAttribute("userId");
 		String channelId = request.getParameter("channelId");
 		String str = request.getParameter("resIds");
 		str = str.substring(0, str.lastIndexOf(","));
 		String[] ids = str.split(",");
 		
-		boolean bln = service.sendResource(channelId, ids);
+		boolean bln = service.sendResource(userId, channelId, ids);
 		
 		PrintWriter out = response.getWriter();
 		out.print("{ msg:\""+bln+"\" }");

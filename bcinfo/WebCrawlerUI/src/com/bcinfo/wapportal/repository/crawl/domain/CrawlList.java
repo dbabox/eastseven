@@ -24,6 +24,7 @@ public class CrawlList implements Serializable {
 
 	private Long crawlId;
 	private Long channelId;
+	private String channelName;
 	private String crawlUrl;
 	private String crawlStatus;
 	private String createTime;
@@ -68,6 +69,14 @@ public class CrawlList implements Serializable {
 		this.createTime = createTime;
 	}
 
+	public String getChannelName() {
+		return channelName;
+	}
+	
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+	
 	@Override
 	public String toString() {
 		return "CrawlList [channelId=" + channelId + ", crawlId=" + crawlId

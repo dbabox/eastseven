@@ -35,6 +35,8 @@ public class CrawlResource implements Serializable {
 	private String status;
 	private String createTime;
 
+	private String pics;// ·ÇÊý¾Ý¿â×Ö¶Î
+
 	public Long getResId() {
 		return resId;
 	}
@@ -105,6 +107,14 @@ public class CrawlResource implements Serializable {
 
 	public void setImgPathSet(String imgPathSet) {
 		this.imgPathSet = imgPathSet;
+	}
+
+	public String getPics() {
+		return pics;
+	}
+
+	public void setPics(String pics) {
+		this.pics = pics;
 	}
 
 	@Override
