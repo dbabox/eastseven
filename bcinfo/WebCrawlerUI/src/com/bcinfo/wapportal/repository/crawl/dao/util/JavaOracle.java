@@ -17,9 +17,9 @@ public class JavaOracle {
 		Connection conn = null;
 		try {
 			// OracleDriver exist check
-			Class.forName(className);
+			//Class.forName(className);
 			// Get Connection
-			conn = DriverManager.getConnection(url, user, password);
+			conn = DriverManager.getConnection("proxool.oracle");//DriverManager.getConnection(url, user, password);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			//return null;
@@ -41,15 +41,4 @@ public class JavaOracle {
 		return conn;
 	}
 	
-	/**
-	 * 自定义数据库连接，主要用于测试
-	 * @param className oracle.jdbc.driver.OracleDriver
-	 * @param url jdbc:oracle:thin:@218.205.231.65:1521:fxk
-	 * @param user scwap
-	 * @param password scwap
-	 * @return
-	 */
-	public static Connection getTestConn(){
-		return getConn("oracle.jdbc.driver.OracleDriver","jdbc:oracle:thin:@218.205.231.65:1521:fxk","scwap","scwap");
-	}
 }

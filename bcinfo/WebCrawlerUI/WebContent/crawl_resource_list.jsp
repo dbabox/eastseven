@@ -9,23 +9,21 @@
 <%@page import="com.bcinfo.wapportal.repository.crawl.dao.CrawlResourceDao"%><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=GBK">
-<!--  
-<link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
-<script type="text/javascript" src="http://jqueryui.com/latest/jquery-1.3.2.js"></script>
-<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.core.js"></script>
-<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.draggable.js"></script>
-<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.resizable.js"></script>
-<script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.dialog.js"></script>
--->
+<!-- jQuery UI -->
 <link type="text/css" href="js/jquery/themes/base/ui.all.css" rel="stylesheet" />
 <script type="text/javascript" src="js/jquery/jquery-1.3.2.js"></script>
 <script type="text/javascript" src="js/jquery/ui/ui.core.js"></script>
 <script type="text/javascript" src="js/jquery/ui/ui.draggable.js"></script>
 <script type="text/javascript" src="js/jquery/ui/ui.resizable.js"></script>
 <script type="text/javascript" src="js/jquery/ui/ui.dialog.js"></script>
-<!--  -->
+<!-- JSON -->
 <script type="text/javascript" src="js/json.js"></script>
-
+<!-- table -->
+<link href="css/tablecloth/tablecloth.css" rel="stylesheet" type="text/css" media="screen" />
+<script type="text/javascript" src="css/tablecloth/tablecloth.js"></script>
+<!-- FCK 
+<script type="text/javascript" src="fckeditor/fckeditor.js"></script>
+--><!-- 自定义脚本程序 -->
 <script type="text/javascript">
 	//height: 530,width: 500
 	var config = { 
@@ -47,7 +45,7 @@
 	
 	$(document).ready(function() {
 		
-		//绑定按钮事件
+		//绑定按钮事件:发送按钮
 		$("#sendBtn").bind('click',function(){
 			var channelId = $("#channelId").val();
 			var ids = new Array();
@@ -73,11 +71,45 @@
 				$("#id_"+ids[i]).attr("checked",false);	
 			}
 		});
+
+		//绑定按钮事件:全部显示按钮
+		$("#allBtn").bind('click',function(){
+			var size = $("#count").val();
+			//alert("size:"+size);
+			$("#pageSize").val(size);
+		});
+
+		//绑定按钮事件:全部审核按钮
+		$("#allVerifyBtn").bind('click',function(){
+			$(":checkbox").each(function(i){
+				$(this).attr("checked",true);
+			});
+		});
+
+		//绑定按钮事件:审核按钮
+		$("#verifyBtn").bind('click',function(){
+			var jsonText = '';
+			$(":checkbox").each(function(i){
+				var obj = $(this).attr("checked");
+				if(obj){ 
+					jsonText += $(this).val()+",";
+				}
+			});
+			if(jsonText == ''){
+				alert("请选择要审核的记录");
+				return false;
+			}
+		});
+		
 		
 		//初始化
 		$("#dialog").dialog(config);
+		//var fck = new FCKeditor( 'dialog' ) ;
+		//fck.BasePath = '/fckeditor/' ;
+		//fck.ToolbarSet = 'Basic' ;
 
-		//给所有tr td 绑定一个dialog
+
+		//弹出框
 		$("tr td:first-child").bind('click',function(){
 			//初始化dialog中的内容
 			$("#dialog").empty();
@@ -94,6 +126,7 @@
 				$("#dialog").append(cnt);
 				$("#dialog_link").append(link);
 				$("#dialog").dialog('option', 'title', title);
+				//fck.ReplaceTextarea();
 			});
 
 			$("#dialog").dialog('open');
@@ -109,6 +142,7 @@
 	String pageSize = (request.getAttribute("pageSize")!=null)?(String)request.getAttribute("pageSize"):"15";
 	String channelId = (String) request.getParameter("channelId");
 	String title = (String) request.getParameter("title");
+	String status = (request.getAttribute("status")!=null)?(String) request.getAttribute("status"):null;
 	if(title == null) title = "";
 	if(channelId == null || "".equals(channelId)) channelId = (String)request.getAttribute("channelId");
 %>
@@ -121,31 +155,52 @@
 	标题
 	<input type="text" value="<%=title %>" id="title" name="title"/>
 	<input type="submit" value="查询"/>
+	<input type="submit" value="全部显示" id="allBtn"/>
 	<select name="resStatus">
+		<%if(status==null){%>
 		<option value="-1" selected="selected">全部</option>
 		<option value="1">已审</option>
 		<option value="0">未审</option>
+		<% }else{
+			if(status.equals("-1")){%>
+			<option value="-1" selected="selected">全部</option>
+			<option value="1">已审</option>
+			<option value="0">未审</option>
+			<%}
+			else if(status.equals("1")){%>
+			<option value="-1">全部</option>
+			<option value="1" selected="selected">已审</option>
+			<option value="0">未审</option>
+			<%}
+			else{%>
+			<option value="-1">全部</option>
+			<option value="1">已审</option>
+			<option value="0" selected="selected">未审</option>
+			<%}
+		   } %>
 	</select>
 	<input type="text" value="<%=pageSize %>" id="pageSize" name="pageSize"/>
 	
 	<input type="hidden" name="channelId" value="<%=channelId %>"/>
-	<!-- 测试用 -->
-	<input type="hidden" value="<%=count %>" id="test"/>
+	
+	<input type="hidden" value="<%=count %>" id="count"/>
 </form>
 
 <form id="tableForm" action="./CrawlResourceServlet?method=update" method="post">
-<input type="submit" value="审核"/>
+<input type="submit" value="审核" id="verifyBtn"/>
+<input type="submit" value="全部审核" id="allVerifyBtn"/>
 <input type="button" id="sendBtn" value="发送"/>
 <input type="hidden" id="channelId" name="channelId" value="<%=channelId %>"/>
 <table>
 	
 	<tr>
-		<td>序号</td>
-		<td>编号</td>
-		<td>操作<input type="hidden" id="checkBox"/></td>
-		<td>状态</td>
-		<td>标题</td>
-		<td>时间</td>
+		<td align="center">序号</td>
+		<td align="center">操作<input type="hidden" id="checkBox"/></td>
+		<td align="center">状态</td>
+		<td align="center">标题</td>
+		<td align="center">图片数量</td>
+		<td align="center">内容长度</td>
+		<td align="center">时间</td>
 	</tr>
 
 <c:if test="<%=(count >0) %>">
@@ -156,15 +211,16 @@
 	<pg:param name="method" value="list" />
 	<pg:param name="channelId" value="<%=channelId %>" />
 	<pg:param name="pageSize" value="<%=pageSize %>"/>
-	
+	<pg:param name="resStatus" value="<%=status %>"/>
 	
 	<c:forEach var="res" items="<%=list %>" varStatus="status">
 	<tr>
 		<td id="${res.resId }">${status.index+1 }</td>
-		<td>${res.resId }</td>
 		<td><input type="checkbox" id="id_${res.resId }" name="checkStatus" value="${res.resId }"/></td>
 		<td>${res.status }</td>
 		<td>${res.title }</td>
+		<td>${res.pics }</td>
+		<td>${res.text }</td>
 		<td>${res.createTime }</td>
 	</tr>	
 	</c:forEach>

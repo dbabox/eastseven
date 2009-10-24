@@ -118,7 +118,7 @@ public class CrawlResourceDao {
 		return count;
 	}
 	
-	public List<CrawlResource> getAllCrawlResources(Long channelId, String title, int start, int end){
+	public List<CrawlResource> getAllCrawlResources(Long channelId, String title, String status, int start, int end){
 		List<CrawlResource> list = null;
 		
 		Connection conn = null;
@@ -129,13 +129,16 @@ public class CrawlResourceDao {
 			conn = JavaOracle.getConn();
 			if(channelId != null){
 				title = (title==null||"".equals(title))?" 1=1 ":" a.res_title like '%"+title+"%' ";
-				sql = " select * from (select * from (select a.res_id,a.channel_id,a.res_title,a.res_link,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time,decode(a.res_status,'0','Œ¥…Û∫À','1','“—…Û∫À') res_status,rownum row_num from twap_public_crawl_resource a where a.channel_id = ? and "+title+" and rownum <= ? order by a.res_id desc) b) c where c.row_num >= ? order by c.res_id desc ";
+				if("-1".equals(status)){
+					status = " 1=1 ";
+				}else{
+					status = " a.res_status = " + status;
+				}
+				sql = " select * from (select * from (select a.res_id,a.channel_id,a.res_title,a.res_link,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time,decode(a.res_status,'0','Œ¥…Û∫À','1','“—…Û∫À') res_status, dbms_lob.getlength(a.res_text) res_text_len, nvl(a.res_img_path_set,'') res_img_path_set, rownum row_num from twap_public_crawl_resource a where a.channel_id = ? and "+title+" and "+status+" and rownum <= ? order by a.res_id desc) b) c where c.row_num >= ? order by c.res_id desc ";
 				pst = conn.prepareStatement(sql);
 				pst.setLong(1, channelId);
 				pst.setInt(2, end);
 				pst.setInt(3, start);
-				
-				System.out.println(" select * from (select * from (select a.res_id,a.channel_id,a.res_title,a.res_link,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time,rownum row_num from twap_public_crawl_resource a where a.channel_id = "+channelId+" and rownum <= "+end+") b) c where c.row_num >= "+start+" order by c.res_id desc; ");
 				
 			}else{
 				sql = " select a.res_id,a.channel_id,a.res_title,a.res_link,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time from twap_public_crawl_resource a order by a.res_id desc ";
@@ -153,6 +156,16 @@ public class CrawlResourceDao {
 				resource.setResId(rs.getLong("res_id"));
 				resource.setStatus(rs.getString("res_status"));
 				resource.setTitle(rs.getString("res_title"));
+				//TODO ¡Ÿ ±¥¶¿Ì
+				resource.setText(rs.getObject("res_text_len").toString());
+				
+				String picStr = rs.getString("res_img_path_set");
+				if("".equals(picStr)||picStr==null){
+					resource.setPics("0");
+				}else{
+					resource.setPics(String.valueOf(picStr.split(",").length));
+				}
+				
 				list.add(resource);
 			}
 			

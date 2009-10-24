@@ -6,11 +6,14 @@ package com.bcinfo.wapportal.repository.crawl.file;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPReply;
+
+import com.bcinfo.wapportal.repository.crawl.dao.FtpConfigDao;
 
 /**
  * @author dongq
@@ -22,26 +25,42 @@ public class FtpUpload {
 	public static void main(String[] args) {
 		FtpUpload ftp = new FtpUpload();
 		System.out.println("start....");
-		boolean bln = ftp.uploadFile("C:/Download/FBI设套钓出间谍 五角大楼顶级科学家落网(图).xml", "/usr/local/dongq/remotedir/test.xml");
-		System.out.println("end... ftp is "+bln);
+		boolean bln = ftp.uploadFile(
+				"C:/Download/FBI设套钓出间谍 五角大楼顶级科学家落网(图).xml",
+				"/usr/local/dongq/remotedir/test.xml");
+		System.out.println("end... ftp is " + bln);
 	}
 
 	String hostName = "218.205.231.65";
-	//TODO 暂时的
+	// TODO 暂时的
 	String userName = "dongq";
 
 	String password = "20090714";
 
 	String remoteDir = "/usr/local/dongq/remotedir";
+
+	public String getRemoteDir() {
+		return remoteDir;
+	}
+
 	String port = "21";
+	private FtpConfigDao dao;
 
 	public FtpUpload() {
-
 		if (remoteDir == null || remoteDir.equalsIgnoreCase("")) {
-
 			remoteDir = null;
 		}
+	}
 
+	public FtpUpload(String code) {
+		dao = new FtpConfigDao();
+		Map<String, String> map = dao.getFtpConfig(code);
+		this.hostName = map.get("ftp_host");
+		this.password = map.get("ftp_password");
+		this.port = map.get("ftp_port");
+		this.remoteDir = map.get("ftp_dir");
+		this.userName = map.get("ftp_user");
+		toString();
 	}
 
 	public boolean uploadFile(String localfilename, String remotefilename) {
@@ -112,6 +131,13 @@ public class FtpUpload {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FtpUpload [hostName=" + hostName + ", password=" + password
+				+ ", port=" + port + ", remoteDir=" + remoteDir + ", userName="
+				+ userName + "]";
 	}
 
 }

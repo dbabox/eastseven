@@ -1,12 +1,14 @@
 package com.bcinfo.wapportal.repository.crawl.ui.servlet;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.bcinfo.wapportal.repository.crawl.dao.ChannelMappingDao;
+import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
 
 /**
  * 
@@ -29,14 +31,24 @@ public class ChannelMappingServlet extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String localCode = request.getParameter("localCode");
+		Long userId = (Long)request.getSession().getAttribute("userId");
+		String localCode = new UserDao().getUserIdLocal(userId); 
 		String localChannelId = request.getParameter("localChannelId");
 		String channelId = request.getParameter("channelId");
+		String type = request.getParameter("type");
 		
-		if(!"".equals(channelId)&&!"".equals(localChannelId)){
-			boolean bln = dao.save(localCode, localChannelId, channelId);
-			System.out.println(localCode+"|"+localChannelId+"|"+channelId+"|"+bln);
+		if("add".equals(type)){
+			if(!"".equals(channelId)&&!"".equals(localChannelId)){
+				boolean bln = dao.save(userId, localCode, localChannelId, channelId);
+				System.out.println(localCode+"|"+localChannelId+"|"+channelId+"|"+bln);
+			}
+		}else if("del".equals(type)){
+			String[] mappingId = request.getParameterValues("mappingId");
+			boolean bln = dao.deleteBatch(userId, mappingId);
+			
+			System.out.println("ÍË¶©"+bln);
 		}
+		
 		
 		response.sendRedirect("channel_mapping.jsp");
 	}

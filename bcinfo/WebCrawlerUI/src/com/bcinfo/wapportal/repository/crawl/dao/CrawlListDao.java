@@ -28,7 +28,7 @@ public class CrawlListDao {
 		ResultSet rs = null;
 		
 		try{
-			String sql = "select a.crawl_id,a.channel_id,a.crawl_url,a.crawl_status,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_crawl_list a order by a.channel_id,a.create_time,a.crawl_id";
+			String sql = "select a.crawl_id,a.channel_id, (select b.channel_name from twap_public_channel b where a.channel_id=b.channel_id) channel_name,a.crawl_url,decode(a.crawl_status,'1','正常','0','停用','未知') crawl_status,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_crawl_list a order by a.channel_id,a.create_time,a.crawl_id";
 			conn = JavaOracle.getConn();
 			pst = conn.prepareStatement(sql);
 			rs = pst.executeQuery();
@@ -38,6 +38,7 @@ public class CrawlListDao {
 				crawl = new CrawlList();
 				crawl.setCrawlId(rs.getLong("crawl_id"));
 				crawl.setChannelId(rs.getLong("channel_id"));
+				crawl.setChannelName(rs.getString("channel_name"));
 				crawl.setCrawlUrl(rs.getString("crawl_url"));
 				crawl.setCrawlStatus(rs.getString("crawl_status"));
 				crawl.setCreateTime(rs.getString("create_time"));
@@ -66,6 +67,39 @@ public class CrawlListDao {
 			pst.setLong(1, channelId);
 			pst.setString(2, url);
 			pst.executeUpdate();
+			conn.commit();
+			bln = true;
+		}catch(Exception e){
+			if(conn != null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}finally{
+			close(conn, pst, rs);
+		}
+		return bln;
+	}
+	
+	public Boolean updateBatch(String[] ids,String status){
+		boolean bln =false;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " update twap_public_crawl_list a set a.crawl_status = ? where a.crawl_id = ? ";
+		
+		try{
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement(sql);
+			for(String id : ids){
+				pst.setString(1, status);
+				pst.setLong(2, Long.parseLong(id));
+				pst.addBatch();
+			}
+			pst.executeBatch();
 			conn.commit();
 			bln = true;
 		}catch(Exception e){
