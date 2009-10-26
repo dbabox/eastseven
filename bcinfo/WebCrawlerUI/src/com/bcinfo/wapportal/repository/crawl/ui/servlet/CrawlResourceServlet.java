@@ -51,6 +51,8 @@ public class CrawlResourceServlet extends HttpServlet {
 			System.out.println("ÆµµÀID:"+request.getParameter("channelId"));
 			System.out.println("²ÎÊý£º   "+request.getParameter("resIds"));
 			send(request, response);
+		}else if("edit".equals(method)){
+			edit(request, response);
 		}
 	}
 
@@ -141,5 +143,13 @@ public class CrawlResourceServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.print("{ msg:\""+bln+"\" }");
 		out.close();
+	}
+	
+	void edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String resId = request.getParameter("resId");
+		System.out.println(resId);
+		CrawlResource resource = dao.getCrawlResourceDetail(Long.parseLong(resId));
+		request.setAttribute("resource", resource);
+		request.getRequestDispatcher("crawl_resource_edit.jsp").forward(request, response);
 	}
 }
