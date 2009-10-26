@@ -52,8 +52,8 @@ public class DefaultJob implements Job {
 			System.out.println(" ");
 			
 		}catch(Exception e){
-			System.out.println("ÅÀÈ¡ "+url+" Ê§°Ü");
-			if(log.isDebugEnabled()) log.debug(e);
+			System.out.println("×¥È¡ "+url+" Ê§°Ü");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 	}

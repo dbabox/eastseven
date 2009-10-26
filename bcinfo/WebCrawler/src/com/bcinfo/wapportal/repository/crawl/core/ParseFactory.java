@@ -10,6 +10,7 @@ import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQForum;
 import com.bcinfo.wapportal.repository.crawl.core.site.sina.ParseSina;
 import com.bcinfo.wapportal.repository.crawl.core.site.sohu.ParseSohu;
 import com.bcinfo.wapportal.repository.crawl.core.site.tom.ParseTom;
+import com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet.ParseNewsCn;
 import com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet.ParseXinHuaNet;
 
 /**
@@ -48,11 +49,16 @@ public final class ParseFactory {
 				log.debug("创建 "+url+" 的解析类ParseSina");
 			}
 			return new ParseSina();
-		} else if (url.contains(".xinhuanet.")) {
+		} else if (url.contains(".xinhuanet.")/*||url.contains("/xinhua/")*/) {
 			if(log.isDebugEnabled()){
 				log.debug("创建 "+url+" 的解析类ParseXinHuaNet");
 			}
 			return new ParseXinHuaNet();
+		} else if(url.contains("www.news.cn")){
+			if(log.isDebugEnabled()){
+				log.debug("创建 "+url+" 的解析类NewsCn");
+			}
+			return new ParseNewsCn();
 		} else {
 			return null;
 		}

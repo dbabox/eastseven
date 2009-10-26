@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.bcinfo.wapportal.repository.crawl.core.AbstractHtmlParseTemplete;
 import com.bcinfo.wapportal.repository.crawl.core.Parse;
+import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 
 /**
  * @author dongq
@@ -46,7 +47,12 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 		String content = null;
 		
 		try{
-			content = "为实现"+link;
+			//ArticleCnt
+			content = this.getPageContent(link, "id", "ArticleCnt");
+			content = this.commonParseContent(content);
+			
+			//视频链接Object标签
+			content = RegexUtil.eliminateString("<[oO][bB][jJ][eE][cC][tT]\\s+[^>]+>", "</[oO][bB][jJ][eE][cC][tT]>", content);
 		}catch(Exception e){
 			System.out.println("解析QQ页面["+link+"]内容失败");
 		}

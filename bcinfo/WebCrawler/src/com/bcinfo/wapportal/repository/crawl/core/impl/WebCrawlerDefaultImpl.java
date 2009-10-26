@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.tags.ImageTag;
 import org.htmlparser.util.NodeIterator;
@@ -19,6 +20,7 @@ import com.bcinfo.wapportal.repository.crawl.core.ParseFactory;
 import com.bcinfo.wapportal.repository.crawl.core.WebCrawler;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
 import com.bcinfo.wapportal.repository.crawl.file.FileOperation;
+import com.bcinfo.wapportal.repository.crawl.util.CrawlerUtil;
 import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 
 /**
@@ -49,110 +51,113 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 			//取得可用地址
 			List<FolderBO> usableFolders = htmlParse.getUsableCrawlLink(folderId, url);
 			parseService = ParseFactory.getParseInstance(url);
-			folders = new ArrayList<FolderBO>();
-			for(FolderBO folder : usableFolders){
-				String title = folder.getTitle();
-				String link = folder.getLink();
-				String content = parseService.parse(link);
-				String imgPathSet = "";
-				//TODO 记录日志,不管成功与否
-				fileOperation.writeLog(folderId, link);
-				/*
+			if(parseService!=null){
+				
+				folders = new ArrayList<FolderBO>();
+				for(FolderBO folder : usableFolders){
+					String title = folder.getTitle();
+					String link = folder.getLink();
+					String content = parseService.parse(link);
+					String imgPathSet = "";
+					//TODO 记录日志,不管成功与否
+					fileOperation.writeLog(folderId, link);
+					/*
 				boolean bln = fileOperation.writeLog(link);
 				if(log.isDebugEnabled()){
 					log.debug("   记录日志 "+link+" = "+bln);
 				}
-				*/
-				
-				if(content == null || "".equals(content) || "null".equals(content)) continue;
-				if(content != null){
+					 */
 					
-					//TODO 格式化文本内容
-					
-					String[] tmp = content.split(RegexUtil.REGEX_BR);
-					Pattern pattern = Pattern.compile(RegexUtil.REGEX_IMG);
-					Parser parser = new Parser();
-					content = "";
-					for(int i=0;i<tmp.length;i++){
-						String cnt = tmp[i].trim();
-						if(cnt.length()>0){
-							cnt = cnt.replaceAll("　", "");
-							if(!cnt.startsWith("<")){
-								cnt = RegexUtil.REGEX_BR + "　" + cnt;
-							}else{
-								//TODO 下载图片，并替换文本中的图片地址
-								String img = "";
-								Matcher matcher = pattern.matcher(cnt);
-								while(matcher.find()){
-									int start = matcher.start();
-									int end = matcher.end();
-									String inputHTML =cnt.substring(start, end); 
-									parser.setInputHTML(inputHTML);
-									NodeIterator iter = parser.elements();
-									ImageTag imgTag = (ImageTag)iter.nextNode();
-									String originUrl = imgTag.getImageURL();
-									String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
-									String localUrl = fileOperation.writeFile(originUrl, fileName);
-									if(localUrl!=null){
-										imgPathSet += localUrl+",";
-										//替换整个IMG标签
-										img = "<img src="+"http://127.0.0.1"+localUrl+">";
-										cnt = cnt.replace(inputHTML, img);
-										//System.out.println("   原始： "+inputHTML+"| 本地："+img);
-										System.out.println("");
+					if(content == null || "".equals(content) || "null".equals(content)){
+						if(log.isDebugEnabled()){
+							System.out.println("未取得内容： LINK:"+link+" | TITLE:"+title);
+						}
+						continue;
+					}
+					if(content != null){
+						if(log.isDebugEnabled()){
+							System.out.println("------------------------抓取到的内容-------------------------------");
+							System.out.println(content);
+						}
+						//TODO 格式化文本内容
+						content = content.replaceAll(">", "><br/>");
+						String[] tmp = content.split(RegexUtil.REGEX_BR);
+						Pattern pattern = Pattern.compile(RegexUtil.REGEX_IMG);
+						Parser parser = new Parser();
+						content = "";
+						for(int i=0;i<tmp.length;i++){
+							String cnt = tmp[i];
+							if(cnt==null) continue;
+							cnt = cnt.trim();
+							if(cnt.length()>0){
+								if(log.isDebugEnabled()){
+									System.out.println("  "+i+"按<br/>split格式化[size:"+cnt.length()+";total:"+tmp.length+"]："+cnt);
+								}
+								//cnt = cnt.replaceAll("　", "");
+								if(!cnt.startsWith("<")){
+									cnt = RegexUtil.REGEX_BR + "　" + cnt;
+								}else{
+									//TODO 下载图片，并替换文本中的图片地址
+									String httpHeader = CrawlerUtil.extractLinkHeader(link);//顶级地址
+									String img = "";
+									Matcher matcher = pattern.matcher(cnt);
+									while(matcher.find()){
+										
+										int start = matcher.start();
+										int end = matcher.end();
+										String inputHTML =cnt.substring(start, end); 
+										//System.out.println(" ***** ["+matcher.groupCount()+"]["+start+"-"+end+"]["+inputHTML+"] ***** ");
+										parser.setInputHTML(inputHTML);
+										NodeIterator iter = parser.elements();
+										Node node = iter.nextNode();
+										ImageTag imgTag = (ImageTag)node;
+										String originUrl = imgTag.getImageURL();
+										//TOM的图片链接有些是相对路径，此时要手动添加成绝对路径，否则，下载图片是会报空指针错误
+										if(!originUrl.contains("http://")){
+											originUrl = CrawlerUtil.addLinkHeader(originUrl, httpHeader);
+										}
+										String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
+										//TODO 图片保存至本地，备用
+										String localUrl = fileOperation.writeFile(originUrl, fileName);
+										if(localUrl!=null){
+											//imgPathSet += localUrl+",";
+											imgPathSet += originUrl+",";//数据库保存实际的图片链接地址
+											//TODO 替换整个IMG标签
+											//img = "<img src="+"http://127.0.0.1"+localUrl+">";
+											
+											//TODO 格式化原IMG标签，只保留src属性
+											img = "<img src="+originUrl+">";
+											cnt = cnt.replace(inputHTML, img);
+											//System.out.println("   原始： "+inputHTML+"| 本地："+img);
+										}
 									}
 								}
+								content += cnt;
 							}
 						}
-						content += cnt;
+						
+						if(log.isDebugEnabled()){
+							System.out.println("------------------------抓取-------------------------------");
+							System.out.println(link+" | "+title);
+							
+							System.out.println("------------------------格式化文本内容-------------------------------");
+							System.out.println("内容                      :"+content);
+							System.out.println("图片存放路径  :"+imgPathSet);
+							System.out.println(" ");
+						}
+						/**/
+						folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
 					}
 					
-					if(log.isDebugEnabled()){
-						System.out.println("------------------------抓取-------------------------------");
-						System.out.println(link+" | "+title);
-						
-						System.out.println("------------------------格式化文本内容-------------------------------");
-						System.out.println("内容：                    "+content);
-						System.out.println("图片存放路径："+imgPathSet);
-						System.out.println(" ");
-					}
-					/**/
-					folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
 				}
 				
+			}else{
+				System.out.println(" 抓取地址["+url+"]目前还不能解析... ");
 			}
-			
-			//分段处理
-			/*
-			List<FolderBO> list = handleContent.handleFolders(folders);
-			if(log.isDebugEnabled()){
-				int count = 1;
-				for(FolderBO folder : list){
-					log.debug(count);
-					log.debug(folder.getFolderId()+" | "+folder.getLink()+" | "+folder.getTitle());
-					List<ResourceBO> res = folder.getResources();
-					int segment = 1;
-					for(ResourceBO r : res){
-						if(r.getType() == ResourceType.PIC){
-							log.debug(segment+"  "+r.getContent()+" | "+r.getPath());
-						}else if (r.getType() == ResourceType.WORDS){
-							log.debug(segment+"  "+r.getContent());
-						}
-						segment++;
-					}
-					System.out.println(" ");
-					count++;
-				}
-			}
-			if(list!=null && !list.isEmpty()){
-				folders.clear();
-				folders.addAll(list);
-			}
-			*/
 		}catch(Exception e){
 			System.out.println("[目标栏目:"+folderId+" "+url+"]抓取失败");
 			if(log.isDebugEnabled()){
-				log.debug(e);
+				e.printStackTrace();
 			}
 		}
 		

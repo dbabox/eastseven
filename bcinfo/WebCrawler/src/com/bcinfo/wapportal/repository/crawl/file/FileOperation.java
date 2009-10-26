@@ -385,6 +385,8 @@ public final class FileOperation {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+		}catch(NullPointerException e){
+			System.out.println("下载 "+destImgUrl + subDir + fileName+" 文件不存在");
 		}
 		return path;
 	}

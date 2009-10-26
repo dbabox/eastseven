@@ -49,7 +49,7 @@ public final class Main {
 			if(list != null && !list.isEmpty()){
 				SchedulerFactory factory = new StdSchedulerFactory();
 				Scheduler scheduler = factory.getScheduler();
-				long currentTime = System.currentTimeMillis();
+				//long currentTime = System.currentTimeMillis();
 				
 				scheduler.start();
 				System.out.println( "  Quartz调度开始运行  " + list.size());
@@ -57,7 +57,7 @@ public final class Main {
 				for(int index=0;index<list.size();index++){
 					//5*1000L;
 					long repeatInterval = 600 * 1000L;//TODO 10分钟一次
-					Date startTime = new Date(currentTime + repeatInterval*index);
+					//Date startTime = new Date(currentTime + repeatInterval*index);
 					
 					CrawlList info = (CrawlList)list.get(index);
 					String folderId = info.getChannelId().toString();
@@ -78,7 +78,7 @@ public final class Main {
 				}
 				System.out.println( "  Quartz调度运行  ");
 			}else{
-				System.out.println("null");
+				System.out.println("从数据库中读取要爬取的地址列表为空");
 			}
 		}catch(Exception e){
 			log.error(e);
