@@ -21,21 +21,16 @@
 <!-- table -->
 <link href="css/tablecloth/tablecloth.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="css/tablecloth/tablecloth.js"></script>
-<!-- FCK 
-<script type="text/javascript" src="fckeditor/fckeditor.js"></script>
---><!-- 自定义脚本程序 -->
+
+<!-- 自定义脚本程序 -->
 <script type="text/javascript">
 	//height: 530,width: 500
 	var config = { 
 			buttons: { "关闭": function() { $(this).dialog("close"); }
-						//"审核通过": function(){},
-						//"审核未通过": function(){},
 						,"查看原网页": function(){
 							var link = $("#dialog_link").html();
-							//alert($("#dialog_link").html());
-							//window.location.replace($("#dialog_link").html());
 							window.open(link);
-						}//window.location.replace(link);
+						}
 		 	},
 			autoOpen: false,
 			modal: true,
@@ -104,11 +99,7 @@
 		
 		//初始化
 		$("#dialog").dialog(config);
-		//var fck = new FCKeditor( 'dialog' ) ;
-		//fck.BasePath = '/fckeditor/' ;
-		//fck.ToolbarSet = 'Basic' ;
-
-
+		
 		//弹出框
 		$("tr td:first-child").bind('click',function(){
 			//初始化dialog中的内容
@@ -126,7 +117,6 @@
 				$("#dialog").append(cnt);
 				$("#dialog_link").append(link);
 				$("#dialog").dialog('option', 'title', title);
-				//fck.ReplaceTextarea();
 			});
 
 			$("#dialog").dialog('open');
@@ -218,7 +208,7 @@
 		<td id="${res.resId }">${status.index+1 }</td>
 		<td><input type="checkbox" id="id_${res.resId }" name="checkStatus" value="${res.resId }"/></td>
 		<td>${res.status }</td>
-		<td>${res.title }</td>
+		<td><a href="./CrawlResourceServlet?method=edit&resId=${res.resId }">${res.title }</a></td>
 		<td>${res.pics }</td>
 		<td>${res.text }</td>
 		<td>${res.createTime }</td>
