@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2009-10-26 上午08:43:35                                                        
+
+     project    
+     description
+                   
+     Dongq                                                                
+     ====================================================================== -->
+<project name="WebCrawlerUI" default="default">
+
+	<property file="build.properties" />
+
+	<property name="src.dir" value="${basedir}/src/" description="源文件存放位置" />
+	<property name="build.dir" value="${basedir}/build/" description="class文件存放位置" />
+	<property name="dist.dir" value="${basedir}/dist/" description="war文件存放位置" />
+	<property name="web.dir" value="${basedir}/WebContent" description="web工程相关文件" />
+	<property name="web.lib" value="${web.dir}/WEB-INF/lib" description="web工程相关文件" />
+
+	<path id="compile.classpath" description="编译路径">
+		<fileset dir="${web.lib}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init" description="初始化目录">
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="clean" description="删除">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="compile" depends="clean,init" description="编译源文件">
+		<javac destdir="${build.dir}/classes" srcdir="${src.dir}" extdirs="${src.dir}/test" executable="${JDK6.dir}/javac" encoding="GBK" failonerror="false">
+			<classpath refid="compile.classpath" />
+		</javac>
+		<echo>compile done</echo>
+	</target>
+
+	<target name="jar" depends="compile" description="打包">
+		<jar destfile="${dist.dir}/webcrawlerui.jar" basedir="${build.dir}/classes/" includes="com/bcinfo/**">
+			<fileset dir="${src.dir}" includes="com/bcinfo/**" />
+		</jar>
+	</target>
+
+	<target name="dist" depends="jar">
+		
+	</target>
+	
+	<target name="default" depends="jar" description="默认">
+		<tstamp>
+			<format property="time.version" pattern="yyMMddHHmmss" />
+		</tstamp>
+
+		<echo message="${time.version}">
+		</echo>
+	</target>
+
+
+</project>
