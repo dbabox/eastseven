@@ -184,8 +184,8 @@ public abstract class AbstractHtmlParseTemplete {
 	 * @param link
 	 * @param divAttrName
 	 * @param divAttrValue
-	 * @return
-	 * @throws Exception
+	 * @return 没有的话返回""
+	 * @throws Exception ""
 	 */
 	public String getPageContent(String link, String divAttrName, String divAttrValue) throws Exception {
 		String content = "";

@@ -15,6 +15,7 @@ import org.htmlparser.Parser;
 import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.ScriptTag;
+import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 
@@ -87,12 +88,29 @@ public final class CrawlerUtil {
 		try{
 			Parser parser = new Parser(url);
 			
+			log.debug(url+" | "+parser.getEncoding());
+			
+			if(!"GBK".equalsIgnoreCase(parser.getEncoding()))
+				parser.setEncoding("GBK");
+				
+			//TODO 该问题待查
+			//解析静态页面内容，这样可以避免链接数据存放在js脚本中的情况
+			//String inputHTML = parser.parse(null).toHtml();
+			//parser.setInputHTML(inputHTML);
 			if(log.isDebugEnabled()){
-				log.debug(url+" | "+parser.getEncoding());
+				log.debug("测试："+url+" | "+parser.getEncoding());
+				//Parser p = new Parser(url);
+				//System.out.println(p.parse(null).toHtml());
 			}
 			
-			parser.setEncoding("GBK");
-			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
+			NodeList nodeList = new NodeList();
+			try{
+				nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
+			}catch(EncodingChangeException e){
+				parser = Parser.createParser(ReadHttpFile.getPageContent(url), "GBK");
+				nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
+			}
+			
 			NodeIterator iter = nodeList.elements();
 			links = new ArrayList<FolderBO>();
 			while(iter.hasMoreNodes()){
@@ -124,44 +142,57 @@ public final class CrawlerUtil {
 			Parser parser = new Parser(url);
 			if(log.isDebugEnabled()){
 				log.debug(url+" | "+parser.getEncoding());
+				System.out.println(parser.parse(null).toHtml());
+				//parser.reset();
 			}
-			parser.setEncoding("GBK");
+			if(!"GBK".equalsIgnoreCase(parser.getEncoding()))
+				parser.setEncoding("GBK");
 			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(ScriptTag.class));
 			NodeIterator iter = nodeList.elements();
 			String data = "";
 			while(iter.hasMoreNodes()){
 				ScriptTag node = (ScriptTag)iter.nextNode();
+				
+				if(log.isDebugEnabled()){
+					System.out.println("script   :"+node.getScriptCode());
+				}
+				
 				if(node.getScriptCode().contains("var data=[")){
 					data = node.getScriptCode().trim();
 					break;
 				}
 			}
 			String httpHeader = extractLinkHeader(url);
-			data = data.substring(data.indexOf("[")+1, data.indexOf("]")).replaceAll("\\},", "");
-			links = new ArrayList<FolderBO>();
-			String[] datas = data.split("\\{");
-			for(int i=0;i<datas.length;i++){
-				String _data = datas[i].replaceAll("", "").trim();
-				String[] tmp = _data.split(",");
-				FolderBO folder = new FolderBO();
-				for(int j=0;j<tmp.length;j++){
-					String val = tmp[j].replaceAll("\"", "").trim();
-					
-					if(val.contains("title")){
-						String title = val.replaceAll("title:", "");
-						folder.setTitle(title);
-					}else if(val.contains("url")){
-						String link = val.replaceAll("url:", "");
-						if(!link.startsWith("http:")){
-							link = addLinkHeader(link, httpHeader);
+			if(!"".equals(data)){
+				
+				data = data.substring(data.indexOf("[")+1, data.indexOf("]")).replaceAll("\\},", "");
+				links = new ArrayList<FolderBO>();
+				String[] datas = data.split("\\{");
+				for(int i=0;i<datas.length;i++){
+					String _data = datas[i].replaceAll("", "").trim();
+					String[] tmp = _data.split(",");
+					FolderBO folder = new FolderBO();
+					for(int j=0;j<tmp.length;j++){
+						String val = tmp[j].replaceAll("\"", "").trim();
+						
+						if(val.contains("title")){
+							String title = val.replaceAll("title:", "");
+							folder.setTitle(title);
+						}else if(val.contains("url")){
+							String link = val.replaceAll("url:", "");
+							if(!link.startsWith("http:")){
+								link = addLinkHeader(link, httpHeader);
+							}
+							folder.setLink(link);
 						}
-						folder.setLink(link);
 					}
+					links.add(folder);
 				}
-				links.add(folder);
+			}else{
+				System.out.println("未取得页面["+url+"]脚本数据");
 			}
 		}catch(Exception e){
-			System.out.println("取得页面["+url+"]内的所有超链接地址失败");
+			System.out.println("取得新浪四川页面["+url+"]内的所有超链接地址失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -175,13 +206,17 @@ public final class CrawlerUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String extractLinkHeader(String link) throws Exception{
-		String http = "";
-		if(link.indexOf("http://")!=-1){
-			String tmp = link.substring("http://".length());
-			http = "http://" + tmp.substring(0, tmp.indexOf("/"));
+	public static String extractLinkHeader(String link) {
+		try{
+			String http = "";
+			if(link.indexOf("http://")!=-1){
+				String tmp = link.substring("http://".length());
+				http = "http://" + tmp.substring(0, tmp.indexOf("/"));
+			}
+			return http;
+		}catch(Exception e){
+			return link;
 		}
-		return http;
 	}
 	
 	/**

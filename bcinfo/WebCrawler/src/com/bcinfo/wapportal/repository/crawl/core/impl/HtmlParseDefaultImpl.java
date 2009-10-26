@@ -37,12 +37,9 @@ public class HtmlParseDefaultImpl implements HtmlParse {
 			if(url.startsWith("http://rss.")){
 				folders = new RomeRSS().getAllLinks(url);
 			}else{
-				//单独处理http://sc.sina.com.cn/news/gngjnews/list.html这类页面，该页面链接数据存放在js脚本中
-				if(!url.startsWith("http://sc.sina.com.cn"))
-					folders = CrawlerUtil.getAllLinks(url);
-				else{
-					folders = CrawlerUtil.getAllLinksForSC(url);
-				}
+				//TODO 貌似HTMLParser又可以将JS数据解析为静态页面了
+				//综合处理页面链接抓取，考虑链接数据存放在js脚本中的情况
+				folders = CrawlerUtil.getAllLinks(url);
 			}
 			
 			usableLinks = new ArrayList<FolderBO>();

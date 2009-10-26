@@ -90,6 +90,8 @@ public class ParseTom extends AbstractHtmlParseTemplete implements Parse {
 			content = content.replaceAll("<MUTILPAGENAV>", replacement);
 			//去掉分页标签
 			content = RegexUtil.eliminateString(RegexUtil.REGEX_SELECT_START, RegexUtil.REGEX_SELECT_END, content);
+			//视频链接Object标签
+			content = RegexUtil.eliminateString("<[oO][bB][jJ][eE][cC][tT]\\s+[^>]+>", "</[oO][bB][jJ][eE][cC][tT]>", content);
 		}catch(Exception e){
 			System.out.println("解析TOM页面["+link+"]内容失败");
 		}
