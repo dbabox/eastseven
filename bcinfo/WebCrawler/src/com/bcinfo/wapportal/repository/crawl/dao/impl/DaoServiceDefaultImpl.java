@@ -84,6 +84,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
+		PreparedStatement pstUpdate = null;
 		ResultSet rs = null;//res_content,RES_IMG_PATH_SET
 		String sql = "insert into twap_public_crawl_resource(res_id,channel_id,res_title,res_link,res_img_path_set) values(seq_twap_public_crawl_resource.nextval,?,?,?,?)";
 		
@@ -96,36 +97,55 @@ public class DaoServiceDefaultImpl implements DaoService {
 			conn = JavaOracle.getConn();
 			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sql);
+			int count = 1;
 			for(FolderBO folder : folders){
 				link = folder.getLink();
 				title = folder.getTitle();
 				channelId = folder.getFolderId();
 				content = folder.getContent();
 				imgPathSet = folder.getImgPathSet();
-				log.debug("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
 				pst.setLong(1, Long.valueOf(channelId));
 				pst.setString(2, title);
 				pst.setString(3, link);
 				pst.setString(4, imgPathSet);
-				pst.addBatch();
-				//log.info(link+" | "+title+" | ±£´æ³É¹¦");
+				/*
+				if(count==100){
+					pst.addBatch();
+					count=1;
+				}	
+				*/
+				count++;
+				if(log.isDebugEnabled())
+					System.out.println("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
 			}
-			pst.executeBatch();
-			pst.clearBatch();
+			
+			if(log.isDebugEnabled()){
+				System.out.println("-------------------insert:"+folders.size());
+			}
 			
 			sql = "update twap_public_crawl_resource set res_text = ? where channel_id = ? and res_title = ? and res_link = ?";
-			pst = conn.prepareStatement(sql);
+			pstUpdate = conn.prepareStatement(sql);
+			//pst = conn.prepareStatement(sql);
 			for(FolderBO folder : folders){
-				pst.setString(1, folder.getContent());
-				pst.setLong(2, Long.valueOf(folder.getFolderId()));
-				pst.setString(3, folder.getTitle());
-				pst.setString(4, folder.getLink());
-				pst.addBatch();
+				pstUpdate.setString(1, folder.getContent());
+				pstUpdate.setLong(2, Long.valueOf(folder.getFolderId()));
+				pstUpdate.setString(3, folder.getTitle());
+				pstUpdate.setString(4, folder.getLink());
+				pstUpdate.addBatch();
 			}
+			
 			pst.executeBatch();
 			pst.clearBatch();
+			pstUpdate.executeBatch();
+			pstUpdate.clearBatch();
+			
+			if(log.isDebugEnabled()){
+				System.out.println("-------------------update:"+folders.size());
+			}
 			
 			pst.close();
+			pstUpdate.close();
+			
 			conn.commit();
 			bln = true;
 		}catch(Exception e){
