@@ -4,6 +4,8 @@
 package com.bcinfo.wapportal.repository.crawl.util;
 
 import org.htmlparser.Node;
+import org.htmlparser.Parser;
+import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 
@@ -64,5 +66,16 @@ public final class DebugUtil {
 			
 		}
 		System.out.println("  ");
+	}
+	
+	public static NodeList getNodeList(String link, String tagName){
+		NodeList nodeList = new NodeList();
+		try{
+			Parser parser = new Parser(link);
+			nodeList = parser.extractAllNodesThatMatch(new TagNameFilter(tagName));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return nodeList;
 	}
 }

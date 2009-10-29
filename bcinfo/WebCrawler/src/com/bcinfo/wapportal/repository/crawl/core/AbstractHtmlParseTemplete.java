@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.nodes.RemarkNode;
 import org.htmlparser.tags.Div;
 import org.htmlparser.tags.ImageTag;
@@ -16,6 +17,7 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.ScriptTag;
 import org.htmlparser.tags.Span;
 import org.htmlparser.tags.StyleTag;
+import org.htmlparser.tags.TableColumn;
 import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
@@ -89,6 +91,12 @@ public abstract class AbstractHtmlParseTemplete {
 			content = content.replaceAll(RegexUtil.REGEX_TABLE_ALL, replacement);
 			//DIV
 			content = content.replaceAll(RegexUtil.REGEX_DIV, replacement);
+			//IFRAME
+			content = content.replaceAll(RegexUtil.REGEX_IFRAME, replacement);
+			//LI
+			content = content.replaceAll("<[lL][iI]\\s+[^>]+>|<[lL][iI]>|</[lL][iI]>", replacement);
+			//UL
+			content = content.replaceAll("<[uU][lL]\\s+[^>]+>|<[uU][lL]>|</[uU][lL]>", replacement);
 			//格式化
 			content = content.replaceAll(RegexUtil.REGEX_ENTER, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_ENTER_TAB, replacement);
@@ -173,6 +181,46 @@ public abstract class AbstractHtmlParseTemplete {
 			}
 		}
 		
+		return content;
+	}
+	
+	/**
+	 * 取得指定标签下的内容
+	 * @param link
+	 * @param tagName 标签名
+	 * @param attrName 标签属性
+	 * @param attrValue 标签属性值
+	 * @return 
+	 * @throws Exception ""
+	 */
+	public String getPageContent(String link, String tagName, String attrName, String attrValue) throws Exception {
+		String content = "";
+		Parser parser = new Parser(link);
+		NodeList nodeList = new NodeList();
+		try{
+			nodeList = parser.extractAllNodesThatMatch(new TagNameFilter(tagName));
+		}catch(EncodingChangeException e){
+			parser.reset();
+			parser.setEncoding("GBK");
+			nodeList = parser.extractAllNodesThatMatch(new TagNameFilter(tagName));
+		}
+		if(nodeList!=null&&nodeList.size()>0){
+			NodeIterator iter = nodeList.elements();
+			while(iter.hasMoreNodes()){
+				Node node = iter.nextNode();
+				if(node instanceof Div){
+					Div div = (Div)node;
+					if(attrValue.equals(div.getAttribute(attrName))){
+						content += div.toHtml();
+					}
+				}else if(node instanceof TableColumn){
+					TableColumn td = (TableColumn)node;
+					if(attrValue.equals(td.getAttribute(attrName))){
+						content += td.toHtml();
+					}
+				}
+			}
+		}
 		return content;
 	}
 	

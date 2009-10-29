@@ -54,6 +54,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 			if(parseService!=null){
 				
 				folders = new ArrayList<FolderBO>();
+				int count = 1;
 				for(FolderBO folder : usableFolders){
 					String title = folder.getTitle();
 					String link = folder.getLink();
@@ -76,8 +77,8 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 					}
 					if(content != null){
 						if(log.isDebugEnabled()){
-							System.out.println("------------------------抓取到的内容-------------------------------");
-							System.out.println(content);
+							//System.out.println("------------------------抓取到的内容-------------------------------");
+							//System.out.println(content);
 						}
 						//TODO 格式化文本内容
 						content = content.replaceAll(">", "><br/>");
@@ -91,7 +92,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 							cnt = cnt.trim();
 							if(cnt.length()>0){
 								if(log.isDebugEnabled()){
-									System.out.println("  "+i+"按<br/>split格式化[size:"+cnt.length()+";total:"+tmp.length+"]："+cnt);
+									//System.out.println("  "+i+"按<br/>split格式化[size:"+cnt.length()+";total:"+tmp.length+"]："+cnt);
 								}
 								//cnt = cnt.replaceAll("　", "");
 								if(!cnt.startsWith("<")){
@@ -105,31 +106,45 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 										
 										int start = matcher.start();
 										int end = matcher.end();
-										String inputHTML =cnt.substring(start, end); 
-										//System.out.println(" ***** ["+matcher.groupCount()+"]["+start+"-"+end+"]["+inputHTML+"] ***** ");
+										String inputHTML =cnt.substring(start, end);
+										
+										//新华网下一页图片
+										if(inputHTML.contains("news_xy.gif")) continue;
+										if(inputHTML.contains("news_sy.gif")) continue;
+										if(inputHTML.contains("news_hy.gif")) continue;
+										
 										parser.setInputHTML(inputHTML);
 										NodeIterator iter = parser.elements();
 										Node node = iter.nextNode();
 										ImageTag imgTag = (ImageTag)node;
 										String originUrl = imgTag.getImageURL();
+										
+										if(log.isDebugEnabled()){
+											System.out.println("------------------------抓取到[ "+link+" ]图片地址-------------------------------");
+											System.out.println("原始图片地址："+originUrl);
+										}
 										//TOM的图片链接有些是相对路径，此时要手动添加成绝对路径，否则，下载图片是会报空指针错误
 										if(!originUrl.contains("http://")){
-											originUrl = CrawlerUtil.addLinkHeader(originUrl, httpHeader);
+											if(originUrl.startsWith("xin")){
+												//新华网的图片链接地址是放在当前页面下的，如：<IMG src"xin_33210062622088432258116.jpg" border0>
+												originUrl = link.substring(0, link.lastIndexOf("/")+1) + originUrl;
+											}else{
+												//TOM
+												originUrl = CrawlerUtil.addLinkHeader(originUrl, httpHeader);
+											}
 										}
-										String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
-										//TODO 图片保存至本地，备用
-										String localUrl = fileOperation.writeFile(originUrl, fileName);
-										if(localUrl!=null){
-											//imgPathSet += localUrl+",";
-											imgPathSet += originUrl+",";//数据库保存实际的图片链接地址
-											//TODO 替换整个IMG标签
-											//img = "<img src="+"http://127.0.0.1"+localUrl+">";
-											
-											//TODO 格式化原IMG标签，只保留src属性
-											img = "<img src="+originUrl+">";
-											cnt = cnt.replace(inputHTML, img);
-											//System.out.println("   原始： "+inputHTML+"| 本地："+img);
+										imgPathSet += originUrl+",";//数据库保存实际的图片链接地址
+										//TODO 格式化原IMG标签，只保留src属性
+										img = "<img src="+originUrl+">";
+										cnt = cnt.replace(inputHTML, img);
+
+										if(log.isDebugEnabled()){
+											System.out.println("格式化后的图片地址："+originUrl);
+											//TODO 图片保存至本地，备用
+											String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
+											String localUrl = fileOperation.writeFile(originUrl, fileName);
 										}
+										
 									}
 								}
 								content += cnt;
@@ -140,15 +155,18 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 							System.out.println("------------------------抓取-------------------------------");
 							System.out.println(link+" | "+title);
 							
-							System.out.println("------------------------格式化文本内容-------------------------------");
+//							System.out.println("------------------------格式化文本内容-------------------------------");
 							System.out.println("内容                      :"+content);
-							System.out.println("图片存放路径  :"+imgPathSet);
+//							System.out.println("图片存放路径  :"+imgPathSet);
 							System.out.println(" ");
 						}
 						/**/
 						folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
+						
+						//TODO 测试
+						//if(log.isDebugEnabled()) if(count==5) break;
 					}
-					
+					count ++;
 				}
 				
 			}else{

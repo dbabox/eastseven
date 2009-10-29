@@ -23,11 +23,14 @@ public class FolderBO implements Serializable {
 	private String imgPathSet;
 	private List<ResourceBO> resources;
 
+	private Long id;
+
 	public FolderBO() {
 
 	}
 
-	public FolderBO(String folderId, String title, String link, String content, String imgPathSet) {
+	public FolderBO(String folderId, String title, String link, String content,
+			String imgPathSet) {
 		super();
 		this.folderId = folderId;
 		this.title = title;
@@ -82,6 +85,14 @@ public class FolderBO implements Serializable {
 
 	public void setImgPathSet(String imgPathSet) {
 		this.imgPathSet = imgPathSet;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Override
