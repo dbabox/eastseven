@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.1
+Created-By: 14.0-b16 (Sun Microsystems Inc.)
+Main-Class: com.bcinfo.wapportal.repository.crawl.client.Main
+Class-Path: lib/commons-collections-3.2.jar 
+ lib/commons-logging-1.1.jar 
+ lib/htmlparser.jar 
+ lib/jdom.jar 
+ lib/log4j-1.2.15.jar 
+ lib/ojdbc14.jar 
+ lib/quartz-all-1.6.5.jar 
+ 
