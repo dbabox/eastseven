@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2009-10-21 下午02:58:34                                                        
+
+     WebCrawlerClient    
+     description
+          	本地服务解析程序         
+     Dongq                                                                
+     ====================================================================== -->
+<project name="WebCrawlerClient" default="default">
+
+	<target name="default" depends="dist" description="description">
+
+	</target>
+
+	<target name="dist" depends="jar">
+		<mkdir dir="${dist.dir}/webcrawlerclient" />
+		<copy todir="${dist.dir}/webcrawlerclient">
+			<fileset dir="${dist.dir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="*.bat" />
+				<include name="*.sh" />
+			</fileset>
+		</copy>
+
+		<mkdir dir="${dist.dir}/webcrawlerclient/log" />
+
+		<mkdir dir="${dist.dir}/webcrawlerclient/config" />
+		<copy todir="${dist.dir}/webcrawlerclient/config">
+			<fileset dir="${src.dir}">
+				<include name="*.properties" />
+			</fileset>
+		</copy>
+
+		<mkdir dir="${dist.dir}/webcrawlerclient/lib" />
+		<copy todir="${dist.dir}/webcrawlerclient/lib">
+			<fileset dir="${basedir}/lib/">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${basedir}/lib/htmlparser/">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${basedir}/lib/jdbc/">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${basedir}/lib/quartz/">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+	<property name="src.dir" value="${basedir}/src/" description="源文件存放位置" />
+	<property name="build.dir" value="${basedir}/build/" description="class文件存放位置" />
+	<property name="dist.dir" value="${basedir}/dist/" description="war文件存放位置" />
+	<property file="build.properties" />
+
+	<path id="compile.classpath" description="编译路径">
+		<fileset dir="${basedir}/lib/">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${basedir}/lib/htmlparser/">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${basedir}/lib/jdbc/">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${basedir}/lib/quartz/">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init" description="初始化目录">
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="clean" description="删除">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="compile" depends="clean,init" description="编译源文件">
+		<javac destdir="${build.dir}/classes" srcdir="${src.dir}" extdirs="${src.dir}/test" executable="${JDK6.dir}/javac" encoding="GBK" failonerror="true">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${dist.dir}/client.jar" basedir="${build.dir}/classes/" includes="com/bcinfo/**" manifest="${basedir}/META-INF/MANIFEST.MF">
+			<fileset dir="${src.dir}" includes="com/bcinfo/**" />
+		</jar>
+	</target>
+
+
+</project>
