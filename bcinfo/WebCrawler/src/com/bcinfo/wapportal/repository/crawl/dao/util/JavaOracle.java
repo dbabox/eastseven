@@ -2,20 +2,29 @@ package com.bcinfo.wapportal.repository.crawl.dao.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
+
+import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
+
 
 public class JavaOracle {
 
 	public JavaOracle() {}
 	
 	private static String className = "oracle.jdbc.driver.OracleDriver";
-	//jdbc:oracle:thin:@218.205.231.65:1521:fxk
-	private static String url = "jdbc:oracle:thin:@127.0.0.1:1521:XE";
-	private static String user = "wapsc";//
-	private static String password = "wapsc";//hello520tshirt
+	private static String url = "jdbc:oracle:thin:@218.205.231.65:1521:fxk";
+	private static String user = "scwap";//
+	private static String password = "scwap";//hello520tshirt
 	
 	public static Connection getConn() {
 		Connection conn = null;
 		try {
+			Properties p = new ConfigPropertyUtil().getConfigProperty();
+			className = p.getProperty("db.className");
+			url = p.getProperty("db.url");
+			user = p.getProperty("db.user");
+			password = p.getProperty("db.password");
+			System.out.println("  数据库连接：url["+url+"],usr["+user+"],pwd["+password+"]");
 			// OracleDriver exist check
 			Class.forName(className);
 			// Get Connection

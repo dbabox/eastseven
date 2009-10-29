@@ -43,6 +43,7 @@ public final class CrawlerUtil {
 				|| link.indexOf("/gallery_") != -1 
 				|| link.indexOf("http://alive.") != -1
 				|| link.indexOf("javascript") != -1
+				|| link.indexOf("/bbs/") != -1
 				|| link.indexOf("data[i].url") != -1){
 			return false;
 		}else{
@@ -97,11 +98,6 @@ public final class CrawlerUtil {
 			//解析静态页面内容，这样可以避免链接数据存放在js脚本中的情况
 			//String inputHTML = parser.parse(null).toHtml();
 			//parser.setInputHTML(inputHTML);
-			if(log.isDebugEnabled()){
-				log.debug("测试："+url+" | "+parser.getEncoding());
-				//Parser p = new Parser(url);
-				//System.out.println(p.parse(null).toHtml());
-			}
 			
 			NodeList nodeList = new NodeList();
 			try{
@@ -120,8 +116,9 @@ public final class CrawlerUtil {
 				if(link == null || "".equals(link)) continue;
 				if(!CrawlerUtil.canCrwal(link)) continue;
 				if(link.equals(url) || link.endsWith("/")) continue;
-				if("详细".equals(title)) continue;
-				log.debug("     待抓取的链接："+link);
+				if(title.contains("详细")||title.contains("更多")) continue;
+				if(log.isDebugEnabled())
+					System.out.println("     待抓取的链接："+link);
 				FolderBO folder = new FolderBO();
 				folder.setLink(link);
 				folder.setTitle(title);
@@ -229,7 +226,7 @@ public final class CrawlerUtil {
 	public static String addLinkHeader(String link, String httpHeader) throws Exception{
 		String completeLink = "";
 		if(link.indexOf("http://")== -1){
-			completeLink = httpHeader + link;
+			completeLink = httpHeader + "/" + link;
 		}else
 			completeLink = link;
 		return completeLink;
@@ -357,4 +354,5 @@ public final class CrawlerUtil {
 			}
 		}
 	}
+	
 }

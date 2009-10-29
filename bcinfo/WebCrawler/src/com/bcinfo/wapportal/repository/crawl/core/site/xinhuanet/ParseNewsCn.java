@@ -7,9 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.htmlparser.Parser;
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.tags.TableTag;
+import org.htmlparser.util.NodeIterator;
+import org.htmlparser.util.NodeList;
 
 import com.bcinfo.wapportal.repository.crawl.core.AbstractHtmlParseTemplete;
 import com.bcinfo.wapportal.repository.crawl.core.Parse;
+import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 
 /**
  * @author dongq
@@ -39,7 +45,27 @@ public class ParseNewsCn extends AbstractHtmlParseTemplete implements Parse {
 		String content = null;
 		
 		try{
-			
+			//www.news.cn的内容是包含在class=txt的table标签内的
+			Parser parser = new Parser(link);
+			parser.setEncoding("GBK");
+			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(TableTag.class));
+			if(nodeList!=null&&nodeList.size()>0){
+				NodeIterator iter = nodeList.elements();
+				while(iter.hasMoreNodes()){
+					TableTag tableTag = (TableTag)iter.nextNode();
+					if("txt".equals(tableTag.getAttribute("class")))
+						content = tableTag.toHtml();
+				}
+			}
+			if(content!=null){
+				content = this.commonParseContent(content);
+				content = content.replaceAll(RegexUtil.REGEX_TABLE_ALL, replacement);
+				content = content.replaceAll(RegexUtil.REGEX_STRONG, replacement);
+				content = content.replaceAll(RegexUtil.REGEX_P_END, replacement);
+				content = content.replaceAll(RegexUtil.REGEX_P_START, RegexUtil.REGEX_BR);
+				content = content.replaceAll(RegexUtil.REGEX_P_START_NO_ATTR, RegexUtil.REGEX_BR);
+				content = content.replaceAll("&nbsp;", " ");
+			}
 		}catch(Exception e){
 			System.out.println("解析新华网页面["+link+"]内容失败");
 			if(log.isDebugEnabled()){

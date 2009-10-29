@@ -41,13 +41,22 @@ public final class FileOperation {
 
 	private static Logger log = Logger.getLogger(FileOperation.class);
 	
-	public final static String log_dir = "E:/bcinfo/内容抓取/logs/";
+	public static String log_dir = "E:/bcinfo/内容抓取/logs/";
 	
 	public final static String catch_list = "E:/bcinfo/内容抓取/catch_list.xls";
 	
 	String logPath = null;
 	
 	final static String sheet_name = "sohu";//list
+	
+	public FileOperation() {
+		String os = System.getenv("OS");
+		if(os!=null && os.toLowerCase().contains("windows")){
+			log_dir = "E:/bcinfo/内容抓取/logs/";
+		}else{
+			log_dir = "/usr/local/oracle/apache-tomcat-6.0.18/webcrawler/log/";
+		}
+	}
 	
 	public Boolean contains(String link){
 		Boolean bln = false;

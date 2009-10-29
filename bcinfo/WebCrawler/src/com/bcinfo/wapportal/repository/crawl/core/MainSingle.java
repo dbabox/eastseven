@@ -3,10 +3,14 @@
  */
 package com.bcinfo.wapportal.repository.crawl.core;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
@@ -34,12 +38,32 @@ public class MainSingle {
 		System.out.println("  Free :"+Runtime.getRuntime().freeMemory()/1024);
 		System.out.println("  Max  :"+Runtime.getRuntime().maxMemory()/1024);
 		System.out.println(" ");
+		
+		try{
+			String os = System.getenv("OS");
+			if(os == null || "".equals(os)){
+				InputStream in = new FileInputStream("/usr/local/oracle/apache-tomcat-6.0.18/webcrawler/lib/log4j.properties"); 
+				Properties properties = new Properties();
+				properties.load(in);
+				in.close();
+				PropertyConfigurator.configure(properties);
+			}else{
+//				InputStream in = new FileInputStream("E:/dev/eclipse_jee_galileo_spring/workspace/WebCrawler/dist/webcrawler/lib/log4j.properties"); 
+//				Properties properties = new Properties();
+//				properties.load(in);
+//				in.close();
+//				PropertyConfigurator.configure(properties);
+			}
+		}catch(Exception e){
+			System.out.println("加载log4j.properties文件失败");
+		}
+		
 		try{
 			SchedulerFactory factory = new StdSchedulerFactory();
 			Scheduler scheduler = factory.getScheduler();
 			
 			JobDetail job = new JobDetail("singleJob", Scheduler.DEFAULT_GROUP, SingleJob.class);
-			long repeatInterval = 30 * 60 * 1000L;//TODO 30分钟一次
+			long repeatInterval = 60 * 60 * 1000L;//TODO 30分钟一次
 			Trigger trigger = new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
 			scheduler.scheduleJob(job, trigger);
 			

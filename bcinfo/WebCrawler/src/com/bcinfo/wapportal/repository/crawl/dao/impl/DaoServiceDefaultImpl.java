@@ -3,12 +3,20 @@
  */
 package com.bcinfo.wapportal.repository.crawl.dao.impl;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.StringReader;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import oracle.jdbc.OracleConnection;
+import oracle.sql.CLOB;
 
 import org.apache.log4j.Logger;
 
@@ -86,7 +94,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 		PreparedStatement pst = null;
 		PreparedStatement pstUpdate = null;
 		ResultSet rs = null;//res_content,RES_IMG_PATH_SET
-		String sql = "insert into twap_public_crawl_resource(res_id,channel_id,res_title,res_link,res_img_path_set) values(seq_twap_public_crawl_resource.nextval,?,?,?,?)";
+		String sql = "insert into twap_public_crawl_resource(channel_id,res_title,res_link,res_img_path_set,res_id,res_text) values(?,?,?,?,?,empty_clob())";
 		
 		String link = "";
 		String title = "";
@@ -94,10 +102,30 @@ public class DaoServiceDefaultImpl implements DaoService {
 		String content = "";
 		String imgPathSet="";
 		try{
+			/**/
+			List<FolderBO> list = insertBatch(folders);
+			if(list!=null && !list.isEmpty()){
+				//conn = JavaOracle.getConn();
+				//conn.setAutoCommit(false);
+				for(FolderBO folder : list){
+					boolean flag = update(folder);
+					
+					if(log.isDebugEnabled()){
+						System.out.println("  "+folder.getId()+" update is "+flag);
+					}
+				}
+				//conn.setAutoCommit(true);
+				bln = true;
+			}
+			
+			/*
 			conn = JavaOracle.getConn();
 			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sql);
-			int count = 1;
+			pst.clearBatch();
+			int count = 0;
+			List<FolderBO> list = new ArrayList<FolderBO>();
+			List<Long> ids = getResourceId(folders);
 			for(FolderBO folder : folders){
 				link = folder.getLink();
 				title = folder.getTitle();
@@ -108,12 +136,14 @@ public class DaoServiceDefaultImpl implements DaoService {
 				pst.setString(2, title);
 				pst.setString(3, link);
 				pst.setString(4, imgPathSet);
-				/*
-				if(count==100){
-					pst.addBatch();
-					count=1;
-				}	
-				*/
+				pst.setLong(5, ids.get(count));
+				
+				CLOB clob = new CLOB((OracleConnection)conn);
+				//clob.
+				
+				folder.setId(ids.get(count));
+				list.add(folder);
+				
 				count++;
 				if(log.isDebugEnabled())
 					System.out.println("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
@@ -123,31 +153,46 @@ public class DaoServiceDefaultImpl implements DaoService {
 				System.out.println("-------------------insert:"+folders.size());
 			}
 			
-			sql = "update twap_public_crawl_resource set res_text = ? where channel_id = ? and res_title = ? and res_link = ?";
-			pstUpdate = conn.prepareStatement(sql);
-			//pst = conn.prepareStatement(sql);
-			for(FolderBO folder : folders){
-				pstUpdate.setString(1, folder.getContent());
-				pstUpdate.setLong(2, Long.valueOf(folder.getFolderId()));
-				pstUpdate.setString(3, folder.getTitle());
-				pstUpdate.setString(4, folder.getLink());
-				pstUpdate.addBatch();
-			}
-			
+			System.out.println(" ----- 1 ----- ");
 			pst.executeBatch();
-			pst.clearBatch();
-			pstUpdate.executeBatch();
-			pstUpdate.clearBatch();
+			conn.commit();
 			
 			if(log.isDebugEnabled()){
-				System.out.println("-------------------update:"+folders.size());
+				if(conn!=null)
+					System.out.println("-------------------insert:"+folders.size()+",after conn is not null");
+				else
+					System.out.println("-------------------insert:"+folders.size()+",after conn is null");
 			}
 			
-			pst.close();
+			sql = "update twap_public_crawl_resource set res_text = ? where res_id = ?";
+			
+			pstUpdate = conn.prepareStatement(sql);
+			pstUpdate.clearBatch();
+			System.out.println(" ----- 2 ----- ");
+			for(FolderBO folder : list){
+				System.out.println(" ----- 3 ----- ");
+				pstUpdate.setString(1, folder.getContent());
+				pstUpdate.setLong(2, folder.getId());
+				pstUpdate.addBatch();
+				System.out.println(" ----- 4 ----- "+folder.getId()+" | "+folder.getTitle());
+			}
+			System.out.println(" ----- 5 ----- ");
+			
+			System.out.println(" ----- 6 ----- ");
+			
+			System.out.println(" ----- 7 ----- ["+pstUpdate.executeBatch()+"]");
+			//pstUpdate.executeBatch();
+			System.out.println(" ----- 8 ----- ");
 			pstUpdate.close();
 			
+			if(log.isDebugEnabled()){
+				System.out.println("-------------------update:"+list.size());
+			}
+			
 			conn.commit();
+			conn.setAutoCommit(true);
 			bln = true;
+			*/
 		}catch(Exception e){
 			log.error(e);
 			log.info(link+" | "+title+" | 保存失败");
@@ -161,9 +206,188 @@ public class DaoServiceDefaultImpl implements DaoService {
 		}finally{
 			close(rs, pst, conn);
 		}
+		
 		return bln;
 	}
 	
+	List<Long> getResourceId(List<FolderBO> list){
+		List<Long> ids = null;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try{
+			conn = JavaOracle.getConn();
+			if(list!=null && !list.isEmpty()){
+				ids = new ArrayList<Long>();
+				for(FolderBO folder : list){
+					pst = conn.prepareStatement("select seq_twap_public_crawl_resource.nextval from dual");
+					rs = pst.executeQuery();
+					if(rs.next()) ids.add(rs.getLong(1));
+				}
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			close(rs, pst, conn);
+		}
+		return ids;
+	}
+	
+	List<FolderBO> insertBatch(List<FolderBO> list){
+		List<FolderBO> folders = null;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try{
+			List<Long> ids = getResourceId(list);
+			if(ids !=null && !ids.isEmpty()){
+				conn = JavaOracle.getConn();
+				conn.setAutoCommit(false);
+				pst = conn.prepareStatement("insert into twap_public_crawl_resource(channel_id,res_title,res_link,res_img_path_set,res_text,res_id) values(?,?,?,?,empty_clob(),?)");
+				pst.clearBatch();
+				folders = new ArrayList<FolderBO>();
+				int index = 0;
+				for(FolderBO folder : list){
+					pst.setLong(1, Long.parseLong(folder.getFolderId()));
+					pst.setString(2, folder.getTitle());
+					pst.setString(3, folder.getLink());
+					pst.setString(4, folder.getImgPathSet());
+					pst.setLong(5, ids.get(index));
+					pst.addBatch();
+					
+					folder.setId(ids.get(index));
+					folders.add(folder);
+					
+					if(log.isDebugEnabled()){
+						System.out.println(" batch insert data: "+folder.getId()+" | "+folder.getLink()+" | "+folder.getTitle());
+					}
+					
+					index++;
+				}
+			}
+			pst.executeBatch();
+			conn.commit();
+			conn.setAutoCommit(true);
+			System.out.println(" -----batch insert finish----- ");
+		}catch(Exception e){
+			e.printStackTrace();
+			if(conn != null)
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			folders = null;
+		}finally{
+			close(rs, pst, conn);
+		}
+		return folders;
+	}
+	
+	Boolean update(FolderBO folder){
+		Boolean bln = false;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String content = null;
+		try{
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("select res_text from twap_public_crawl_resource where res_id = ? for update");
+			pst.setLong(1, folder.getId());
+			rs = pst.executeQuery();
+			if(rs.next()){
+				content = folder.getContent();
+				CLOB clob = (CLOB)rs.getClob("res_text");
+				//Oracle 9i 写法
+				Writer w = clob.getCharacterOutputStream();
+				//TODO Oracle 10g[10.2.0.1.0]
+				//getCharacterOutputStream() 
+		        //  Deprecated. This method is deprecated. Use setCharacterStream( 0L ).
+				BufferedWriter writer = new BufferedWriter(w);
+				BufferedReader reader = new BufferedReader(new StringReader(content));
+				int len = 0;
+				int off = 0;
+				char[] cbuf = new char[1024];
+				while((len = reader.read(cbuf))!=-1)
+					writer.write(cbuf, off, len);
+				writer.close();
+				reader.close();
+				pst = conn.prepareStatement("update twap_public_crawl_resource set res_text = ? where res_id = ?");
+				pst.setClob(1, clob);
+				pst.setLong(2, folder.getId());
+				pst.execute();
+			}
+			conn.setAutoCommit(true);
+			conn.commit();
+			
+			if(log.isDebugEnabled()){
+				System.out.println(" update data: "+folder.getId()+" | "+folder.getLink()+" | "+folder.getTitle());
+			}
+			
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			if(conn != null)
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+		}finally{
+			close(rs, pst, conn);
+		}
+		return bln;
+	}
+	
+	Boolean updateBatch(List<FolderBO> list){
+		Boolean bln = false;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try{
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement("update twap_public_crawl_resource set res_text = ? where res_id = ?");
+			pst.clearBatch();
+			
+			for(FolderBO folder : list){
+				
+				pst.setString(1, folder.getContent());
+				pst.setLong(2, folder.getId());
+				
+				pst.addBatch();
+				
+				if(log.isDebugEnabled()){
+					System.out.println(" batch update data: "+folder.getId()+" | "+folder.getLink()+" | "+folder.getTitle());
+				}
+			}
+			
+			pst.executeBatch();
+			conn.commit();
+			conn.setAutoCommit(true);
+			
+			System.out.println(" -----batch update finish----- ");
+			
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			if(conn != null)
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+		}finally{
+			close(rs, pst, conn);
+		}
+		return bln;
+	}
+	
+	//废弃的方法
 	Boolean saveBatch(FolderBO folder){
 		Boolean bln = false;
 		
