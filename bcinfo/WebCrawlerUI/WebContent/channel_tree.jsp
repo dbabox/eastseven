@@ -8,8 +8,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=GBK">
 <title>Tree</title>
+<!-- 梅花雪 -->
+<!--  
 <script language="JavaScript" src="js/MzTreeView10/MzTreeView10.js"></script>
-
 <style>
 A.MzTreeview
 {
@@ -17,29 +18,19 @@ A.MzTreeview
   padding-left: 3px;
 }
 </style>
-<script language="JavaScript">
-  var tree = new MzTreeView("tree");
+-->
+<!-- DTree -->
+<link rel="StyleSheet" href="js/dtree/dtree.css" type="text/css" />
+<script type="text/javascript" src="js/dtree/dtree.js"></script>
 
-  tree.icons["property"] = "property.gif";
-  tree.icons["css"] = "collection.gif";
-  tree.icons["book"]  = "book.gif";
-  tree.iconsExpand["book"] = "bookopen.gif"; //展开时对应的图片
+<script type="text/javascript">
 
-  tree.setIconPath("js/MzTreeView10/"); //可用相对路径
+<%
+ChannelDao dao = new ChannelDao();
 
-  tree.nodes["0_1"] = "text:频道";
-  
-  <%
-  ChannelDao dao = new ChannelDao();
-  //List<Channel> list = dao.getChannels(null);
-  String nodes = dao.getChannelTree(/*list*/);
-  if(nodes != null){
-	  out.print(nodes);
-  }
-  %>
-  tree.setURL("channel_tree.jsp");
-  //tree.setTarget("MzMain");
-  document.write(tree.toString());    //亦可用 obj.innerHTML = tree.toString();
+out.print(dao.getChannelTreeForDTree(dao.getChannels(null)));
+%>
+
 </script>
 
 </head>
