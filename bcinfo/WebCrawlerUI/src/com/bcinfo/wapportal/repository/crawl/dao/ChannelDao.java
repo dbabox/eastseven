@@ -92,6 +92,42 @@ public class ChannelDao {
 		return list;
 	}
 	
+	public String getChannelTreeForDTree(List<Channel> list){
+		String tree = null;
+		
+		try{
+			if(list != null && !list.isEmpty()){
+				tree = "var d = new dTree('d');" +"\n";
+				tree += "d.add(0,-1,'ÆµµÀ','channel_tree.jsp','ÆµµÀ','');"+"\n";
+				for(Channel channel : list){
+					/*
+					 *  id	Number	Unique identity number.
+						pid	Number	Number refering to the parent node. The value for the root node has to be -1.
+						name	String	Text label for the node.
+						url	String	Url for the node.
+						title	String	Title for the node.
+						target	String	Target for the node.
+						icon	String	Image file to use as the icon. Uses default if not specified.
+						iconOpen	String	Image file to use as the open icon. Uses default if not specified.
+						open	Boolean	Is the node open.
+						
+						Example
+						
+						mytree.add(1, 0, 'My node', 'node.html', 'node title', 'mainframe', 'img/musicfolder.gif');
+					 * */
+					String node = "d.add("+channel.getChannelId()+","+channel.getChannelPid()+",'"+channel.getChannelName()+"','./crawl_resource_list.jsp?method=init&channelId="+channel.getChannelId()+"','"+channel.getChannelName()+"','mainFrame');";
+					
+					tree += node +"\n";
+				}
+				tree += " document.write(d);"+"\n";
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return tree;
+	}
+	
 	public String getChannelTree(List<Channel> list){
 		String tree = null;
 		

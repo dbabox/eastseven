@@ -45,7 +45,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	public CrawlResourceServiceDefaultImpl() {
 		this.crawlResourceDao = new CrawlResourceDao();
 		this.channelMappingDao = new ChannelMappingDao();
-		this.property = new ConfigPropertyUtil().getConfigProperty();
+		this.property = ConfigPropertyUtil.property;
 		String os = null;
 		os = System.getenv("OS");
 		if(os!=null&&os.toLowerCase().contains("windows")){
@@ -75,7 +75,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 					resource = this.crawlResourceDao.getCrawlResourceDetail(resId);
 					if("0".equals(resource.getStatus())) continue;
 					System.out.println(resource);
-					//生成资源包文件ZIP
+					//生成资源包文件XML
 					generateResourceFile(map, resource);
 				}
 			}
@@ -178,6 +178,8 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 		return fileName;
 	}
 	
+	//本地测试时使用
+	@SuppressWarnings("unused")
 	private Boolean packToZip(String filePath, String title, String imgPath){
 		boolean bln = false;
 		try{
