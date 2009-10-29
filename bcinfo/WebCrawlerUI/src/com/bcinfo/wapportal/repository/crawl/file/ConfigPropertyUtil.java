@@ -15,11 +15,13 @@ import java.util.Properties;
  */
 public class ConfigPropertyUtil {
 
+	public static Properties property;
+	
 	public Properties getConfigProperty(){
 		Properties property = null;
 		try{
 			//TODO E:/dev/eclipse_jee_galileo_spring/workspace/WebCrawlerUI/src/
-			InputStream in = new BufferedInputStream (new FileInputStream("E:/dev/eclipse_jee_galileo_spring/workspace/WebCrawlerUI/src/config.properties"));
+			InputStream in = new BufferedInputStream (new FileInputStream("config.properties"));
 			property = new Properties();
 			property.load(in);
 			in.close();

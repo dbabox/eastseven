@@ -75,7 +75,8 @@ public class CrawlResourceDao {
 				char[] c = new char[(int) clob.length()];
 				inStream.read(c);
 				//data是读出并需要返回的数据，类型是String
-				String data = new String(c);
+				String data = new String(new String(c).getBytes(),"GBK");
+				
 				inStream.close();
 				
 				resource = new CrawlResource();
