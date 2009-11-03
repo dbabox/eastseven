@@ -22,6 +22,9 @@
 		<fileset dir="${web.lib}">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${tomcat.dir}/lib">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	<target name="init" description="初始化目录">
@@ -49,7 +52,8 @@
 
 	<target name="war-formal" depends="jar" description="打成War包">
 		<war destfile="${dist.dir}/webcrawler.war">
-			<fileset dir="${web.dir}"></fileset>
+			<fileset dir="${web.dir}" excludes="${web.dir}/WEB-INF/classes">
+			</fileset>
 		</war>
 	</target>
 
@@ -68,7 +72,7 @@
 				<filename name="webcrawlerui.jar" />
 			</fileset>
 		</copy>
-		
+
 		<war destfile="${dist.dir}/webcrawler.war">
 			<fileset dir="${web.dir}">
 			</fileset>
