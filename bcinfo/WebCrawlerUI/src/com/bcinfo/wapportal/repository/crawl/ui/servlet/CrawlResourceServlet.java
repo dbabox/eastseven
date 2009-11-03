@@ -59,9 +59,9 @@ public class CrawlResourceServlet extends HttpServlet {
 	void list(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String channelId = request.getParameter("channelId");
-		String status = request.getParameter("resStatus");
-		String title = request.getParameter("title");
-		String pageSize = request.getParameter("pageSize");
+		String status = (request.getParameter("resStatus") == null) ? "-1" : request.getParameter("resStatus");
+		String title = (request.getParameter("title") == null) ? "" : request.getParameter("title");
+		String pageSize = (request.getParameter("pageSize")==null) ? "15" : request.getParameter("pageSize");
 		String pageNo = (request.getParameter("pageNo")==null)?"1":request.getParameter("pageNo");
 		
 		//String pageOffset = (request.getParameter("pager.offset")==null)?"0":request.getParameter("pager.offset");
@@ -83,7 +83,7 @@ public class CrawlResourceServlet extends HttpServlet {
 		if(!"".equals(channelId)) channel_id = Long.valueOf(channelId);
 		
 		List<CrawlResource> list = dao.getAllCrawlResources(channel_id,title,status,start,end);
-
+		
 		request.setAttribute("channelId", channelId);
 		request.setAttribute("title", title);
 		request.setAttribute("status", status);
