@@ -457,6 +457,7 @@ public final class OperationDB {
 				os.write(buffer, 0, bytesRead);
 			}
 			path = "/upload/"+subDir;
+			System.out.println("Í¼Æ¬±£´æÔÚ:"+destImgUrl + subDir + fileName);
 		} catch (FileNotFoundException e) {
 
 		} catch (IOException e) {
@@ -465,7 +466,7 @@ public final class OperationDB {
 		return path;
 	}
 
-	public String destImgUrl = "/usr/local/jboss-3.2.7/server/default/deploy/spcpnew.war/upload/";
+	public String destImgUrl = new ConfigPropertyUtil().getConfigProperty().getProperty("img.dir");
 	
 	public String subDir = "";
 
