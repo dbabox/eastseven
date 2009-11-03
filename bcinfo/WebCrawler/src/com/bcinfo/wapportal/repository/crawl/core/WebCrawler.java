@@ -10,7 +10,7 @@ import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
 /**
  * @author dongq
  * 
- *         create time : 2009-10-14 ионГ10:02:08
+ *         create time : 2009-10-14 ионГ10:02:08<br>
  */
 public interface WebCrawler {
 

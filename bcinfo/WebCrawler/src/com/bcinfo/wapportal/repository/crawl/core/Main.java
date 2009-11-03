@@ -23,8 +23,10 @@ import com.bcinfo.wapportal.repository.crawl.job.DefaultJob;
 /**
  * @author dongq
  * 
- *         create time : 2009-10-15 下午03:13:02
+ *         create time : 2009-10-15 下午03:13:02<br>
+ *         废弃的方法
  */
+@Deprecated
 public final class Main {
 
 	private static Logger log = Logger.getLogger(Main.class);

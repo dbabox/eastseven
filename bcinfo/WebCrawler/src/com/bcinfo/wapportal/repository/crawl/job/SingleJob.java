@@ -6,7 +6,6 @@ package com.bcinfo.wapportal.repository.crawl.job;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.quartz.Job;
@@ -68,7 +67,8 @@ public class SingleJob implements Job {
 			
 			Date end = new Date(System.currentTimeMillis());
 			double minutes = (double)((end.getTime()-start.getTime())/(60*1000));
-			System.out.println(sdf.format(end)+" : 抓取[v:"+version+"]完成,耗时"+minutes+"分,共入库数据:"+count);
+			System.out.println(sdf.format(end)+" : 抓取[v:"+version+"]完成,耗时"+minutes+"分,共入库数据:"+count+"条,下次执行时间:"+sdf.format(context.getNextFireTime()));
+			
 		}catch(Exception e){
 			if(log.isDebugEnabled()) e.printStackTrace();
 			System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]失败");

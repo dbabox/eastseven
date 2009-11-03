@@ -27,6 +27,11 @@ public class RegexUtil {
 	public final static String REGEX_EM = "<[eE][mM]\\s+[^>]+>|</[eE][mM]>";
 	
 	/**
+	 * embed
+	 */
+	public final static String REGEX_EMBED = "<[eE][mM][bB][eE][dD]\\s+[^>]+>|</[eE][mM][bB][eE][dD]>";
+	
+	/**
 	 * TABLEÈ«Ì×±êÇ©
 	 */
 	public final static String REGEX_TABLE = "<[tT][aA][bB][lL][eE]\\s+[^>]+>|<[tT][aA][bB][lL][eE]>|</[tT][aA][bB][lL][eE]>";
