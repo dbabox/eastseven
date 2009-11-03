@@ -18,10 +18,11 @@
 <script type="text/javascript" src="js/jquery/ui/ui.dialog.js"></script>
 <!-- JSON -->
 <script type="text/javascript" src="js/json.js"></script>
-<!-- table -->
-<link href="css/tablecloth/tablecloth.css" rel="stylesheet" type="text/css" media="screen" />
-<script type="text/javascript" src="css/tablecloth/tablecloth.js"></script>
 
+<link href="css/tablecloth/tablecloth.css" rel="stylesheet" type="text/css" media="screen" />
+<!-- table 
+<script type="text/javascript" src="css/tablecloth/tablecloth.js"></script>
+-->
 <!-- 自定义脚本程序 -->
 <script type="text/javascript">
 	//height: 530,width: 500
@@ -37,8 +38,20 @@
 			width: 500,
 			position: 'top'
 	};
-	
+
 	$(document).ready(function() {
+
+		//
+		$('tr:odd').addClass('odd');
+		$('tr:even').addClass('even');
+		
+		//绑定按钮事件:全选操作
+		$("#checkBox").bind('click',function(){
+			var isCheck = $("#checkBox").attr("checked");
+			$(":checkbox").each(function(i){
+				$(this).attr("checked",isCheck);
+			});
+		});
 		
 		//绑定按钮事件:发送按钮
 		$("#sendBtn").bind('click',function(){
@@ -67,6 +80,7 @@
 			}
 		});
 
+		$("#allBtn").hide();
 		//绑定按钮事件:全部显示按钮
 		$("#allBtn").bind('click',function(){
 			var size = $("#count").val();
@@ -130,15 +144,17 @@
 <div id="dialog_link" style="display:none"></div>
 <%
 	String pageSize = (request.getAttribute("pageSize")!=null)?(String)request.getAttribute("pageSize"):"15";
+	
 	String channelId = (String) request.getParameter("channelId");
 	String title = (String) request.getParameter("title");
 	String status = (request.getAttribute("status")!=null)?(String) request.getAttribute("status"):null;
+	
 	if(title == null) title = "";
 	if(channelId == null || "".equals(channelId)) channelId = (String)request.getAttribute("channelId");
 %>
 <%
 	List<CrawlResource> list = (List<CrawlResource>) request.getAttribute("crawlResourceList");
-	int count = new CrawlResourceDao().getCount(Long.parseLong(channelId));
+	int count = new CrawlResourceDao().getCount(Long.parseLong(channelId), title, status);
 %>
 
 <form id="crawlResourceMainForm" action="./CrawlResourceServlet?method=list" method="post">
@@ -169,7 +185,7 @@
 			<%}
 		   } %>
 	</select>
-	<input type="text" value="<%=pageSize %>" id="pageSize" name="pageSize"/>
+	每页显示<input type="text" value="<%=pageSize %>" id="pageSize" name="pageSize" style="width: 30px"/>条记录
 	
 	<input type="hidden" name="channelId" value="<%=channelId %>"/>
 	
@@ -185,11 +201,11 @@
 	
 	<tr>
 		<td align="center">序号</td>
-		<td align="center">操作<input type="hidden" id="checkBox"/></td>
+		<td align="center">操作<input type="checkbox" id="checkBox"/></td>
 		<td align="center">状态</td>
 		<td align="center">标题</td>
-		<td align="center">图片数量</td>
-		<td align="center">内容长度</td>
+		<td align="center">图片</td>
+		<td align="center">内容</td>
 		<td align="center">时间</td>
 	</tr>
 
@@ -209,8 +225,8 @@
 		<td><input type="checkbox" id="id_${res.resId }" name="checkStatus" value="${res.resId }"/></td>
 		<td>${res.status }</td>
 		<td><a href="./CrawlResourceServlet?method=edit&resId=${res.resId }">${res.title }</a></td>
-		<td>${res.pics }</td>
-		<td>${res.text }</td>
+		<td>${res.pics }张</td>
+		<td>${res.text }字</td>
 		<td>${res.createTime }</td>
 	</tr>	
 	</c:forEach>

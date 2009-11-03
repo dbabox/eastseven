@@ -43,7 +43,7 @@
 	<tr>
 		<td><select name="channelId">
 			<c:forEach items="<%=channelList %>" var="chl">
-				<option value="${chl.channelId }">${chl.channelName }</option>
+				<option value="${chl.channelId }">[${chl.channelId }]${chl.channelName }</option>
 			</c:forEach>
 		</select>
 		<input type="text" name="crawlUrl" value="" alt="抓取地址" title="抓取地址">
