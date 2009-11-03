@@ -29,7 +29,8 @@ import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 /**
  * @author dongq
  * 
- *         create time : 2009-10-14 下午12:09:22
+ *         create time : 2009-10-14 下午12:09:22<br>
+ *         网页解析的模板类，所有解析实现类都应该继承此类<br>
  */
 public abstract class AbstractHtmlParseTemplete {
 
@@ -37,6 +38,11 @@ public abstract class AbstractHtmlParseTemplete {
 	
 	public final String replacement = "";
 	
+	/**
+	 * 提供一个指导性的解析入口,若有特殊解析规则的页面,可通过实现Parse接口中的方法来实现
+	 * @param link
+	 * @return
+	 */
 	public String simpleParse(String link){
 		String content = null;
 		
@@ -56,6 +62,11 @@ public abstract class AbstractHtmlParseTemplete {
 		return content;
 	}
 	
+	/**
+	 * 统一格式化文本内容
+	 * @param targetCnt
+	 * @return
+	 */
 	public String commonParseContent(String targetCnt) {
 		String content = targetCnt;
 		
@@ -115,6 +126,12 @@ public abstract class AbstractHtmlParseTemplete {
 		return content;
 	}
 	
+	/**
+	 * 删除指定标签对象
+	 * @param targetCnt
+	 * @return
+	 */
+	@Deprecated
 	public synchronized String removeTag(String targetCnt){
 		try{
 			String content = "";
@@ -165,7 +182,12 @@ public abstract class AbstractHtmlParseTemplete {
 		}
 	}
 	
-	//合并一个页面内有分页的链接
+	/**
+	 * 合并一个页面内有分页的链接
+	 * @param link
+	 * @param links
+	 * @return
+	 */
 	public String mergeTargetContent(String link,List<String> links){
 		String content = null;
 		
@@ -185,7 +207,11 @@ public abstract class AbstractHtmlParseTemplete {
 	}
 	
 	/**
-	 * 取得指定标签下的内容
+	 * 取得指定标签下的内容<br>
+	 * 目前可以取得的标签有：<br>
+	 * Div<br>
+	 * TableColumn<br>
+	 * 有新的需求，可自行添加标签<br>
 	 * @param link
 	 * @param tagName 标签名
 	 * @param attrName 标签属性
@@ -204,23 +230,37 @@ public abstract class AbstractHtmlParseTemplete {
 			parser.setEncoding("GBK");
 			nodeList = parser.extractAllNodesThatMatch(new TagNameFilter(tagName));
 		}
-		if(nodeList!=null&&nodeList.size()>0){
-			NodeIterator iter = nodeList.elements();
-			while(iter.hasMoreNodes()){
-				Node node = iter.nextNode();
-				if(node instanceof Div){
-					Div div = (Div)node;
-					if(attrValue.equals(div.getAttribute(attrName))){
-						content += div.toHtml();
-					}
-				}else if(node instanceof TableColumn){
-					TableColumn td = (TableColumn)node;
-					if(attrValue.equals(td.getAttribute(attrName))){
-						content += td.toHtml();
+		try{
+			if(nodeList!=null&&nodeList.size()>0){
+				NodeIterator iter = nodeList.elements();
+				while(iter.hasMoreNodes()){
+					Node node = iter.nextNode();
+					if(node instanceof Div){
+						Div div = (Div)node;
+						if(attrValue.equals(div.getAttribute(attrName))){
+							if(div.getChildCount()>0)
+								content += div.getChildrenHTML();
+							else
+								content += div.toHtml();
+						}
+					}else if(node instanceof TableColumn){
+						TableColumn td = (TableColumn)node;
+						if(attrValue.equals(td.getAttribute(attrName))){
+							if(td.getChildCount()>0)
+								content += td.getChildrenHTML();
+							else
+								content += td.toHtml();
+						}
 					}
 				}
 			}
+		}catch(Exception e){
+			System.out.println("取得指定标签下的内容["+link+"]解析失败");
+			if(log.isDebugEnabled()){
+				e.printStackTrace();
+			}
 		}
+		
 		return content;
 	}
 	
@@ -271,4 +311,5 @@ public abstract class AbstractHtmlParseTemplete {
 	 * @return
 	 */
 	public abstract List<String> checkPageOfLinks(String link);
+	
 }

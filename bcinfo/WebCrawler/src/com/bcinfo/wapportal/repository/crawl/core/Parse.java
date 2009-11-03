@@ -10,7 +10,19 @@ package com.bcinfo.wapportal.repository.crawl.core;
  */
 public interface Parse {
 	
+	/**
+	 * ½âÎöÍøÒ³ÄÚÈİ
+	 * @param link
+	 * @return
+	 */
 	public String parse(String link);
 	
+	/**
+	 * ½âÎöÍøÒ³ÄÚÈİ,Ô¤Áô
+	 * @param folderId
+	 * @param title
+	 * @param link
+	 * @return
+	 */
 	public Boolean parse(String folderId, String title, String link);
 }

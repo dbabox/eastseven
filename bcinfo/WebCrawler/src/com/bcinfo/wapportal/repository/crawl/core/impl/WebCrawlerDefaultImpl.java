@@ -77,8 +77,8 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 					}
 					if(content != null){
 						if(log.isDebugEnabled()){
-							//System.out.println("------------------------抓取到的内容-------------------------------");
-							//System.out.println(content);
+							System.out.println("------------------------抓取到的内容-------------------------------");
+							System.out.println(content);
 						}
 						//TODO 格式化文本内容
 						content = content.replaceAll(">", "><br/>");
@@ -92,7 +92,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 							cnt = cnt.trim();
 							if(cnt.length()>0){
 								if(log.isDebugEnabled()){
-									//System.out.println("  "+i+"按<br/>split格式化[size:"+cnt.length()+";total:"+tmp.length+"]："+cnt);
+									System.out.println("  "+i+"按<br/>split格式化[size:"+cnt.length()+";total:"+tmp.length+"]："+cnt);
 								}
 								//cnt = cnt.replaceAll("　", "");
 								if(!cnt.startsWith("<")){
@@ -128,6 +128,9 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 											if(originUrl.startsWith("xin")){
 												//新华网的图片链接地址是放在当前页面下的，如：<IMG src"xin_33210062622088432258116.jpg" border0>
 												originUrl = link.substring(0, link.lastIndexOf("/")+1) + originUrl;
+											}else if(originUrl.startsWith("attachment")){
+												//环球网图片地址是统一存放在http://himg2.huanqiu.com/目录下的
+												originUrl = "http://himg2.huanqiu.com/" + originUrl;
 											}else{
 												//TOM
 												originUrl = CrawlerUtil.addLinkHeader(originUrl, httpHeader);
@@ -142,7 +145,8 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 											System.out.println("格式化后的图片地址："+originUrl);
 											//TODO 图片保存至本地，备用
 											String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
-											String localUrl = fileOperation.writeFile(originUrl, fileName);
+											//String localUrl = ;
+											fileOperation.writeFile(originUrl, fileName);
 										}
 										
 									}

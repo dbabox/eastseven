@@ -3,21 +3,16 @@
  */
 package test.bcinfo.wapportal.repository.crawl;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
-import java.nio.CharBuffer;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import oracle.jdbc.OracleConnection;
 import oracle.sql.CLOB;
-import oracle.sql.CharacterBuffer;
 
 import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
 
@@ -29,6 +24,45 @@ import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
 public class DBTest {
 
 	public static void main(String[] args) {
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try{
+			conn = JavaOracle.getConn();
+			DatabaseMetaData metaData = conn.getMetaData();
+			//System.out.println(" DatabaseMajorVersion  : "+metaData.getDatabaseMajorVersion());
+			//System.out.println(" DatabaseMinorVersion  : "+metaData.getDatabaseMinorVersion());
+			System.out.println(" DatabaseProductName   : "+metaData.getDatabaseProductName());
+			System.out.println(" DatabaseProductVersion: "+metaData.getDatabaseProductVersion());
+			System.out.println(" DriverMajorVersion    : "+metaData.getDriverMajorVersion());
+			System.out.println(" DriverMinorVersion    : "+metaData.getDriverMinorVersion());
+			System.out.println(" DriverName            : "+metaData.getDriverName());
+			System.out.println(" DriverVersion         : "+metaData.getDriverVersion());
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (pst != null)
+				try {
+					pst.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	void test(){
 		String sql = "insert into twap_public_crawl_resource(res_id,res_text) values(seq_twap_public_crawl_resource.nextval,?)";
 		Connection conn = null;
 		PreparedStatement pst = null;
