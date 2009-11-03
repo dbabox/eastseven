@@ -21,18 +21,13 @@
 			</fileset>
 			<fileset dir="${basedir}">
 				<include name="*.bat" />
-				<include name="*.sh" />
+				<include name="*.txt"/>
 			</fileset>
 		</copy>
 
 		<mkdir dir="${dist.dir}/webcrawlerclient/log" />
-
+		<mkdir dir="${dist.dir}/webcrawlerclient/remotedir" />
 		<mkdir dir="${dist.dir}/webcrawlerclient/config" />
-		<copy todir="${dist.dir}/webcrawlerclient/config">
-			<fileset dir="${src.dir}">
-				<include name="*.properties" />
-			</fileset>
-		</copy>
 
 		<mkdir dir="${dist.dir}/webcrawlerclient/lib" />
 		<copy todir="${dist.dir}/webcrawlerclient/lib">
@@ -54,6 +49,8 @@
 	<property name="src.dir" value="${basedir}/src/" description="源文件存放位置" />
 	<property name="build.dir" value="${basedir}/build/" description="class文件存放位置" />
 	<property name="dist.dir" value="${basedir}/dist/" description="war文件存放位置" />
+	<property name="config.dir" value="${basedir}/config" />
+
 	<property file="build.properties" />
 
 	<path id="compile.classpath" description="编译路径">
@@ -93,5 +90,29 @@
 		</jar>
 	</target>
 
+	<target name="dist-sc" depends="dist" description="四川风采客户端">
+		<copy todir="${dist.dir}/webcrawlerclient/config/">
+			<fileset dir="${config.dir}/sc/">
+				<filename name="*.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/webcrawlerclient">
+			<fileset dir="${config.dir}/sc/">
+				<filename name="*.sh" />
+			</fileset>
+		</copy>
+	</target>
 
+	<target name="dist-jx" depends="dist" description="江西风采客户端">
+		<copy todir="${dist.dir}/webcrawlerclient/config/">
+			<fileset dir="${config.dir}/jx/">
+				<filename name="*.properties" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/webcrawlerclient">
+			<fileset dir="${config.dir}/jx/">
+				<filename name="*.sh" />
+			</fileset>
+		</copy>
+	</target>
 </project>
