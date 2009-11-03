@@ -51,6 +51,42 @@ public class ChannelDao {
 		return bln;
 	}
 	
+	public List<Channel> getChannels(){
+List<Channel> list = null;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "";
+		
+		try{
+			conn = JavaOracle.getConn();
+			sql = " select a.channel_id,a.channel_pid,concat(to_char(replace(rpad(level,level,level),level,'--')),a.channel_name) channel_name,a.channel_path,a.channel_index,to_char(a.create_time,'yyyy-mm-dd hh24:mm:ss') create_time from twap_public_channel a start with a.channel_id = 0 connect by nocycle prior a.channel_id = a.channel_pid ";
+			System.out.println(sql);
+			pst = conn.prepareStatement(sql);
+			
+			rs = pst.executeQuery();
+			list = new ArrayList<Channel>();
+			Channel channel = null;
+			while(rs.next()){
+				channel = new Channel();
+				channel.setChannelId(rs.getLong("channel_id"));
+				channel.setChannelIndex(rs.getString("channel_index"));
+				channel.setChannelName(rs.getString("channel_name"));
+				channel.setChannelPath(rs.getString("channel_path"));
+				channel.setChannelPid(rs.getLong("channel_pid"));
+				channel.setCreateTime(rs.getString("create_time"));
+				list.add(channel);
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			close(conn, pst, rs);
+		}
+		return list;
+	}
+	
 	public List<Channel> getChannels(Long channelId){
 		List<Channel> list = null;
 		
@@ -98,7 +134,8 @@ public class ChannelDao {
 		try{
 			if(list != null && !list.isEmpty()){
 				tree = "var d = new dTree('d');" +"\n";
-				tree += "d.add(0,-1,'频道','channel_tree.jsp','频道','');"+"\n";
+				//tree += "d.add(0,-1,'频道','channel_tree.jsp','频道','');"+"\n";
+				String node = "";
 				for(Channel channel : list){
 					/*
 					 *  id	Number	Unique identity number.
@@ -115,9 +152,16 @@ public class ChannelDao {
 						
 						mytree.add(1, 0, 'My node', 'node.html', 'node title', 'mainframe', 'img/musicfolder.gif');
 					 * */
-					String node = "d.add("+channel.getChannelId()+","+channel.getChannelPid()+",'"+channel.getChannelName()+"','./crawl_resource_list.jsp?method=init&channelId="+channel.getChannelId()+"','"+channel.getChannelName()+"','mainFrame');";
+					if(channel.getChannelId() == 0){
+						node = "d.add("+channel.getChannelId()+",-1,'"+channel.getChannelName()+"','channel_tree.jsp','"+channel.getChannelName()+"','');";
+					}else{
+						//./crawl_resource_list.jsp?method=init
+						//./CrawlResourceServlet?method=list
+						node = "d.add("+channel.getChannelId()+","+channel.getChannelPid()+",'"+channel.getChannelName()+"','./CrawlResourceServlet?method=list&channelId="+channel.getChannelId()+"','"+channel.getChannelName()+"','mainFrame');";
+					}
 					
-					tree += node +"\n";
+					if(!"".equals(node))
+						tree += node +"\n";
 				}
 				tree += " document.write(d);"+"\n";
 			}
