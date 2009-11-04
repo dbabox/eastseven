@@ -30,7 +30,7 @@ public final class HandleContent {
 
 	public final static int MAX_LENGTH = 500;
 	
-	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMhhHHmmss");
+	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMhhHHmmssSSS");
 	
 	//返回一个可用的资源栏目集
 	public List handleFolders(List folderList) {
@@ -102,8 +102,10 @@ public final class HandleContent {
 						if(imgSrc != null){
 							System.out.println("图片地址:"+imgSrc);
 							//将图片下载到服务器上，路径保存在Resource对象中
-							String imgName = imgSrc.substring(imgSrc.lastIndexOf("/")+1).toLowerCase();
-							if(imgName.lastIndexOf(".") == -1) imgName = sdf.format(new Date()) + i + ".jpg";
+							//图片名称统一为：pa_yyyyMMhhHHmmssSSS_i.jpg 格式
+							String imgName = "pa_"+sdf.format(new Date())+"_"+i+".jpg";
+							
+							//if(imgName.lastIndexOf(".") == -1) imgName = sdf.format(new Date()) + i + ".jpg";
 							String imgPath = oper.writeFile(imgSrc, imgName) + imgName;
 							System.out.println("   下载图片 "+imgName+"|"+imgSrc+"|本地路径："+imgPath);
 							resource = new Resource(i,folder,resContent,type,imgPath);
