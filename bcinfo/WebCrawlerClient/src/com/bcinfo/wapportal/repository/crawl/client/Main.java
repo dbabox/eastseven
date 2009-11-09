@@ -46,11 +46,11 @@ public class Main {
 			SchedulerFactory factory = new StdSchedulerFactory();
 			Scheduler scheduler = factory.getScheduler();
 			
-			//解析Job,每5分钟解析一次
+			//解析Job,每1分钟解析一次
 			JobDetail parseJob = new JobDetail("parseJob", Scheduler.DEFAULT_GROUP, ParseJob.class);
-			Trigger trigger_5 = new SimpleTrigger("trigger_5", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 5 * 60 * 1000L);
-			scheduler.scheduleJob(parseJob, trigger_5);
-			//监控Job,每60分钟扫描一次
+			Trigger trigger_1 = new SimpleTrigger("trigger_1", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 1 * 60 * 1000L);
+			scheduler.scheduleJob(parseJob, trigger_1);
+			//监控Job,每60分钟扫描一次,目前未使用
 			JobDetail monitorJob = new JobDetail("monitorJob", Scheduler.DEFAULT_GROUP, MonitorJob.class);
 			Trigger trigger_60 = new SimpleTrigger("trigger_60", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 60 * 60 * 1000L);
 			scheduler.scheduleJob(monitorJob, trigger_60);
