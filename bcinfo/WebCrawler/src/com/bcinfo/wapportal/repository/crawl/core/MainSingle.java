@@ -18,6 +18,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
 import com.bcinfo.wapportal.repository.crawl.job.SingleJob;
 
 /**
@@ -40,20 +41,11 @@ public class MainSingle {
 		System.out.println(" ");
 		
 		try{
-			String os = System.getenv("OS");
-			if(os == null || "".equals(os)){
-				InputStream in = new FileInputStream("/usr/local/oracle/apache-tomcat-6.0.18/webcrawler/lib/log4j.properties"); 
-				Properties properties = new Properties();
-				properties.load(in);
-				in.close();
+			Properties properties = null;
+			properties = ConfigPropertyUtil.getLog4jProperty();
+			if(properties != null)
 				PropertyConfigurator.configure(properties);
-			}else{
-//				InputStream in = new FileInputStream("E:/dev/eclipse_jee_galileo_spring/workspace/WebCrawler/dist/webcrawler/lib/log4j.properties"); 
-//				Properties properties = new Properties();
-//				properties.load(in);
-//				in.close();
-//				PropertyConfigurator.configure(properties);
-			}
+			
 		}catch(Exception e){
 			System.out.println("加载log4j.properties文件失败");
 		}
@@ -63,12 +55,14 @@ public class MainSingle {
 			Scheduler scheduler = factory.getScheduler();
 			
 			JobDetail job = new JobDetail("singleJob", Scheduler.DEFAULT_GROUP, SingleJob.class);
-			long repeatInterval = 60 * 60 * 1000L;//TODO 30分钟一次
+			long repeatInterval = 60 * 60 * 1000L;//TODO 60分钟一次
 			Trigger trigger = new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
 			scheduler.scheduleJob(job, trigger);
 			
 			scheduler.start();
 			System.out.println(sdf.format(new Date())+" : 程序启动 ");
+			
+			//scheduler.shutdown();
 		}catch(Exception e){
 			if(log.isDebugEnabled()) e.printStackTrace();
 			System.out.println(sdf.format(new Date())+" : 程序启动失败 ");
