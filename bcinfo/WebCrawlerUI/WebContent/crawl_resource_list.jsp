@@ -59,20 +59,26 @@
 			var ids = new Array();
 			var jsonText = '';
 			$(":checkbox").each(function(i){
-				var obj = $(this).attr("checked");
-				
-				if(obj){
-					//alert($(this).val());
-					ids[i] = $(this).val();
-					jsonText += $(this).val()+",";
+				var id = $(this).attr("id");
+				if(id != "checkBox"){
+					var obj = $(this).attr("checked");
+					
+					if(obj){
+						//alert($(this).val());
+						ids[i] = $(this).val();
+						jsonText += $(this).val()+",";
+					}
 				}
-				
 			});
 			//发送ajax请求
 			$.get('./CrawlResourceServlet?method=send',{channelId:channelId,resIds:jsonText},function(data){
 				var json = eval('('+data+')');
 				var msg = json.msg;
-				alert(msg);
+				if(msg == "true"){
+					alert("发送成功");
+				}else{
+					alert("发送失败");
+				}
 				
 			});
 			for(var i=0;i<ids.length;i++){
