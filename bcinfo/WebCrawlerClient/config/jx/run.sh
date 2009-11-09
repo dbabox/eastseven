@@ -1,1 +1,1 @@
-/usr/local/bea/jdk1.6.0_13/bin/java -Xms512m -Xmx2000m -jar client.jar
+/usr/local/bea/jdk1.6.0_13/bin/java -Xms64m -Xmx256m -jar client.jar
