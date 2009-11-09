@@ -85,19 +85,15 @@ public abstract class AbstractHtmlParseTemplete {
 			//FONT
 			content = content.replaceAll(RegexUtil.REGEX_FONT, replacement);
 			//B
-			content = content.replaceAll("<B>|<b>|</B>|</b>", replacement);
-			//P to BR
-			content = content.replaceAll(RegexUtil.REGEX_P_START, RegexUtil.REGEX_BR);
-			content = content.replaceAll(RegexUtil.REGEX_P_START_NO_ATTR, RegexUtil.REGEX_BR);
-			content = content.replaceAll("<br>", RegexUtil.REGEX_BR);
-			content = content.replaceAll("<br />", RegexUtil.REGEX_BR);
-			content = content.replaceAll("<[bB][rR]>", RegexUtil.REGEX_BR);
+			content = content.replaceAll("<[bB]>|<[bB]\\s+[^>]+>|</[bB]>", replacement);
 			//新浪内容
 			content = content.replaceAll("看明星八卦、查影讯电视节目，上手机新浪网娱乐频道 ent.sina.cn", replacement);
 			content = content.replaceAll("(点击小图看大图)", replacement);
 			content = content.replaceAll("点击此处查看其它图片", replacement);
 			//搜狐内容
 			content = content.replaceAll("<SOHUADCODE></SOHUADCODE>", replacement);
+			//TOM内容
+			content = content.replaceAll("声明：泛华娱乐提供专稿，未经tom授权，严禁转载，违者必究！", replacement);
 			//TABLE
 			content = content.replaceAll(RegexUtil.REGEX_TABLE_ALL, replacement);
 			//DIV
@@ -108,6 +104,17 @@ public abstract class AbstractHtmlParseTemplete {
 			content = content.replaceAll("<[lL][iI]\\s+[^>]+>|<[lL][iI]>|</[lL][iI]>", replacement);
 			//UL
 			content = content.replaceAll("<[uU][lL]\\s+[^>]+>|<[uU][lL]>|</[uU][lL]>", replacement);
+			//U
+			content = content.replaceAll("<[uU]\\s+[^>]+>|<[uU]>|</[uU]>", replacement);
+			//H
+			content = content.replaceAll("<[hH]\\d+>|</[hH]\\d+>", replacement);
+			
+			//P to BR
+			content = content.replaceAll(RegexUtil.REGEX_P_START, RegexUtil.REGEX_BR);
+			content = content.replaceAll(RegexUtil.REGEX_P_START_NO_ATTR, RegexUtil.REGEX_BR);
+			content = content.replaceAll("<br>", RegexUtil.REGEX_BR);
+			content = content.replaceAll("<br />", RegexUtil.REGEX_BR);
+			content = content.replaceAll("<[bB][rR]>", RegexUtil.REGEX_BR);
 			//格式化
 			content = content.replaceAll(RegexUtil.REGEX_ENTER, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_ENTER_TAB, replacement);

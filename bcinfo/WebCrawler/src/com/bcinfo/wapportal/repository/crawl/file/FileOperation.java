@@ -358,6 +358,7 @@ public final class FileOperation {
 	 * 保存网页上的图片到本地服务器上
 	 * 
 	 */
+	@Deprecated
 	public String writeFile(String strUrl, String fileName) {
 		String path = null;
 		URL url = null;

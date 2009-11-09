@@ -48,6 +48,8 @@ public class ParseQQForum extends AbstractHtmlParseTemplete implements Parse {
 		
 		try{
 			content = this.getPageContent(link, "id", "main_content_div");
+			content = this.commonParseContent(content);
+			
 		}catch(Exception e){
 			System.out.println("解析QQ论坛页面["+link+"]内容失败");
 			content = null;

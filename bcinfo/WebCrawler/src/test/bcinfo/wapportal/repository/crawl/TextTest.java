@@ -3,6 +3,14 @@
  */
 package test.bcinfo.wapportal.repository.crawl;
 
+import org.htmlparser.Parser;
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.tags.LinkTag;
+import org.htmlparser.util.NodeIterator;
+import org.htmlparser.util.NodeList;
+
+import com.bcinfo.wapportal.repository.crawl.util.DebugUtil;
+
 /**
  * @author dongq
  * 
@@ -10,9 +18,17 @@ package test.bcinfo.wapportal.repository.crawl;
  */
 public class TextTest {
 
-	public static void main(String[] args) {
-		String txt = "http://news.xinhuanet.com/world/2009-10/26/content_12334278.htm";
-		System.out.println(txt.substring(0, txt.lastIndexOf("/")+1));
+	public static void main(String[] args) throws Exception{
+		String url = "http://www.coocook.com/index.php/action_viewnews_itemid_57071.html";
+		Parser parser = new Parser(url);
+//		NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
+//		DebugUtil.printNodeList(nodeList);
+		NodeList nodeList = DebugUtil.getNodeList(url, "div");
+		DebugUtil.printNodeList(nodeList);
+		NodeIterator iter = nodeList.elements();
+		while(iter.hasMoreNodes()){
+			
+		}
 	}
 
 }
