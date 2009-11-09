@@ -3,8 +3,6 @@
  */
 package com.bcinfo.wapportal.repository.crawl.core;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -48,6 +46,8 @@ public class MainSingle {
 			
 		}catch(Exception e){
 			System.out.println("加载log4j.properties文件失败");
+			log.error("加载log4j.properties文件失败");
+			log.error(e.getMessage());
 		}
 		
 		try{
@@ -61,7 +61,7 @@ public class MainSingle {
 			
 			scheduler.start();
 			System.out.println(sdf.format(new Date())+" : 程序启动 ");
-			
+			 
 			//scheduler.shutdown();
 		}catch(Exception e){
 			if(log.isDebugEnabled()) e.printStackTrace();

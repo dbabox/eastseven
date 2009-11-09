@@ -34,44 +34,67 @@ public class SingleJob implements Job {
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+		String message = "";
 		Date start = new Date(System.currentTimeMillis());
 		String version = new SimpleDateFormat("yyMMddHHmmss").format(start);
 		int count = 0;
 		try{
-			System.out.println(sdf.format(start)+" : 抓取[v:"+version+"]开始");
-			
+			message = sdf.format(start)+" : 抓取[v:"+version+"]开始";
+			System.out.println(message);
+			log.info(message);
 			//加载抓取地址
 			DaoService daoService = new DaoServiceDefaultImpl();
 			List<CrawlList> list = daoService.getCrawlLists();
 			if(list!=null && !list.isEmpty()){
-				System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]地址共"+list.size()+"条");
+				
+				message = sdf.format(new Date())+" : 抓取[v:"+version+"]地址共"+list.size()+"条";
+				System.out.println(message);
+				log.info(message);
+				
 				Long channelId = null;
 				String url = null;
 				WebCrawler webCrawler = new WebCrawlerDefaultImpl();
 				for(CrawlList obj : list){
 					channelId = obj.getChannelId();
 					url = obj.getCrawlUrl();
-					System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]开始");
+					
+					message = sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]开始";
+					System.out.println(message);
+					log.info(message);
+					
 					List<FolderBO> folders = webCrawler.crawl(channelId.toString(), url);
 					if(folders!=null && !folders.isEmpty()){
 						boolean bln = daoService.saveCrawlResource(folders);
 						if(bln) count += folders.size();
-						System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]共"+folders.size()+"条记录，入库操作"+(bln?"成功":"失败"));
+						
+						message = sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]共"+folders.size()+"条记录，入库操作"+(bln?"成功":"失败");
+						System.out.println(message);
+						log.info(message);
+						
 					}else{
-						System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]资源对象集合为空");
+						message = sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]资源对象集合为空";
+						System.out.println(message);
+						log.info(message);
 					}
 				}
 			}else{
-				System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]地址未取到");
+				message = sdf.format(new Date())+" : 抓取[v:"+version+"]地址未取到";
+				System.out.println(message);
+				log.info(message);
 			}
 			
 			Date end = new Date(System.currentTimeMillis());
 			double minutes = (double)((end.getTime()-start.getTime())/(60*1000));
-			System.out.println(sdf.format(end)+" : 抓取[v:"+version+"]完成,耗时"+minutes+"分,共入库数据:"+count+"条,下次执行时间:"+sdf.format(context.getNextFireTime()));
+			
+			message = sdf.format(end)+" : 抓取[v:"+version+"]完成,耗时"+minutes+"分,共入库数据:"+count+"条,下次执行时间:"+sdf.format(context.getNextFireTime());
+			System.out.println(message);
+			log.info(message);
 			
 		}catch(Exception e){
 			if(log.isDebugEnabled()) e.printStackTrace();
-			System.out.println(sdf.format(new Date())+" : 抓取[v:"+version+"]失败");
+			message = sdf.format(new Date())+" : 抓取[v:"+version+"]失败";
+			System.out.println(message);
+			log.error(e);
 		}
 
 	}

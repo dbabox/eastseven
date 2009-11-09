@@ -23,6 +23,7 @@ import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
  * 
  *         create time : 2009-9-29 обнГ12:43:30
  */
+@Deprecated
 public class DefaultJob implements Job {
 
 	private static Logger log = Logger.getLogger(DefaultJob.class);
