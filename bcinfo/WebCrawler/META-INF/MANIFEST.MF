@@ -11,4 +11,4 @@ Class-Path: lib/commons-collections-3.2.jar
  lib/quartz-all-1.6.5.jar 
  lib/rome-1.0.jar 
  lib/log4j-1.2.15.jar 
- lib/log4j.properties 
+ lib/mail.jar 
