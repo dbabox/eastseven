@@ -144,9 +144,8 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 										if(log.isDebugEnabled()){
 											System.out.println("格式化后的图片地址："+originUrl);
 											//TODO 图片保存至本地，备用
-											String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
-											//String localUrl = ;
-											fileOperation.writeFile(originUrl, fileName);
+											//String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
+											//fileOperation.writeFile(originUrl, fileName);
 										}
 										
 									}

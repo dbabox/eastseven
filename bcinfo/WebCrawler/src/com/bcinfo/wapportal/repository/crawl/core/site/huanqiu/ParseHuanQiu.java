@@ -80,6 +80,9 @@ public class ParseHuanQiu extends AbstractHtmlParseTemplete implements Parse {
 			content = this.getPageContent(link, "div", "id", "text");
 			content = this.commonParseContent(content);
 			
+			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
+			content = content.replaceAll(RegexUtil.REGEX_SCRIPT_START, replacement);
+			content = content.replaceAll(RegexUtil.REGEX_SCRIPT_END, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_EMBED, replacement);
 			content = content.replaceAll("\\d+?\\[下一页\\]", replacement);
 			content = content.replaceAll("\\[上一页\\]?\\d+", replacement);

@@ -109,6 +109,7 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 			content = content.replaceAll("\\[进入.*论坛\\]", replacement);
 			content = content.replaceAll("发表您的观点。请您文明上网、理性发言并遵守相关规定，在注册后发表评论。  留言须知", replacement);
 			content = content.replaceAll("=", replacement);
+			content = content.replaceAll("<object\\s+[^>]+>|</object>|<param\\s+[^>]+>|</param>|<embed\\s+[^>]+>|</embed>", replacement);
 			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
 			//分页标签:[1][2][3][4]
 			content = content.replaceAll("\\[\\d+\\]", replacement);
@@ -126,4 +127,9 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 		return content;
 	}
 
+	public static void main(String[] args) {
+		String link = "http://news.xinhuanet.com/tech/2009-11/01/content_12368002.htm";
+		ParseXinHuaNet p = new ParseXinHuaNet();
+		System.out.println(p.parse(link));
+	}
 }

@@ -38,7 +38,7 @@ public final class CrawlerUtil {
 				|| link.indexOf("/photo/")!=-1 
 				|| link.indexOf("http://you.video.")!=-1
 				|| link.indexOf("http://pic.") != -1
-				|| link.indexOf("http://astro.") != -1 
+				//|| link.indexOf("http://astro.") != -1 
 				|| link.indexOf("http://test.") != -1 
 				|| link.indexOf("/gallery_") != -1 
 				|| link.indexOf("http://alive.") != -1
@@ -56,6 +56,7 @@ public final class CrawlerUtil {
 	 * @param url
 	 * @return
 	 */
+	@Deprecated
 	public static List<LinkTag> getAllLinkTag(String url){
 		List<LinkTag> linkTags = null;
 		try{
@@ -89,7 +90,7 @@ public final class CrawlerUtil {
 		try{
 			Parser parser = new Parser(url);
 			
-			log.debug(url+" | "+parser.getEncoding());
+			if(log.isDebugEnabled()) System.out.println(url+" | "+parser.getEncoding());
 			
 			if(!"GBK".equalsIgnoreCase(parser.getEncoding()))
 				parser.setEncoding("GBK");
@@ -117,8 +118,7 @@ public final class CrawlerUtil {
 				if(!CrawlerUtil.canCrwal(link)) continue;
 				if(link.equals(url) || link.endsWith("/")) continue;
 				if(title.contains("详细")||title.contains("更多")) continue;
-				if(log.isDebugEnabled())
-					System.out.println("     待抓取的链接："+link);
+				if(log.isDebugEnabled()) System.out.println("     待抓取的链接："+link);
 				FolderBO folder = new FolderBO();
 				folder.setLink(link);
 				folder.setTitle(title);
@@ -271,9 +271,12 @@ public final class CrawlerUtil {
 			content = content.replaceAll("&gt;",replacement);
 			content = content.replaceAll("&apos;", "'");
 			content = content.replaceAll("&quot;", "\"");
-			//content = content.replaceAll("$$", "$");
+			content = content.replaceAll("&ldquo;", "\"");
+			content = content.replaceAll("&rdquo;", "\"");
+			//
 			content = content.replaceAll("&nbsp;", " ");//&nbsp;
 			content = content.replaceAll("&shy;", "-");
+			content = content.replaceAll("&#8230;", "…");
 		}catch(Exception e){
 			content = pageContent;
 			if(log.isDebugEnabled()){

@@ -9,6 +9,9 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import com.bcinfo.wapportal.repository.crawl.core.site.huanqiu.ParseHuanQiu;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCooCook;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcladyAstro;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcpopMovie;
 import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQ;
 import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQForum;
 import com.bcinfo.wapportal.repository.crawl.core.site.sina.ParseSina;
@@ -31,12 +34,12 @@ public final class ParseFactory {
 	
 	public static Parse getParseInstance(String url) {
 		
-		if (url.contains(".qq.") && !url.contains("http://bbs.")) {
+		if (url.contains(".qq.") && !url.contains("bbs.ent.qq")) {
 			if(log.isDebugEnabled()){
 				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseQQ");
 			}
 			return new ParseQQ();
-		} else if (url.contains(".qq.") && url.contains("http://bbs.")) {
+		} else if (url.contains("bbs.ent.qq")) {
 			if(log.isDebugEnabled()){
 				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseQQForum");
 			}
@@ -71,6 +74,21 @@ public final class ParseFactory {
 				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseHuanQiu");
 			}
 			return new ParseHuanQiu();
+		} else if(url.contains("movie.pcpop.")){
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMovie");
+			}
+			return new ParsePcpopMovie();
+		} else if(url.contains("astro.pclady.")){
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcladyAstro");
+			}
+			return new ParsePcladyAstro();
+		} else if(url.contains(".coocook.")){
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseCooCook");
+			}
+			return new ParseCooCook();
 		} else {
 			return null;
 		}

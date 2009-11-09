@@ -48,6 +48,7 @@ public final class HandleContent {
 	}
 	
 	//返回一个可用的资源栏目集
+	@Deprecated
 	public List<FolderBO> handleFolders(List<FolderBO> folderList) {
 		List<FolderBO> folders = null;
 		
