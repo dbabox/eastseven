@@ -87,6 +87,12 @@
 		<fileset dir="${basedir}/lib/">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${basedir}/lib/mail/">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${basedir}/lib/ftp/">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	<target name="init" description="初始化目录">
@@ -111,5 +117,15 @@
 		</jar>
 	</target>
 
+	<target name="ftp" description="目前不能用">
+		<echo>${ftp.server}|${ftp.userid}|${ftp.password}|${ftp.port}</echo>
+		<echo>${ftp.remotedir}</echo>
+		<ftp password="VXqzHlAMxsF6" server="218.205.231.65" userid="oracle" remotedir="/usr/local/oracle/apache-tomcat-6.0.18/webcrawler" action="send">
+			<fileset dir="${dist.dir}">
+				<include name="core.jar" />
+			</fileset>
+		</ftp>
+		<echo>ftp done</echo>
+	</target>
 
 </project>
