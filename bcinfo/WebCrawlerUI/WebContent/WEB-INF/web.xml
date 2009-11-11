@@ -110,9 +110,14 @@
 		<servlet-name>ConfigServlet</servlet-name>
 		<servlet-class>com.bcinfo.wapportal.repository.crawl.ui.servlet.ConfigServlet</servlet-class>
 		<init-param>
-			<description></description>
+			<description>配置文件</description>
 			<param-name>configFile</param-name>
 			<param-value>WEB-INF/config.properties</param-value>
+		</init-param>
+		<init-param>
+			<description>日志文件</description>
+			<param-name>logFile</param-name>
+			<param-value>WEB-INF/log4j.properties</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -120,4 +125,7 @@
 		<servlet-name>ConfigServlet</servlet-name>
 		<url-pattern>/ConfigServlet</url-pattern>
 	</servlet-mapping>
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
 </web-app>

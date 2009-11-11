@@ -209,6 +209,7 @@
 		<td align="center">序号</td>
 		<td align="center">操作<input type="checkbox" id="checkBox"/></td>
 		<td align="center">状态</td>
+		<td align="center">原文</td>
 		<td align="center">标题</td>
 		<td align="center">图片</td>
 		<td align="center">内容</td>
@@ -230,7 +231,8 @@
 		<td id="${res.resId }">${status.index+1 }</td>
 		<td><input type="checkbox" id="id_${res.resId }" name="checkStatus" value="${res.resId }"/></td>
 		<td>${res.status }</td>
-		<td><a href="./CrawlResourceServlet?method=edit&resId=${res.resId }">${res.title }</a></td>
+		<td><a href="${res.link }" target="_blank">原文</a></td>
+		<td><a href="./CrawlResourceServlet?method=edit&resId=${res.resId }" target="_blank">${res.title }</a></td>
 		<td>${res.pics }张</td>
 		<td>${res.text }字</td>
 		<td>${res.createTime }</td>

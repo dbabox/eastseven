@@ -9,7 +9,8 @@
 <%@page
 	import="com.bcinfo.wapportal.repository.crawl.dao.ChannelMappingDao"%>
 <%@page import="com.bcinfo.wapportal.repository.crawl.dao.ChannelDao"%>
-<%@page import="com.bcinfo.wapportal.repository.crawl.domain.Channel"%><html>
+<%@page import="com.bcinfo.wapportal.repository.crawl.domain.Channel"%>
+<%@page import="java.util.ArrayList"%><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=GBK">
 <title>频道映射</title>
@@ -32,8 +33,14 @@
 <body>
 
 <%
-	List<ChannelMapping> list = new ChannelMappingDao()
-			.getAllChannelMappingList();
+	Long userId = (Long)session.getAttribute("userId");
+	
+	ChannelMappingDao dao = new ChannelMappingDao();
+	List<ChannelMapping> list = null;
+	if(userId != null)
+		list = dao.getChannelMappingList(userId,null);
+	else
+		list = new ArrayList();
 	List<Channel> channelList = new ChannelDao().getChannels(null);
 	int count = (list != null) ? list.size() : 0;
 %>
