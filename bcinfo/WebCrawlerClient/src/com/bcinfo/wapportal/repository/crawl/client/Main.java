@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
@@ -18,6 +19,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.bcinfo.wapportal.repository.crawl.job.MonitorJob;
 import com.bcinfo.wapportal.repository.crawl.job.ParseJob;
+import com.bcinfo.wapportal.repository.crawl.util.ConfigPropertyUtil;
 
 /**
  * @author dongq
@@ -33,15 +35,16 @@ public class Main {
 	static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
 	
 	public static void main(String[] args) {
-		System.out.println("******************************");
-		Map<String, String> sys = System.getenv();
-		Set<String> key = sys.keySet();
-		for(String k : key){
-			System.out.println(k+" : "+sys.get(k));
+		try{
+			PropertyConfigurator.configure(new ConfigPropertyUtil().getConfigProperty("log4j.properties"));
+			
+		}catch(Exception e){
+			log.error(e);
+			log.info("日志文件加载失败");
 		}
-		System.out.println("******************************");
 		try{
 			System.out.println(sdf.format(new Date())+" 本地服务启动... ");
+			log.info(" 本地服务启动... ");
 			//创建并启动调度线程
 			SchedulerFactory factory = new StdSchedulerFactory();
 			Scheduler scheduler = factory.getScheduler();
@@ -57,8 +60,11 @@ public class Main {
 			
 			scheduler.start();
 			System.out.println(sdf.format(new Date())+" 本地服务启动完毕... ");
+			log.info(" 本地服务启动完毕... ");
 		}catch(Exception e){
 			System.out.println(sdf.format(new Date())+" 本地服务启动失败 ");
+			log.info(" 本地服务启动失败 ");
+			log.error(e);
 			if(log.isDebugEnabled()){
 				e.printStackTrace();
 			}

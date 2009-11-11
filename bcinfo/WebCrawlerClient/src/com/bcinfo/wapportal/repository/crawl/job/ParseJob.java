@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -19,7 +18,6 @@ import org.quartz.JobExecutionException;
 
 import com.bcinfo.wapportal.repository.crawl.domain.Folder;
 import com.bcinfo.wapportal.repository.crawl.domain.Resource;
-import com.bcinfo.wapportal.repository.crawl.util.ConfigPropertyUtil;
 import com.bcinfo.wapportal.repository.crawl.util.HandleContent;
 import com.bcinfo.wapportal.repository.crawl.util.OperationDB;
 import com.bcinfo.wapportal.repository.crawl.util.ResourceType;
@@ -40,38 +38,23 @@ public class ParseJob implements Job {
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		System.out.println("开始解析文件");
+		log.info("开始解析文件");
 		try{
-			
-			Properties property = new ConfigPropertyUtil().getConfigProperty();
-			String dir = null;
-			if(property!=null){
-				String os = System.getenv("OS");
-				System.out.println("OS:"+os);
-				if(os!=null&&!"".equals(os)&&!"null".equals(os)){
-					dir = property.getProperty("resource.dir.windows");
-					System.out.println("WINNT:"+dir);
-				}else{
-					dir = property.getProperty("resource.dir.linux");
-					System.out.println("LINUX:"+dir);
-				}
-			}else{
-				System.out.println(" 没有取到配置文件的值 ");
-			}
+			String dir = System.getProperty("user.dir")+"/remotedir/";
 			if(dir!=null && !"".equals(dir)){
-				System.out.println(" 开始解析目录["+dir+"]下的文件");
+				log.info(" 开始解析目录["+dir+"]下的文件");
 				List<Folder> list = new ArrayList<Folder>();
 				File directory = new File(dir);
 				if(directory.isDirectory()){
 					File[] resFiles = directory.listFiles(/*new ResourceFileFilter()*/);
 					if(resFiles!=null){
-						System.out.println(dir+"目录下有："+resFiles.length+" 个文件");
+						log.info(dir+"目录下有："+resFiles.length+" 个文件");
 					}else{
-						System.out.println(dir+"目录下没有文件");
+						log.info(dir+"目录下没有文件");
 					}
 					Folder folder = null;
 					for(File resFile : resFiles){
-						System.out.println("解析资源文件："+resFile.getName());
+						log.info("解析资源文件："+resFile.getName());
 						folder = new Folder();
 						folder.setResFileName(resFile.getName());
 						SAXBuilder sb = new SAXBuilder(); 
@@ -100,7 +83,7 @@ public class ParseJob implements Job {
 					    list.add(folder);
 					}
 				}else{
-					System.out.println("不是存放资源文件的目录...");
+					log.info("不是存放资源文件的目录...");
 				}
 				
 				//分段处理
@@ -108,7 +91,7 @@ public class ParseJob implements Job {
 					HandleContent handle = new HandleContent();
 					list = handle.handleFolders(list);
 					if(list != null && !list.isEmpty()){
-						System.out.println("成功处理记录："+list.size());
+						log.info("成功处理记录："+list.size());
 						for(int index=0;index<list.size();index++){
 							Folder f = (Folder)list.get(index);
 							System.out.println(index+" : "+f.getId()+"|"+f.getTitle());
@@ -129,21 +112,23 @@ public class ParseJob implements Job {
 					}
 					
 					if(list!=null&&!list.isEmpty()){
-						System.out.println("入库操作开始");
+						log.info("入库操作开始");
 						//入库操作
 						boolean bln = new OperationDB().patchSave(list);
-						System.out.println(" 记录： "+list.size()+" 入库操作： "+bln);
+						
+						log.info(" 记录： "+list.size()+" 入库操作： "+bln);
 					}else{
-						System.out.println("记录为空，不能入库");
+						log.info("记录为空，不能入库");
 					}
 				}
 				
 			}else{
-				System.out.println(" 本地解析, 未找到config.properties文件中的资源目录");
+				log.info(" 本地解析, 未找到config.properties文件中的资源目录");
 			}
 			
 		}catch(Exception e){
-			System.out.println(" 本地解析入库失败 ");
+			log.info(" 本地解析入库失败 ");
+			log.error(e);
 			if(log.isDebugEnabled()){
 				e.printStackTrace();
 			}
