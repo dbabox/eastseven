@@ -26,12 +26,15 @@ public class ChannelMappingDao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = "select a.mapping_id,a.channel_id,a.local_code,a.local_channel_id,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_channel_mapping a where a.channel_id = ? and a.user_id = ?";
+		String sql = "select a.mapping_id,a.channel_id,a.local_code,a.local_channel_id,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_channel_mapping a where a.user_id = ?";
+		
 		try{
+			if(channelId != null){
+				sql += " and a.channel_id = "+channelId;
+			}
 			conn = JavaOracle.getConn();
 			pst = conn.prepareStatement(sql);
-			pst.setLong(1, channelId);
-			pst.setLong(2, userId);
+			pst.setLong(1, userId);
 			rs = pst.executeQuery();
 			list = new ArrayList<ChannelMapping>();
 			ChannelMapping map = null;
