@@ -9,4 +9,4 @@ Class-Path: lib/commons-collections-3.2.jar
  lib/log4j-1.2.15.jar 
  lib/ojdbc14.jar 
  lib/quartz-all-1.6.5.jar 
- 
+ lib/mail.jar 
