@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.ImageTag;
@@ -28,6 +29,8 @@ import com.bcinfo.wapportal.repository.crawl.domain.Resource;
  */
 public final class HandleContent {
 
+	private static Logger log = Logger.getLogger(HandleContent.class);
+	
 	public final static int MAX_LENGTH = 500;
 	
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMhhHHmmssSSS");
@@ -46,13 +49,15 @@ public final class HandleContent {
 					usableFolder = handleFolder(folder);
 				}catch(Exception e){
 					e.printStackTrace();
-					System.out.println(sdf.format(new Date())+" catch fail:"+folder.getUrl()+"|"+folder.getTitle());
+					log.error(e);
+					log.error(sdf.format(new Date())+" catch fail:"+folder.getUrl()+"|"+folder.getTitle());
 				}
 				if(usableFolder != null) folders.add(usableFolder);
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("  HandleContent.handleFolders error...");
+			log.error(e);
 		}
 		return folders;
 	}

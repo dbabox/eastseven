@@ -4,10 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.bcinfo.wapportal.repository.crawl.util.ConfigPropertyUtil;
 
 public class JavaOracle {
 
+	private static Logger log = Logger.getLogger(JavaOracle.class);
+	
 	public JavaOracle() {}
 	
 	private static String className = "oracle.jdbc.driver.OracleDriver";
@@ -18,7 +22,7 @@ public class JavaOracle {
 	public static Connection getConn() {
 		Connection conn = null;
 		try {
-			Properties p = new ConfigPropertyUtil().getConfigProperty();
+			Properties p = new ConfigPropertyUtil().getConfigProperty("config.properties");
 			className = p.getProperty("db.className");
 			url = p.getProperty("db.url");
 			user = p.getProperty("db.user");
@@ -29,6 +33,7 @@ public class JavaOracle {
 			conn = DriverManager.getConnection(url, user, password);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			log.error(ex);
 			//return null;
 		}
 		return conn;
@@ -43,6 +48,7 @@ public class JavaOracle {
 			conn = DriverManager.getConnection(url, user, password);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			log.error(ex);
 			return null;
 		}
 		return conn;

@@ -4,6 +4,7 @@
 package com.bcinfo.wapportal.repository.crawl.util;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -19,6 +20,37 @@ import org.apache.log4j.Logger;
 public class ConfigPropertyUtil {
 
 	private static Logger log = Logger.getLogger(ConfigPropertyUtil.class);
+	
+	public Properties getConfigProperty(String fileName){
+		Properties property = null;
+		InputStream in = null;
+		try{
+			//取得当前工程所在的根目录
+			String userDir = System.getProperty("user.dir");
+			
+			if(userDir != null && !"".equals(userDir)){
+				File configFolder = new File(userDir+"/config");
+				if(configFolder.exists()){
+					//生产环境,Windows or Linux
+					in = new BufferedInputStream(new FileInputStream(userDir+"/config/"+fileName));
+				}else{
+					//开发环境
+					in = new BufferedInputStream(new FileInputStream(userDir+"/src/"+fileName));
+				}
+			}else{
+				//未找到工程路径
+				System.out.println("未找到工程路径,无法加载"+fileName+"文件");
+			}
+			
+			property = new Properties();
+			property.load(in);
+			in.close();
+		}catch(Exception e){
+			log.error(e);
+			e.printStackTrace();
+		}
+		return property;
+	}
 	
 	public Properties getConfigProperty(){
 		Properties property = null;
