@@ -88,6 +88,33 @@ public class DaoServiceDefaultImpl implements DaoService {
 	}
 	
 	@Override
+	public Boolean isExistCrawlResource(Long channelId, String title) {
+		Boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " select count(1) from twap_public_crawl_resource a where a.channel_id = ? and a.res_title = ? ";
+		
+		try{
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, channelId);
+			pst.setString(2, title);
+			rs = pst.executeQuery();
+			if(rs.next()){
+				if(rs.getInt(1)>0) bln = true;
+			}
+		}catch(Exception e){
+			log.error(e);
+		}finally{
+			close(rs, pst, conn);
+		}
+		
+		return bln;
+	}
+	
+	@Override
 	public Boolean saveCrawlResource(List<FolderBO> folders) {
 		Boolean bln = false;
 		
@@ -267,6 +294,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 		return folders;
 	}
 	
+	@SuppressWarnings("deprecation")
 	Boolean update(FolderBO folder){
 		Boolean bln = false;
 		Connection conn = null;
@@ -502,6 +530,45 @@ public class DaoServiceDefaultImpl implements DaoService {
 					log.error(e);
 				}
 		}
+		return bln;
+	}
+	
+	@Override
+	public Boolean clearCrawlResource() {
+		boolean bln = false;
+		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try{
+			String sql = " delete from twap_public_crawl_resource a where a.res_status = '0' and to_char(a.create_time,'yyyymmdd') < to_char(sysdate-7,'yyyymmdd') ";
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			
+			pst = conn.prepareStatement(sql);
+			//pst.setString(1, sdf.format(date));
+			pst.executeUpdate();
+			
+			conn.setAutoCommit(true);
+			conn.commit();
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+			if(conn != null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					log.error(e1);
+				}
+			}
+		}finally{
+			close(rs, pst, conn);
+		}
+		
 		return bln;
 	}
 	

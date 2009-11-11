@@ -14,6 +14,7 @@ import org.quartz.JobExecutionException;
 
 import com.bcinfo.wapportal.repository.crawl.core.WebCrawler;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerDefaultImpl;
+import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerLotteryImpl;
 import com.bcinfo.wapportal.repository.crawl.dao.DaoService;
 import com.bcinfo.wapportal.repository.crawl.dao.impl.DaoServiceDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
@@ -31,7 +32,6 @@ public class SingleJob implements Job {
 
 	final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
 
-	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		String message = "";
@@ -54,7 +54,10 @@ public class SingleJob implements Job {
 				Long channelId = null;
 				String url = null;
 				WebCrawler webCrawler = new WebCrawlerDefaultImpl();
+				WebCrawler webCrawlerLottery = new WebCrawlerLotteryImpl();
 				for(CrawlList obj : list){
+					List<FolderBO> folders = null;
+
 					channelId = obj.getChannelId();
 					url = obj.getCrawlUrl();
 					
@@ -62,7 +65,13 @@ public class SingleJob implements Job {
 					System.out.println(message);
 					log.info(message);
 					
-					List<FolderBO> folders = webCrawler.crawl(channelId.toString(), url);
+					//TODO 针对彩票特殊处理
+					if(url.contains("lottery.sports.sohu.com")){
+						folders = webCrawlerLottery.crawl(channelId.toString(), url);
+					}else{
+						folders = webCrawler.crawl(channelId.toString(), url);
+					}
+					
 					if(folders!=null && !folders.isEmpty()){
 						boolean bln = daoService.saveCrawlResource(folders);
 						if(bln) count += folders.size();
