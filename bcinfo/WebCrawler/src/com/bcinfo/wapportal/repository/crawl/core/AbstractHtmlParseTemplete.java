@@ -18,6 +18,7 @@ import org.htmlparser.tags.ScriptTag;
 import org.htmlparser.tags.Span;
 import org.htmlparser.tags.StyleTag;
 import org.htmlparser.tags.TableColumn;
+import org.htmlparser.tags.TableTag;
 import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
@@ -218,6 +219,7 @@ public abstract class AbstractHtmlParseTemplete {
 	 * 目前可以取得的标签有：<br>
 	 * Div<br>
 	 * TableColumn<br>
+	 * Span<br>
 	 * 有新的需求，可自行添加标签<br>
 	 * @param link
 	 * @param tagName 标签名
@@ -257,6 +259,24 @@ public abstract class AbstractHtmlParseTemplete {
 								content += td.getChildrenHTML();
 							else
 								content += td.toHtml();
+						}
+					}else if(node instanceof Span){
+						Span span = (Span)node;
+						if(attrValue.equals(span.getAttribute(attrName))){
+							if(span.getChildCount()>0){
+								content += span.getChildrenHTML();
+							}else{
+								content += span.toHtml();
+							}
+						}
+					}else if(node instanceof TableTag){
+						TableTag table = (TableTag)node;
+						if(attrValue.equals(table.getAttribute(attrName))){
+							if(table.getChildCount()>0){
+								content += table.getChildrenHTML();
+							}else{
+								content += table.toHtml();
+							}
 						}
 					}
 				}

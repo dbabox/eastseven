@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
@@ -18,6 +19,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
 import com.bcinfo.wapportal.repository.crawl.job.SingleJob;
+import com.bcinfo.wapportal.repository.crawl.job.WeeklyJob;
 
 /**
  * @author dongq
@@ -54,9 +56,15 @@ public class MainSingle {
 			SchedulerFactory factory = new StdSchedulerFactory();
 			Scheduler scheduler = factory.getScheduler();
 			
+			//业务Job
 			JobDetail job = new JobDetail("singleJob", Scheduler.DEFAULT_GROUP, SingleJob.class);
 			long repeatInterval = 60 * 60 * 1000L;//TODO 60分钟一次
 			Trigger trigger = new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
+			scheduler.scheduleJob(job, trigger);
+			
+			//数据处理Job,每周一凌晨0:00:00执行
+			job = new JobDetail("weeklyJob",Scheduler.DEFAULT_GROUP,WeeklyJob.class);
+			trigger = new CronTrigger("cronTrigger", Scheduler.DEFAULT_GROUP, "0 0 0 ? * MON");
 			scheduler.scheduleJob(job, trigger);
 			
 			scheduler.start();

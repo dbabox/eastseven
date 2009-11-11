@@ -29,6 +29,14 @@ public class FolderBO implements Serializable {
 
 	}
 
+	public FolderBO(String folderId, String title, String link, String content) {
+		super();
+		this.folderId = folderId;
+		this.title = title;
+		this.link = link;
+		this.content = content;
+	}
+
 	public FolderBO(String folderId, String title, String link, String content,
 			String imgPathSet) {
 		super();

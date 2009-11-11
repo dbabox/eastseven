@@ -23,12 +23,12 @@ import com.bcinfo.wapportal.repository.crawl.util.DebugUtil;
 public class TestMain {
 
 	public static void main(String[] args) throws Exception{
-		String url = "http://www.sc.xinhuanet.com/content/2009-10/27/content_18063804.htm";
+		String url = "http://lottery.sports.sohu.com/open/sceexw.shtml";
 		Parser parser = new Parser(url);
 		System.out.println(parser.parse(null).toHtml());
 		System.out.println(" *********************************************************************************************** ");
 		parser.reset();
-		NodeList nodeList = DebugUtil.getNodeList(url, "td");
+		NodeList nodeList = DebugUtil.getNodeList(url, "iframe");
 		
 		DebugUtil.printNodeList(nodeList);
 //		NodeIterator iter = nodeList.elements();
