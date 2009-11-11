@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.PropertyConfigurator;
+
 import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
 
 /**
@@ -51,6 +53,27 @@ public final class ConfigServlet extends HttpServlet {
 			
 		}else{
 			System.out.println("配置文件["+configPath+"]加载失败");
+		}
+		
+		configPath = config.getInitParameter("logFile");
+		if(configPath!=null || "".equals(configPath)){
+			InputStream in;
+			try {
+				//in = new BufferedInputStream (new FileInputStream(configPath));
+				in = config.getServletContext().getResourceAsStream(configPath);
+				Properties property = new Properties();
+				property = new Properties();
+				property.load(in);
+				in.close();
+				PropertyConfigurator.configure(property);
+				System.out.println("日志文件["+configPath+"]加载成功");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else{
+			System.out.println("日志文件["+configPath+"]加载失败");
 		}
 	}
 	

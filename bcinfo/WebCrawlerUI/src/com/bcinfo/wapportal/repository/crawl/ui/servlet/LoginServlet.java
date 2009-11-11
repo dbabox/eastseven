@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
 
 /**
@@ -16,6 +18,8 @@ import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
  */
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger log = Logger.getLogger(LoginServlet.class);
        
     public LoginServlet() {
         super();
@@ -32,7 +36,9 @@ public class LoginServlet extends HttpServlet {
 		Long userId = new UserDao().getLoginUserId(userName, password);
 		
 		if(userId!=null){
+			log.info("ÓÃ»§"+userName+"µÇÂ¼");
 			request.getSession().setAttribute("userId", userId);
+			this.getServletContext().setAttribute("userId", userId);
 			request.getRequestDispatcher("channel.jsp").forward(request, response);
 		}else{
 			response.sendRedirect("login.jsp");
