@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.jdom.CDATA;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -34,6 +35,8 @@ import com.bcinfo.wapportal.repository.crawl.service.CrawlResourceService;
  */
 public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 
+	private static final Logger log = Logger.getLogger(CrawlResourceServiceDefaultImpl.class);
+	
 	private CrawlResourceDao crawlResourceDao;
 	private ChannelMappingDao channelMappingDao;
 	private Properties property;
@@ -94,7 +97,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 		try{
 			
 			//生成资源内容XML文件
-			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getCreateTime());
+			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getCreateTime());
 			System.out.println("生成资源内容XML文件:"+localFileName);
 			
 			//TODO 暂时将生成的文件包FTP到地方服务器上
@@ -125,11 +128,12 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			}
 		}catch(Exception e){
 			e.printStackTrace();
+			log.error(e);
 		}
 		return bln;
 	}
 	
-	private String generateXMLFile(String filePath,String content, String title, String localChannelId, String imgPath, String date){
+	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPath, String date){
 		String fileName = null;
 		try{
 			Element root = new Element("resource");
@@ -140,6 +144,9 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			
 			Element eTitle = new Element("title");
 			eTitle.setText(title);
+			
+			Element eLink = new Element("link");
+			eLink.addContent(new CDATA(link));
 			
 			Element eCreateTime = new Element("createTime");
 			eCreateTime.setText(date);
@@ -160,6 +167,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			
 			root.addContent(eLocalChannelId);
 			root.addContent(eTitle);
+			root.addContent(eLink);
 			root.addContent(eCreateTime);
 			root.addContent(eContent);
 			root.addContent(eImgPath);
@@ -173,6 +181,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			
 		}catch(Exception e){
 			e.printStackTrace();
+			log.error(e);
 			fileName = null;
 		}
 		return fileName;
