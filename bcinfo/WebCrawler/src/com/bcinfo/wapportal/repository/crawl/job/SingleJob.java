@@ -13,6 +13,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.bcinfo.wapportal.repository.crawl.core.WebCrawler;
+import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerAstroSohuImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerLotteryImpl;
 import com.bcinfo.wapportal.repository.crawl.dao.DaoService;
@@ -55,6 +56,7 @@ public class SingleJob implements Job {
 				String url = null;
 				WebCrawler webCrawler = new WebCrawlerDefaultImpl();
 				WebCrawler webCrawlerLottery = new WebCrawlerLotteryImpl();
+				WebCrawler webCrawlerAstro = new WebCrawlerAstroSohuImpl();
 				for(CrawlList obj : list){
 					List<FolderBO> folders = null;
 
@@ -65,10 +67,14 @@ public class SingleJob implements Job {
 					System.out.println(message);
 					log.info(message);
 					
-					//TODO 针对彩票特殊处理
 					if(url.contains("lottery.sports.sohu.com")){
+						//TODO 针对彩票特殊处理
 						folders = webCrawlerLottery.crawl(channelId.toString(), url);
+					}else if(url.contains("astro.women.sohu.com")){
+						//TODO 针对星座占卜特殊处理
+						folders = webCrawlerAstro.crawl(channelId.toString(), url);
 					}else{
+						//TODO 通用频道处理
 						folders = webCrawler.crawl(channelId.toString(), url);
 					}
 					

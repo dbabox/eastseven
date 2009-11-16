@@ -294,7 +294,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 		return folders;
 	}
 	
-	@SuppressWarnings("deprecation")
 	Boolean update(FolderBO folder){
 		Boolean bln = false;
 		Connection conn = null;

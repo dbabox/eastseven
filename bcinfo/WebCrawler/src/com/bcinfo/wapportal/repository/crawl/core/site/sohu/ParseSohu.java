@@ -55,12 +55,14 @@ public class ParseSohu extends AbstractHtmlParseTemplete implements Parse {
 		
 		try{
 			content = this.getPageContent(link, "id", "contentText");
+			if(content == null || "".equals(content))
+				content = this.getPageContent(link, "td", "class", "wz12_3B07");
+				
 			content = this.commonParseContent(content);
 			
 			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_EM, replacement);
 			content = content.replaceAll("\\[我来说两句\\]", replacement);
-			
 			content = RegexUtil.eliminateString(RegexUtil.REGEX_SCRIPT_START, RegexUtil.REGEX_SCRIPT_END, content);
 		}catch(Exception e){
 			System.out.println("解析sohu页面["+link+"]内容失败");
