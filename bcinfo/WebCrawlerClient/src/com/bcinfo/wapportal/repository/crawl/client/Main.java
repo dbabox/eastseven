@@ -5,8 +5,6 @@ package com.bcinfo.wapportal.repository.crawl.client;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -17,6 +15,7 @@ import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.bcinfo.wapportal.repository.crawl.dao.DaoService;
 import com.bcinfo.wapportal.repository.crawl.job.MonitorJob;
 import com.bcinfo.wapportal.repository.crawl.job.ParseJob;
 import com.bcinfo.wapportal.repository.crawl.util.ConfigPropertyUtil;
@@ -37,11 +36,27 @@ public class Main {
 	public static void main(String[] args) {
 		try{
 			PropertyConfigurator.configure(new ConfigPropertyUtil().getConfigProperty("log4j.properties"));
-			
+			log.info("日志文件加载成功");
 		}catch(Exception e){
 			log.error(e);
-			log.info("日志文件加载失败");
+			log.error("日志文件加载失败");
 		}
+		
+		try{
+			//初始化内存数据库
+			DaoService dao = new DaoService();
+			boolean bln = dao.isTableExist("internal_file_log");
+			if(!bln){
+				log.info("初始化内存数据库");
+				bln = dao.createInternalFileLogTable();
+				log.info("内存数据库创建："+(bln?"成功":"失败"));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+			log.error("初始化内存数据库出错");
+		}
+		
 		try{
 			System.out.println(sdf.format(new Date())+" 本地服务启动... ");
 			log.info(" 本地服务启动... ");

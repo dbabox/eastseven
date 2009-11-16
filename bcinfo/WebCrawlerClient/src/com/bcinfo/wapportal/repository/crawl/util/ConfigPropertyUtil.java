@@ -29,7 +29,7 @@ public class ConfigPropertyUtil {
 			String userDir = System.getProperty("user.dir");
 			
 			if(userDir != null && !"".equals(userDir)){
-				File configFolder = new File(userDir+"/config");
+				File configFolder = new File(userDir+"/config/"+fileName);
 				if(configFolder.exists()){
 					//生产环境,Windows or Linux
 					in = new BufferedInputStream(new FileInputStream(userDir+"/config/"+fileName));

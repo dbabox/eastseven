@@ -16,6 +16,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.bcinfo.wapportal.repository.crawl.dao.DaoService;
 import com.bcinfo.wapportal.repository.crawl.domain.Folder;
 import com.bcinfo.wapportal.repository.crawl.domain.Resource;
 import com.bcinfo.wapportal.repository.crawl.util.HandleContent;
@@ -36,6 +37,7 @@ public class ParseJob implements Job {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		log.info("开始解析文件");
@@ -46,15 +48,33 @@ public class ParseJob implements Job {
 				List<Folder> list = new ArrayList<Folder>();
 				File directory = new File(dir);
 				if(directory.isDirectory()){
-					File[] resFiles = directory.listFiles(/*new ResourceFileFilter()*/);
+					File[] resFiles = directory.listFiles();
 					if(resFiles!=null){
 						log.info(dir+"目录下有："+resFiles.length+" 个文件");
 					}else{
 						log.info(dir+"目录下没有文件");
 					}
 					Folder folder = null;
+					String fileName = "";
+					DaoService dao = new DaoService();
+					List<String> fileLogs = dao.getAllFileLog();
 					for(File resFile : resFiles){
-						log.info("解析资源文件："+resFile.getName());
+						
+						fileName = resFile.getName();
+						if(fileName.lastIndexOf(".xml") == -1){
+							log.info("非资源文件["+fileName+"]不予解析入库");
+							continue;
+						}
+						log.info("解析资源文件："+fileName);
+						
+						if(!fileLogs.contains(fileName)){
+							//记录
+							boolean bln = dao.saveInternalFileLog(fileName, "1");
+							log.info("记录解析资源文件："+fileName+" : "+bln);
+						}else{
+							continue;
+						}
+						
 						folder = new Folder();
 						folder.setResFileName(resFile.getName());
 						SAXBuilder sb = new SAXBuilder(); 
@@ -69,6 +89,8 @@ public class ParseJob implements Job {
 					    		folder.setId(e.getText());
 					    	}else if("title".equals(name)){
 					    		folder.setTitle(e.getText());
+					    	}else if("link".equals(name)){
+					    		folder.setUrl(e.getText());
 					    	}else if("createTime".equals(name)){
 					    		//TODO 暂不处理，备用
 					    	}else if("content".equals(name)){
