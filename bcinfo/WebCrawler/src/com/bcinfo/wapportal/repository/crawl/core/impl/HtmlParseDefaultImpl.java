@@ -51,6 +51,8 @@ public class HtmlParseDefaultImpl implements HtmlParse {
 				if(folder.getTitle() == null) continue;
 				else if("".equals(folder.getTitle()) || folder.getTitle().length() == 0) continue;
 				
+				if(folder.getTitle().contains("查看全文")) continue;
+				
 				if(!logLinks.contains(link)) usableLinks.add(folder);
 				//TODO 采用数据比对
 				//if(!fileOperation.contains(link)) usableLinks.add(folder);
