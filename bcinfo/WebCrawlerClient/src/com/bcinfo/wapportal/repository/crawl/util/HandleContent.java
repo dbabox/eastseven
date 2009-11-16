@@ -36,6 +36,7 @@ public final class HandleContent {
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMhhHHmmssSSS");
 	
 	//返回一个可用的资源栏目集
+	@SuppressWarnings("unchecked")
 	public List handleFolders(List folderList) {
 		List folders = null;
 		
@@ -63,6 +64,7 @@ public final class HandleContent {
 	}
 	
 	//单个栏目（资源）的处理
+	@SuppressWarnings("unchecked")
 	public Folder handleFolder(Folder folder) throws Exception{
 		OperationDB oper = new OperationDB();
 		Folder usableFolder = null;
@@ -84,7 +86,7 @@ public final class HandleContent {
 					Resource resource = null;
 					int type = ResourceType.WORDS;//默认为文字类型
 					if(resContent.startsWith("<img")|| resContent.startsWith("<IMG")){
-						System.out.println("原始图片地址:"+resContent);
+						log.info("原始图片地址:"+resContent);
 						//剔除不要的图片
 						if(resContent.contains("entphone.gif")) continue;
 						if(resContent.contains("news_xy.gif")||resContent.contains("news_sy.gif")||resContent.contains("news_hy.gif")) continue;
@@ -99,20 +101,21 @@ public final class HandleContent {
 						ImageTag imageTag = (ImageTag)imgList.elementAt(0);
 						imgSrc = imageTag.getImageURL();
 						//将相对路径的图片地址补全
-						if(imgSrc.indexOf("http:") == -1){
-							System.out.println("将相对路径的图片地址补全:"+imgSrc+" | "+folder.getUrl());
+						if(imgSrc.indexOf("http:") == -1 && folder.getUrl() != null){
+							log.info("将相对路径的图片地址补全:"+imgSrc+" | "+folder.getUrl());
 							imgSrc = CrawlerUtil.extractLinkHeader(folder.getUrl()) + imgSrc;
 						}
 						
-						if(imgSrc != null){
-							System.out.println("图片地址:"+imgSrc);
+						if(imgSrc != null && imgSrc.startsWith("http:")){
+							log.info("图片地址:"+imgSrc);
 							//将图片下载到服务器上，路径保存在Resource对象中
 							//图片名称统一为：pa_yyyyMMhhHHmmssSSS_i.jpg 格式
 							String imgName = "pa_"+sdf.format(new Date())+"_"+i+".jpg";
 							
-							//if(imgName.lastIndexOf(".") == -1) imgName = sdf.format(new Date()) + i + ".jpg";
-							String imgPath = oper.writeFile(imgSrc, imgName) + imgName;
-							System.out.println("   下载图片 "+imgName+"|"+imgSrc+"|本地路径："+imgPath);
+							String imgPath = oper.writeFile(imgSrc, imgName);
+							if(imgPath == null) continue;
+							imgPath +=  imgName;
+							log.info("   下载图片 "+imgName+"|"+imgSrc+"|本地路径："+imgPath);
 							resource = new Resource(i,folder,resContent,type,imgPath);
 							Thread.sleep(1000);
 						}
@@ -165,6 +168,7 @@ public final class HandleContent {
 		return content;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List sliptWithImageTag(String content) throws Exception{
 		List resource = null;
 		if(content == null) throw new Exception("resource content is null");
@@ -223,6 +227,7 @@ public final class HandleContent {
 	}
 	
 	//将文字按指定数量分段
+	@SuppressWarnings("unchecked")
 	public List splitWords(String content, int limit) {
 		List resource = null;
 		try{
