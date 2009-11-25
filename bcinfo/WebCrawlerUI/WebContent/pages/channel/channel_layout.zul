@@ -1,0 +1,18 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window id="channelWin" border="normal" height="100%" width="100%" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.channel.BorderLayoutComposer">
+		<borderlayout>
+			<west size="150px" splittable="true" collapsible="true" autoscroll="true" title="频道" tooltip="aaa">
+				<div>
+					<toolbar>
+						<toolbarbutton label="添加" id="addRootChannel" />
+					</toolbar>
+					<tree id="channelTree" />
+				</div>
+			</west>
+			<center autoscroll="true">
+				<div id="contentDiv" height="100%" width="100%" />
+			</center>
+		</borderlayout>
+	</window>
+</zk>

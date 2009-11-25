@@ -1,0 +1,15 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window border="normal" height="100%" width="100%" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.subscribe.BorderLayoutComposer">
+		<borderlayout>
+			<west size="150px" splittable="true" collapsible="true" autoscroll="true" title="手动订购" tooltip="aaa">
+				<div>
+					<tree id="channelTree" />
+				</div>
+			</west>
+			<center autoscroll="true">
+				<div id="contentDiv" height="100%" width="100%" />
+			</center>
+		</borderlayout>
+	</window>
+</zk>

@@ -1,0 +1,28 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window border="normal"
+		apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.channel.ChannelManagementComposer">
+		<menubar>
+			<menuitem label="添加" id="add"/>
+			<menuitem label="修改" id="mod"/>
+			<menuitem label="删除" id="del"/>
+		</menubar>
+		<listbox id="channelListbox" fixedLayout="true" multiple="true" mold="paging" pageSize="30">
+			<listhead>
+				<listheader label="序号" sort="auto" />
+				<listheader label="频道" sort="auto" />
+				<listheader label="路径" sort="auto" />
+				<listheader label="索引" sort="auto" />
+				<listheader label="时间" sort="auto" />
+			</listhead>
+			<listitem>
+				<listcell></listcell>
+				<listcell></listcell>
+				<listcell></listcell>
+				<listcell></listcell>
+				<listcell></listcell>
+			</listitem>
+		</listbox>
+	</window>
+	<div id="channelDiv"/>
+</zk>
