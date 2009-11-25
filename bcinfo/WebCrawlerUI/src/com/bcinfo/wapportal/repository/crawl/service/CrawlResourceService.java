@@ -10,5 +10,8 @@ package com.bcinfo.wapportal.repository.crawl.service;
  */
 public interface CrawlResourceService {
 
+	public Boolean sendResourceAuto();
+	
 	public Boolean sendResource(Long userId, String channelId, String[] resourceIds);
+	
 }

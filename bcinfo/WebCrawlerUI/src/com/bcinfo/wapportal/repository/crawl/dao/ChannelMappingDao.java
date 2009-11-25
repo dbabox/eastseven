@@ -20,6 +20,43 @@ import com.bcinfo.wapportal.repository.crawl.domain.ChannelMapping;
  */
 public class ChannelMappingDao {
 
+	public List<ChannelMapping> getAutoChannelMappingList(Long userId, Long channelId){
+		List<ChannelMapping> list = null;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "select a.mapping_id,a.channel_id,a.local_code,a.local_channel_id,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_channel_mapping_a a where a.user_id = ?";
+		
+		try{
+			if(channelId != null){
+				sql += " and a.channel_id = "+channelId;
+			}
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, userId);
+			rs = pst.executeQuery();
+			list = new ArrayList<ChannelMapping>();
+			ChannelMapping map = null;
+			while(rs.next()){
+				map = new ChannelMapping();
+				map.setChannelId(rs.getLong("channel_id"));
+				map.setCreateTime(rs.getString("create_time"));
+				map.setLocalChannelId(rs.getString("local_channel_id"));
+				map.setLocalCode(rs.getString("local_code"));
+				map.setMappingId(rs.getLong("mapping_id"));
+				list.add(map);
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			close(conn, pst, rs);
+		}
+		
+		return list;
+	}
+	
 	public List<ChannelMapping> getChannelMappingList(Long userId, Long channelId){
 		List<ChannelMapping> list = null;
 		

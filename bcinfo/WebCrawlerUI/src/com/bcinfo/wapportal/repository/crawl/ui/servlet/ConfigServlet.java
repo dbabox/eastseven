@@ -3,6 +3,7 @@ package com.bcinfo.wapportal.repository.crawl.ui.servlet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -12,8 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerFactory;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
 
 import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
+import com.bcinfo.wapportal.repository.crawl.job.AutoSendJob;
 
 /**
  * 
@@ -74,6 +82,24 @@ public final class ConfigServlet extends HttpServlet {
 			}
 		}else{
 			System.out.println("日志文件["+configPath+"]加载失败");
+		}
+		
+		//启动调度器
+		try{
+			SchedulerFactory factory = new StdSchedulerFactory();
+			Scheduler scheduler = factory.getScheduler();
+			
+			//业务Job
+			JobDetail job = new JobDetail("autoSendJob", Scheduler.DEFAULT_GROUP, AutoSendJob.class);
+			long repeatInterval = 60 * 60 * 1000L;//TODO 60分钟一次
+			Trigger trigger = new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
+			scheduler.scheduleJob(job, trigger);
+			
+			//scheduler.start();
+			System.out.println("调度器启动");
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("调度器启动报错");
 		}
 	}
 	

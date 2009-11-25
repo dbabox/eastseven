@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -56,6 +57,30 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 		}else{
 			localFileDir = this.property.getProperty("resource.dir.linux");
 		}
+	}
+	
+	@Override
+	public Boolean sendResourceAuto() {
+		boolean bln = false;
+		CrawlResource resource;
+		try{
+			List<Map<String, String>> list = this.crawlResourceDao.getAutoSendCrawlResources();
+			if(list != null && !list.isEmpty()){
+				ChannelMapping mapping = null;
+				for(Map<String, String> map : list){
+					resource = this.crawlResourceDao.getCrawlResourceDetail(Long.parseLong(map.get("resId")));
+					mapping = new ChannelMapping();
+					mapping.setLocalChannelId(map.get("localChannelId"));
+					mapping.setLocalCode(map.get("localCode"));
+					generateResourceFile(mapping, resource);
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+		}
+		
+		return bln;
 	}
 	
 	@Override
