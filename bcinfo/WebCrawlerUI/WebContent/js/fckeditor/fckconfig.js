@@ -87,7 +87,7 @@ FCKConfig.ForceSimpleAmpersand	= false ;
 FCKConfig.TabSpaces		= 0 ;
 FCKConfig.ShowBorders	= true ;
 FCKConfig.SourcePopup	= false ;
-FCKConfig.ToolbarStartExpanded	= true ;
+FCKConfig.ToolbarStartExpanded	= false ;//true
 FCKConfig.ToolbarCanCollapse	= true ;
 FCKConfig.IgnoreEmptyParagraphValue = true ;
 FCKConfig.FloatingPanelsZIndex = 10000 ;
@@ -97,8 +97,8 @@ FCKConfig.TemplateReplaceAll = true ;
 FCKConfig.TemplateReplaceCheckbox = true ;
 
 FCKConfig.ToolbarLocation = 'In' ;
-
-FCKConfig.ToolbarSets["Default"] = [
+/*
+FCKConfig.ToolbarSets["Default"] = [//Default
 	['Source','DocProps','-','Save','NewPage','Preview','-','Templates'],
 	['Cut','Copy','Paste','PasteText','PasteWord','-','Print','SpellCheck'],
 	['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
@@ -112,11 +112,15 @@ FCKConfig.ToolbarSets["Default"] = [
 	'/',
 	['Style','FontFormat','FontName','FontSize'],
 	['TextColor','BGColor'],
-	['FitWindow','ShowBlocks','-','About']		// No comma for the last row.
+	['FitWindow','ShowBlocks','-','About']		// No comma for the last row.Basic
 ] ;
 
-FCKConfig.ToolbarSets["Basic"] = [
+FCKConfig.ToolbarSets["Basic"] = [//Basic
 	['Bold','Italic','-','OrderedList','UnorderedList','-','Link','Unlink','-','About']
+] ;
+*/
+FCKConfig.ToolbarSets["Default"] = [
+	['Save','FitWindow','Source','Undo','Redo','Preview','Print','SelectAll','Link','Image','Find','Replace']
 ] ;
 
 FCKConfig.EnterMode = 'p' ;			// p | div | br
