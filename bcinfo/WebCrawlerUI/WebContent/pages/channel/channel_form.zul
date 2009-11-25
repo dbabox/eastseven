@@ -1,0 +1,36 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+<window border="normal" closable="true" height="200px" width="400px">
+	<zscript>
+		Long _channelPid = (Long)arg.get("channelPid");
+	</zscript>
+	<grid>
+		<rows>
+			<row>
+				ID :
+				<longbox id="channelId" width="200px" readonly="true"/>
+			</row>
+			<row>
+				PID :
+				<longbox id="channelPid" width="200px" value="${_channelPid }" readonly="true"/>
+			</row>
+			<row>
+				名称 :
+				<textbox id="channelName" width="200px" value="" constraint="no empty" />
+			</row>
+			<row>
+				索引 :
+				<textbox id="channelIndex" width="200px" value="" />
+			</row>
+			<row>
+				路径 :
+				<textbox id="channelPath" width="200px" value="" />
+			</row>
+			<row>
+				<label></label>
+				<button label="保存" id="save"/>
+			</row>
+		</rows>
+	</grid>
+</window>
+</zk>

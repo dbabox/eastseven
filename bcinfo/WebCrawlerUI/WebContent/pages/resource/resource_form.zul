@@ -1,0 +1,65 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="FCK" closable="true" height="80%" border="normal"
+		sizable="true">
+		<zscript>
+	com.bcinfo.wapportal.repository.crawl.ui.zk.domain.ResourceBean bean = (com.bcinfo.wapportal.repository.crawl.ui.zk.domain.ResourceBean) arg
+			.get("bean");
+</zscript>
+		<grid>
+			<rows>
+				<row>
+					<div>
+						ID :
+						<longbox id="resId" width="100px"
+							value="${bean.resId }" readonly="true" />
+					</div>
+				</row>
+				<row>
+					<div>
+						频道 :
+						<textbox id="channelId" width="100px"
+							value="${bean.channelName }" readonly="true" />
+					</div>
+				</row>
+				<row>
+					<div>
+						标题 :
+						<textbox id="title" width="80%"
+							value="${bean.title }" />
+					</div>
+				</row>
+				<row>
+					<div>
+						地址 :
+						<textbox id="link" width="80%"
+							value="${bean.link }" readonly="true" />
+					</div>
+				</row>
+
+				<row>
+					<div>
+						状态 :
+						<textbox id="status" width="100px"
+							value="${bean.status }" readonly="true" />
+					</div>
+				</row>
+				<row>
+					<div>
+						<fckeditor id="content"
+							customConfigurationsPath="/js/fckeditor/fckconfig.js">
+							<attribute name="value">
+								${bean.content }
+							</attribute>
+						</fckeditor>
+					</div>
+				</row>
+				<row>
+					<div>
+						<button label="保存" id="save" />
+					</div>
+				</row>
+			</rows>
+		</grid>
+	</window>
+</zk>

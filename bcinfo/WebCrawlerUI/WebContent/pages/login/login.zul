@@ -1,0 +1,25 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window width="400px" position="parent" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.LoginComposer">
+		<groupbox mold="3d" closable="false">
+			<caption label="登录窗口" />
+			<div>
+				<grid>
+					<rows>
+						<row>
+							帐号 :
+							<textbox id="nametb" width="200px" constraint="no empty" />
+						</row>
+						<row>
+							密码 :
+							<textbox id="pwdtb" width="200px" type="password" constraint="no empty" />
+						</row>
+					</rows>
+				</grid>
+				<hbox pack="center" width="100%">
+					<button label="登录" id="login"/>
+				</hbox>
+			</div>
+		</groupbox>
+	</window>
+</zk>

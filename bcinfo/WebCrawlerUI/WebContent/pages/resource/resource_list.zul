@@ -1,0 +1,44 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window id="win" border="normal" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.resource.ResourceListComposer">
+		<zscript>
+			String status = (String)arg.get("status");
+		</zscript>
+		<toolbar>
+			<toolbarbutton label="审核" id="add" if='${status == "0" }'/>
+			<toolbarbutton label="发布" id="mod" if='${status == "1" }'/>
+		</toolbar>
+		
+		<paging id="resourceListboxPaging" pageSize="30" detailed="true"/>
+		
+		<grid id="resourceGrid" fixedLayout="true">
+			<columns>
+				<column label="" width="25px"/>
+				<column label="操作" width="30px"/>
+				<column label="频道" width="100px"/>
+				<column label="标题" />
+				<column label="编辑" width="50px"/>
+				<column label="状态" width="50px"/>
+				<column label="图片" width="50px"/>
+				<column label="字数" width="50px"/>
+				<column label="时间" width="150px"/>
+			</columns>
+			<rows>
+				<row>
+					<detail><html><![CDATA[<strong>详细内容</strong> ]]></html></detail>
+					<checkbox />
+					<label>频道频道</label>
+					<html>
+					<![CDATA[<a href='http://www.baidu.com' target='_blank'>标题连接</a> ]]>
+					</html>
+					<label>编辑</label>
+					<label>状态</label>
+					<label>图片</label>
+					<label>字数</label>
+					<label>09/11/20 16:03:00</label>
+				</row>
+			</rows>
+		</grid>
+	</window>
+	<div id="resourceDiv"/>
+</zk>
