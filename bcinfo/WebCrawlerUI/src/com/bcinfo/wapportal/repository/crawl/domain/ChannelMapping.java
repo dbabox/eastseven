@@ -9,13 +9,16 @@ import java.io.Serializable;
  * @author dongq
  * 
  *         create time : 2009-10-20 上午11:32:26<br>
- *         中心频道与地方栏目对于关系表
+ *         中心频道与地方栏目对于关系表<br>
+ *         2009-11-17 添加MAPPING_FLAG字段，用以控制是否自动FTP到目标SPCP后台<br>
+ *         0--非定时;1--定时<br>
  */
 public class ChannelMapping implements Serializable {
 
 	private static final long serialVersionUID = 6872095441836904734L;
 
 	private Long mappingId;
+	private String mappingFlag;
 	private Long channelId;
 	private String localCode;
 	private String localChannelId;
@@ -61,11 +64,20 @@ public class ChannelMapping implements Serializable {
 		this.createTime = createTime;
 	}
 
+	public String getMappingFlag() {
+		return mappingFlag;
+	}
+
+	public void setMappingFlag(String mappingFlag) {
+		this.mappingFlag = mappingFlag;
+	}
+
 	@Override
 	public String toString() {
 		return "ChannelMapping [channelId=" + channelId + ", createTime="
 				+ createTime + ", localChannelId=" + localChannelId
-				+ ", localCode=" + localCode + ", mappingId=" + mappingId + "]";
+				+ ", localCode=" + localCode + ", mappingFlag=" + mappingFlag
+				+ ", mappingId=" + mappingId + "]";
 	}
 
 }

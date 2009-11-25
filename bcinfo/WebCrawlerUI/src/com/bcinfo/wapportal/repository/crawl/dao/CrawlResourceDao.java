@@ -10,7 +10,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.jfree.util.Log;
 
 import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
 import com.bcinfo.wapportal.repository.crawl.domain.CrawlResource;
@@ -148,6 +152,42 @@ public class CrawlResourceDao {
 			close(conn, pst, rs);
 		}
 		return count;
+	}
+	
+	/**
+	 * 
+	 * @return List<Map<String, String>> [resId,localCode,localChannelId]
+	 */
+	public List<Map<String, String>> getAutoSendCrawlResources(){
+		List<Map<String, String>> list = null;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " select a.res_id,b.local_code,b.local_channel_id from twap_public_crawl_resource a,twap_public_channel_mapping_a b where a.channel_id = b.channel_id  ";
+		
+		try{
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			rs = pst.executeQuery();
+			list = new ArrayList<Map<String,String>>();
+			Map<String, String> map = null;
+			while(rs.next()){
+				map = new HashMap<String, String>();
+				map.put("resId", String.valueOf(rs.getLong("res_id")));
+				map.put("localCode", rs.getString("local_code"));
+				map.put("localChannelId", rs.getString("local_channel_id"));
+				list.add(map);
+			}
+			 
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.error(e);
+		}finally{
+			close(conn, pst, rs);
+		}
+		
+		return list;
 	}
 	
 	public List<CrawlResource> getAllCrawlResources(Long channelId, String title, String status, int start, int end){

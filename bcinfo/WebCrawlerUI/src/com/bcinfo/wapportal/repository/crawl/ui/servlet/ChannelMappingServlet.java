@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import com.bcinfo.wapportal.repository.crawl.dao.ChannelMappingDao;
 import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
 
@@ -17,6 +19,7 @@ import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
  *         create time : 2009-10-20 上午11:45:22
  */
 public class ChannelMappingServlet extends HttpServlet {
+	private static final Logger log = Logger.getLogger(ChannelMappingServlet.class);
 	private static final long serialVersionUID = 1L;
 
 	private ChannelMappingDao dao;
@@ -40,17 +43,20 @@ public class ChannelMappingServlet extends HttpServlet {
 		if("add".equals(type)){
 			if(!"".equals(channelId)&&!"".equals(localChannelId)){
 				boolean bln = dao.save(userId, localCode, localChannelId, channelId);
-				System.out.println(localCode+"|"+localChannelId+"|"+channelId+"|"+bln);
+				log.info("用户["+userId+"]订购："+localCode+"|"+localChannelId+"|"+channelId+"|"+bln);
 			}
+			response.sendRedirect("channel_mapping.jsp");
 		}else if("del".equals(type)){
 			String[] mappingId = request.getParameterValues("mappingId");
 			boolean bln = dao.deleteBatch(userId, mappingId);
+			log.info("用户["+userId+"]退订:"+bln);
+			response.sendRedirect("channel_mapping.jsp");
+		}else if("".equals(type)){
 			
-			System.out.println("退订"+bln);
 		}
 		
 		
-		response.sendRedirect("channel_mapping.jsp");
 	}
 
+	
 }
