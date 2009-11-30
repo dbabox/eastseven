@@ -34,6 +34,8 @@ public class SubscribeManagementAutoComposer extends GenericForwardComposer {
 	private Listbox subscribeListbox;
 	private ListitemRenderer renderer = new SubscribeListitemRenderer();
 	private Textbox folderId;
+	private Listbox operation;
+	private Listbox localCode;
 	
 	private boolean live = true;
 	private SubscribeDao dao;
@@ -64,9 +66,10 @@ public class SubscribeManagementAutoComposer extends GenericForwardComposer {
 		if(folderId.getValue() != null && !"".equals(folderId.getValue()) && !"null".equals(folderId.getValue())){
 			SubscribeBean order = new SubscribeBean();
 			order.setChannelId(bean.getChannelId());
-			order.setLocalCode(user.getLocalCode());
+			order.setLocalCode(localCode.getSelectedItem().getValue().toString());
 			order.setLocalFolderId(folderId.getValue());
 			order.setUserId(user.getUserId());
+			order.setOperation(operation.getSelectedItem().getValue().toString());
 			
 			boolean isSave = dao.saveAutoSubscribeBean(order);
 			if(isSave){
@@ -125,6 +128,7 @@ public class SubscribeManagementAutoComposer extends GenericForwardComposer {
 				item.appendChild(new Listcell(bean.getLocalCode()));
 				item.appendChild(new Listcell(bean.getChannelName()));
 				item.appendChild(new Listcell(bean.getLocalFolderId()));
+				item.appendChild(new Listcell(bean.getOperation()));
 				
 				item.setValue(data);
 			}

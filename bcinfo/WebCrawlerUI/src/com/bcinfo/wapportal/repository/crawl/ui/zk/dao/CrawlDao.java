@@ -16,6 +16,74 @@ import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.CrawlBean;
  */
 public class CrawlDao extends Dao {
 
+	public Boolean save(Long channelId, String url) {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " insert into twap_public_crawl_list(crawl_id,channel_id,crawl_url) values(seq_twap_public_crawl_list.nextval,?,?) ";
+		
+		try{
+			conn = OracleUtil.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, channelId);
+			pst.setString(2, url);
+			pst.executeUpdate();
+			conn.commit();
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			rollback(conn);
+		}finally{
+			close(conn, pst, rs);
+		}
+		
+		return bln;
+	}
+	
+	public Boolean updateStatus(List<Long> list, String status) {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " update twap_public_crawl_list a set a.crawl_status = ? where a.crawl_id = ? ";
+		
+		try{
+			conn = OracleUtil.getConnection();
+			if(list != null && !list.isEmpty()){
+				if(list.size() > 1){
+					conn.setAutoCommit(false);
+					pst = conn.prepareStatement(sql);
+					for(Long id : list){
+						pst.setString(1, status);
+						pst.setLong(2, id);
+						pst.addBatch();
+					}
+					pst.executeBatch();
+					conn.setAutoCommit(true);
+					conn.commit();
+					bln = true;
+				}else{
+					pst = conn.prepareStatement(sql);
+					pst.setString(1, status);
+					pst.setLong(2, list.get(0));
+					pst.executeUpdate();
+					conn.commit();
+					bln = true;
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			rollback(conn);
+		}finally{
+			close(conn, pst, rs);
+		}
+		
+		return bln;
+	}
+	
 	public List<CrawlBean> getCrawlList(Long channelId){
 		List<CrawlBean> list = null;
 		

@@ -82,4 +82,14 @@ public class BorderLayoutComposer extends GenericForwardComposer {
 		map.put("user", session.getAttribute("user"));
 		Executions.createComponents("/pages/resource/resource_layout.zul", contentDiv, map);
 	}
+	
+	/*
+	public void onClick$logout() {
+		if(session.getAttribute("user") != null){
+			contentDiv.getChildren().clear();
+			session.removeAttribute("user");
+			execution.sendRedirect("index.zul");
+		}
+	}
+	*/
 }

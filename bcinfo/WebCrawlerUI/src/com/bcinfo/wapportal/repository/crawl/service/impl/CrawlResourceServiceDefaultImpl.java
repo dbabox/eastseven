@@ -38,6 +38,9 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 
 	private static final Logger log = Logger.getLogger(CrawlResourceServiceDefaultImpl.class);
 	
+	public static int INSERT = 1;
+	public static int UPDATE = 2;
+	
 	private CrawlResourceDao crawlResourceDao;
 	private ChannelMappingDao channelMappingDao;
 	private Properties property;
@@ -59,6 +62,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 		}
 	}
 	
+	//自动发送
 	@Override
 	public Boolean sendResourceAuto() {
 		boolean bln = false;
@@ -67,14 +71,17 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			List<Map<String, String>> list = this.crawlResourceDao.getAutoSendCrawlResources();
 			if(list != null && !list.isEmpty()){
 				ChannelMapping mapping = null;
+				int operation = INSERT;//默认值
 				for(Map<String, String> map : list){
 					resource = this.crawlResourceDao.getCrawlResourceDetail(Long.parseLong(map.get("resId")));
 					mapping = new ChannelMapping();
 					mapping.setLocalChannelId(map.get("localChannelId"));
 					mapping.setLocalCode(map.get("localCode"));
-					generateResourceFile(mapping, resource);
+					operation = Integer.parseInt(map.get("operation"));
+					generateResourceFile(mapping, resource, operation);
 				}
 			}
+			bln = true;
 		}catch(Exception e){
 			e.printStackTrace();
 			log.error(e);
@@ -87,7 +94,6 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	public Boolean sendResource(Long userId, String channelId, String[] resourceIds) {
 		boolean bln = false;
 		Long resId;
-		String localChannelId = "";
 		CrawlResource resource;
 		try{
 			
@@ -95,16 +101,14 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			List<ChannelMapping> mappingList = this.channelMappingDao.getChannelMappingList(userId, Long.parseLong(channelId));
 			for(ChannelMapping map : mappingList){
 				System.out.println(map);
-				//获得本地栏目ID
-				localChannelId = map.getLocalChannelId();
 				//取得资源
 				for(int i=0;i<resourceIds.length;i++){
 					resId = Long.parseLong(resourceIds[i]);
 					resource = this.crawlResourceDao.getCrawlResourceDetail(resId);
 					if("0".equals(resource.getStatus())) continue;
 					System.out.println(resource);
-					//生成资源包文件XML
-					generateResourceFile(map, resource);
+					//生成资源包文件XML,默认操作为INSERT
+					generateResourceFile(map, resource, INSERT);
 				}
 			}
 			
@@ -117,12 +121,12 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	}
 
 	//生成资源包
-	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource){
+	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource, int operation){
 		boolean bln = false;
 		try{
 			
 			//生成资源内容XML文件
-			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getCreateTime());
+			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getCreateTime(), operation);
 			System.out.println("生成资源内容XML文件:"+localFileName);
 			
 			//TODO 暂时将生成的文件包FTP到地方服务器上
@@ -158,7 +162,19 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 		return bln;
 	}
 	
-	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPath, String date){
+	/**
+	 * 生产资源文件
+	 * @param filePath
+	 * @param content
+	 * @param title
+	 * @param link
+	 * @param localChannelId
+	 * @param imgPath
+	 * @param date
+	 * @param operation
+	 * @return
+	 */
+	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPath, String date, int operation){
 		String fileName = null;
 		try{
 			Element root = new Element("resource");
@@ -190,12 +206,16 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 				}
 			}
 			
+			Element eOperation = new Element("operation");
+			eOperation.setText(String.valueOf(operation));
+			
 			root.addContent(eLocalChannelId);
 			root.addContent(eTitle);
 			root.addContent(eLink);
 			root.addContent(eCreateTime);
 			root.addContent(eContent);
 			root.addContent(eImgPath);
+			root.addContent(eOperation);
 			
 			XMLOutputter outputter = new XMLOutputter();
 			Format format = Format.getPrettyFormat();

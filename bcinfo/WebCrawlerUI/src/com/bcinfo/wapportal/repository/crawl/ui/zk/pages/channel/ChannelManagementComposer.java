@@ -1,8 +1,11 @@
 package com.bcinfo.wapportal.repository.crawl.ui.zk.pages.channel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
@@ -110,12 +113,26 @@ public class ChannelManagementComposer extends GenericForwardComposer {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public void onClick$del() {
 		// 多选
 		if(channelListbox.getSelectedCount() > 0){
 			try {
 				if(Messagebox.show("确定要删除?", "TODO", Messagebox.YES|Messagebox.NO, Messagebox.QUESTION) == Messagebox.YES){
-					
+					Set<Listitem> set = channelListbox.getSelectedItems();
+					List<Long> list = new ArrayList<Long>(set.size());
+					Iterator iter = set.iterator();
+					while(iter.hasNext()){
+						Listitem item = (Listitem)iter.next();
+						list.add(Long.valueOf(item.getValue().toString()));
+					}
+					boolean bln = dao.delete(list);
+					if(bln){
+						channelListbox.setModel(new ListModelList(dao.getChannelList(bean.getChannelId()), live));
+						alert("删除成功");
+					}else{
+						alert("删除失败");
+					}
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -174,7 +191,7 @@ public class ChannelManagementComposer extends GenericForwardComposer {
 				item.appendChild(new Listcell(bean.getChannelIndex()));
 				item.appendChild(new Listcell(bean.getCreateTime()));
 				
-				item.setValue(data);
+				item.setValue(bean.getChannelId());
 			}
 		}
 

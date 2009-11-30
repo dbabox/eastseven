@@ -156,7 +156,7 @@ public class CrawlResourceDao {
 	
 	/**
 	 * 
-	 * @return List<Map<String, String>> [resId,localCode,localChannelId]
+	 * @return List<Map<String, String>> [resId,localCode,localChannelId,operation]
 	 */
 	public List<Map<String, String>> getAutoSendCrawlResources(){
 		List<Map<String, String>> list = null;
@@ -164,7 +164,7 @@ public class CrawlResourceDao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " select a.res_id,b.local_code,b.local_channel_id from twap_public_crawl_resource a,twap_public_channel_mapping_a b where a.channel_id = b.channel_id  ";
+		String sql = " select a.res_id,b.local_code,b.local_channel_id,b.operation from twap_public_crawl_resource a,twap_public_channel_mapping_a b where a.channel_id = b.channel_id  ";
 		
 		try{
 			conn = JavaOracle.getConn();
@@ -177,6 +177,7 @@ public class CrawlResourceDao {
 				map.put("resId", String.valueOf(rs.getLong("res_id")));
 				map.put("localCode", rs.getString("local_code"));
 				map.put("localChannelId", rs.getString("local_channel_id"));
+				map.put("operation", String.valueOf(rs.getInt("operation")));
 				list.add(map);
 			}
 			 

@@ -150,12 +150,34 @@ public class ChannelDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " delete from twap_public_channel ";
 
 		try {
 			if (list != null && !list.isEmpty()) {
 				conn = OracleUtil.getConnection();
-				pst = conn.prepareStatement(sql);
+				for(Long id : list){
+					//twap_public_crawl_resource
+					pst = conn.prepareStatement("delete twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
+					pst.setLong(1, id);
+					pst.executeUpdate();
+					//twap_public_crawl_list
+					pst = conn.prepareStatement("delete twap_public_crawl_list a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
+					pst.setLong(1, id);
+					pst.executeUpdate();
+					//twap_public_channel_mapping_a
+					pst = conn.prepareStatement("delete twap_public_channel_mapping_a a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
+					pst.setLong(1, id);
+					pst.executeUpdate();
+					//twap_public_channel_mapping
+					pst = conn.prepareStatement("delete twap_public_channel_mapping a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
+					pst.setLong(1, id);
+					pst.executeUpdate();
+					//twap_public_channel
+					pst = conn.prepareStatement("delete twap_public_channel a start with a.channel_id = ? connect by prior a.channel_id=a.channel_pid");
+					pst.setLong(1, id);
+					pst.executeUpdate();
+				}
+				conn.commit();
+				bln = true;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

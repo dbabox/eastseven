@@ -23,7 +23,7 @@ public class SubscribeDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " select a.mapping_id,a.channel_id,(select t.channel_name from twap_public_channel t where t.channel_id = a.channel_id) channel_name,decode(a.local_code,'028','四川','0791','江西','未知') local_code,a.local_channel_id,a.user_id,to_char(a.create_time,'yyyy-mm-dd') create_time from twap_public_channel_mapping_a a where a.user_id = ? and exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid ) ";
+		String sql = " select a.mapping_id,a.channel_id,(select t.channel_name from twap_public_channel t where t.channel_id = a.channel_id) channel_name,decode(a.local_code,'028','四川','0791','江西','未知') local_code,a.local_channel_id,a.user_id,to_char(a.create_time,'yyyy-mm-dd') create_time,decode(a.operation,1,'写入',2,'更新') operation from twap_public_channel_mapping_a a where a.user_id = ? and exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid ) ";
 		
 		try{
 			conn = OracleUtil.getConnection();
@@ -42,7 +42,7 @@ public class SubscribeDao extends Dao {
 				bean.setLocalFolderId(rs.getString("local_channel_id"));
 				bean.setMappingId(rs.getLong("mapping_id"));
 				bean.setUserId(rs.getLong("user_id"));
-				
+				bean.setOperation(rs.getString("operation"));
 				list.add(bean);
 			}
 		}catch(Exception e){
@@ -97,7 +97,7 @@ public class SubscribeDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " insert into twap_public_channel_mapping_a(mapping_id,channel_id,local_code,local_channel_id,user_id) values(seq_twap_public_chl_mapping.nextval,?,?,?,?) ";
+		String sql = " insert into twap_public_channel_mapping_a(mapping_id,channel_id,local_code,local_channel_id,user_id,operation) values(seq_twap_public_chl_mapping.nextval,?,?,?,?,?) ";
 		
 		try{
 			conn = OracleUtil.getConnection();
@@ -106,6 +106,7 @@ public class SubscribeDao extends Dao {
 			pst.setString(2, bean.getLocalCode());
 			pst.setString(3, bean.getLocalFolderId());
 			pst.setLong(4, bean.getUserId());
+			pst.setLong(5, Long.parseLong(bean.getOperation()));
 			if(pst.executeUpdate()>0){
 				conn.commit();
 				bln = true;
