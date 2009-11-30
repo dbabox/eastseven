@@ -4,9 +4,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<meta http-equiv="refresh" content="0.1;url=http://<%=request.getLocalAddr() %>:8080/zk">
 <title>登录</title>
 </head>
 <body>
+<!--  
 <form action="./LoginServlet" method="post">
 <table align="center">
 	<tr>
@@ -19,9 +21,11 @@
 	</tr>
 	<tr>
 		<td colspan="2"><input type="submit" value="登录"> <input
-			type="reset" value="重置"></td>
+			type="reset" value="重置">
+			</td>
 	</tr>
 </table>
 </form>
+-->
 </body>
 </html>
