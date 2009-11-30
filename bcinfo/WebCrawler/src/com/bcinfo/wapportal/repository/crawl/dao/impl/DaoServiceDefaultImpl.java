@@ -41,6 +41,31 @@ public class DaoServiceDefaultImpl implements DaoService {
 	}
 	
 	@Override
+	public String getChannelName(Long channelId) {
+		String name = null;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " select a.channel_name from twap_public_channel a where a.channel_id = ? ";
+		
+		try{
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, channelId);
+			rs = pst.executeQuery();
+			if(rs.next()) name = rs.getString("channel_name");
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+		}finally{
+			close(rs, pst, conn);
+		}
+		
+		return name;
+	}
+	
+	@Override
 	public List<CrawlList> getCrawlLists() {
 		List<CrawlList> list = null;
 		Connection conn = null;
@@ -535,7 +560,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 	@Override
 	public Boolean clearCrawlResource() {
 		boolean bln = false;
-		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -547,7 +571,44 @@ public class DaoServiceDefaultImpl implements DaoService {
 			conn.setAutoCommit(false);
 			
 			pst = conn.prepareStatement(sql);
-			//pst.setString(1, sdf.format(date));
+			pst.executeUpdate();
+			
+			conn.setAutoCommit(true);
+			conn.commit();
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+			if(conn != null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					log.error(e1);
+				}
+			}
+		}finally{
+			close(rs, pst, conn);
+		}
+		
+		return bln;
+	}
+	
+	@Override
+	public Boolean deleteCrawlResource(Long channelId) {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try{
+			String sql = " delete from twap_public_crawl_resource a where a.channel_id = ? ";
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, channelId);
 			pst.executeUpdate();
 			
 			conn.setAutoCommit(true);

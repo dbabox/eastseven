@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.bcinfo.wapportal.repository.crawl.core.site.others;
+package com.bcinfo.wapportal.repository.crawl.core.site.pcpop;
 
 import java.util.ArrayList;
 import java.util.List;
