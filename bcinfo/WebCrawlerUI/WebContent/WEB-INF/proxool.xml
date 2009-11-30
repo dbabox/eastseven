@@ -4,11 +4,11 @@
 	<proxool>
 		<alias>oracle</alias>
 		
-		<driver-url>jdbc:oracle:thin:@127.0.0.1:1521:XE</driver-url>
+		<driver-url>jdbc:oracle:thin:@127.0.0.1:1521:ZK</driver-url>
 		<driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
 		<driver-properties>
-			<property name="user" value="wapsc" />
-			<property name="password" value="wapsc" />
+			<property name="user" value="wap" />
+			<property name="password" value="wap" />
 		</driver-properties>
 		
 		<maximum-connection-count>1000</maximum-connection-count>
