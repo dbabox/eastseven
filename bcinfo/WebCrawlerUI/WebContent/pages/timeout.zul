@@ -1,4 +1,4 @@
 <window title="会话超时" border="normal">
 	<vbox>会话超时，请重新登录</vbox>
-	<button label="登录" href="../index.zul"></button>
+	<button label="登录" href="../index.zul" focus="true"/>
 </window>
