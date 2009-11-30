@@ -130,8 +130,14 @@ public class RegexUtil {
 	 */
 	public final static String REGEX_SELECT_END = "</[sS][eE][lL][eE][cC][tT]>";
 	
+	/**
+	 * SCRIPT开始标签
+	 */
 	public final static String REGEX_SCRIPT_START = "<[sS][cC][rR][iI][pP][tT]\\s+[^>]+>";
 	
+	/**
+	 * SCRIPT结束标签
+	 */
 	public final static String REGEX_SCRIPT_END = "</[sS][cC][rR][iI][pP][tT]>";
 	
 	/**

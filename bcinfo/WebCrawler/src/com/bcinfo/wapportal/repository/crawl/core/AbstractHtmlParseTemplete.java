@@ -3,6 +3,7 @@
  */
 package com.bcinfo.wapportal.repository.crawl.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -109,7 +110,8 @@ public abstract class AbstractHtmlParseTemplete {
 			content = content.replaceAll("<[uU]\\s+[^>]+>|<[uU]>|</[uU]>", replacement);
 			//H
 			content = content.replaceAll("<[hH]\\d+>|</[hH]\\d+>", replacement);
-			
+			//HR
+			content = content.replaceAll("<[hH][rR]>|</[hH][rR]>", replacement);
 			//P to BR
 			content = content.replaceAll(RegexUtil.REGEX_P_START, RegexUtil.REGEX_BR);
 			content = content.replaceAll(RegexUtil.REGEX_P_START_NO_ATTR, RegexUtil.REGEX_BR);
@@ -132,6 +134,35 @@ public abstract class AbstractHtmlParseTemplete {
 		}
 		
 		return content;
+	}
+	
+	public synchronized String removeScritpTag(String link){
+		String content = "";
+		try{
+			Parser parser = new Parser(link);
+			parser.setEncoding("GBK");
+			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(ScriptTag.class));
+			List<ScriptTag> list = new ArrayList<ScriptTag>();
+			if(nodeList!=null && nodeList.size()>0){
+				for(int index=0;index<nodeList.size();index++){
+					list.add((ScriptTag)nodeList.elementAt(index));
+				}
+			}
+			if(list!=null && !list.isEmpty()){
+				parser = new Parser(link);
+				parser.setEncoding("GBK");
+				nodeList = parser.extractAllNodesThatMatch(null);
+				for(ScriptTag node : list){
+					nodeList.remove(node);
+				}
+				content = nodeList.toHtml();
+			}
+			return content;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+			return "";
+		}
 	}
 	
 	/**
@@ -225,7 +256,7 @@ public abstract class AbstractHtmlParseTemplete {
 	 * @param tagName 标签名
 	 * @param attrName 标签属性
 	 * @param attrValue 标签属性值
-	 * @return 
+	 * @return ""
 	 * @throws Exception ""
 	 */
 	public String getPageContent(String link, String tagName, String attrName, String attrValue) throws Exception {

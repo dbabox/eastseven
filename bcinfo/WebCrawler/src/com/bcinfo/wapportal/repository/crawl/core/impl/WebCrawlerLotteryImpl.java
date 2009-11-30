@@ -68,14 +68,15 @@ public class WebCrawlerLotteryImpl extends AbstractHtmlParseTemplete implements 
 			}
 			
 			if(link != null){
-				
+				DaoService dao = new DaoServiceDefaultImpl();
 				//span class span_left
 				String title = null;
 				title = this.getPageContent(link, "span", "class", "span_left");
 				title = title.replaceAll(RegexUtil.REGEX_FONT, replacement);
 				title = title.replaceAll(RegexUtil.REGEX_STRONG, replacement);
 				title = title.replaceAll("第|期", replacement);
-				title = "第"+title.trim()+"期";
+				title = dao.getChannelName(Long.parseLong(folderId))+"第"+title.trim()+"期开奖公告";
+				
 				
 				//div class ball_box01
 				//span class cfont5
@@ -88,14 +89,14 @@ public class WebCrawlerLotteryImpl extends AbstractHtmlParseTemplete implements 
 				content = content.replaceAll("<ul>|</ul>", replacement);
 				content = content.replaceAll("</li>", replacement);
 				content = content.replaceAll("<li\\s+[^>]+>|<li>", " ");
-				content = content.trim();
+				content = " 开奖号码 : "+content.trim();
 				
 				if(log.isDebugEnabled()){
 					log.info(link);
 					log.info("期号["+title+"]奖号["+content+"]");
 				}
 				
-				DaoService dao = new DaoServiceDefaultImpl();
+				
 				if(dao.isExistCrawlResource(Long.parseLong(folderId), title)){
 					log.info("频道["+folderId+"]彩票期号["+title+"]已存在");
 					return null;

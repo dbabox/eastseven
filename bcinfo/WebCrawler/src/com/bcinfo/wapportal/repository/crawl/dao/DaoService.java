@@ -24,6 +24,13 @@ public interface DaoService {
 	public Boolean isExistCrawlResource(Long channelId, String title);
 	
 	/**
+	 * 取得频道名称
+	 * @param channelId
+	 * @return
+	 */
+	public String getChannelName(Long channelId);
+	
+	/**
 	 * 保存抓取资源
 	 * @param folders
 	 * @return
@@ -35,4 +42,11 @@ public interface DaoService {
 	 * @return
 	 */
 	public Boolean clearCrawlResource();
+	
+	/**
+	 * 删除频道下的所有数据
+	 * @param channelId
+	 * @return
+	 */
+	public Boolean deleteCrawlResource(Long channelId);
 }

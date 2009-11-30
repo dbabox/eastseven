@@ -11,7 +11,10 @@ import org.apache.log4j.Logger;
 import com.bcinfo.wapportal.repository.crawl.core.site.huanqiu.ParseHuanQiu;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCooCook;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcladyAstro;
-import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcpopMovie;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseYala;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseZolMobile;
+import com.bcinfo.wapportal.repository.crawl.core.site.pcpop.ParsePcpopMobile;
+import com.bcinfo.wapportal.repository.crawl.core.site.pcpop.ParsePcpopMovie;
 import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQ;
 import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQForum;
 import com.bcinfo.wapportal.repository.crawl.core.site.sina.ParseSina;
@@ -74,10 +77,11 @@ public final class ParseFactory {
 				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseHuanQiu");
 			}
 			return new ParseHuanQiu();
-		} else if(url.contains("movie.pcpop.")){
-			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMovie");
-			}
+		} else if(url.contains("www.pcpop.com")){
+			System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMobile");
+			return new ParsePcpopMobile();
+		}else if(url.contains("movie.pcpop.")){
+			System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMovie");
 			return new ParsePcpopMovie();
 		} else if(url.contains("astro.pclady.")){
 			if(log.isDebugEnabled()){
@@ -89,6 +93,16 @@ public final class ParseFactory {
 				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseCooCook");
 			}
 			return new ParseCooCook();
+		} else if(url.contains(".51yala.")){
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseYala");
+			}
+			return new ParseYala();
+		} else if(url.contains("mobile.zol.")){
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseZolMobile");
+			}
+			return new ParseZolMobile();
 		} else {
 			return null;
 		}

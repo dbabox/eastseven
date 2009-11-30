@@ -72,11 +72,19 @@ public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 			//以年月日做资源的标题
 			String title = "";
 			title = RegexUtil.extractContentWithRegex("\\d+年\\d+月\\d+日", content);
-			
 			DaoService dao = new DaoServiceDefaultImpl();
+			//title = dao.getChannelName(Long.parseLong(folderId));
+			
 			if(dao.isExistCrawlResource(Long.parseLong(folderId), title)){
 				log.info("频道["+folderId+"]星座占卜标题["+title+"]已存在");
 				return null;
+			}else{
+				//TODO 删除旧有的数据，保持星座子栏目只有一条最新的记录
+				if(dao.deleteCrawlResource(Long.parseLong(folderId))){
+					log.info("频道["+folderId+"]星座占卜旧有数据清除成功");
+				}else{
+					log.info("频道["+folderId+"]星座占卜旧有数据清除失败");
+				}
 			}
 			
 			folders = new ArrayList<FolderBO>();
