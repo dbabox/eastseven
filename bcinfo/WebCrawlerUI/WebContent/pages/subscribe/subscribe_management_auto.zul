@@ -3,6 +3,8 @@
 	<window border="normal"
 		apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.subscribe.SubscribeManagementAutoComposer">
 		<toolbar>
+			<listbox mold="select" rows="1" id="localCode"><listitem label="四川" value="028" selected="true"/><listitem label="江西" value="0791"/></listbox>
+			<listbox mold="select" rows="1" id="operation"><listitem label="写入" value="1" selected="true"/><listitem label="更新" value="2"/></listbox>
 			<label value="目的栏目"/><textbox value="" id="folderId"/>
 			<toolbarbutton label="订购" id="add" />
 			<toolbarbutton label="退订" id="del" />
@@ -13,6 +15,7 @@
 				<listheader label="运营" width="100px" />
 				<listheader label="频道源" />
 				<listheader label="目的栏目" />
+				<listheader label="操作" width="50px"/>
 			</listhead>
 		</listbox>
 	</window>
