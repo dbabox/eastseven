@@ -95,7 +95,7 @@ public final class ConfigServlet extends HttpServlet {
 			Trigger trigger = new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
 			scheduler.scheduleJob(job, trigger);
 			
-			//scheduler.start();
+			scheduler.start();
 			System.out.println("µ÷¶ÈÆ÷Æô¶¯");
 		}catch(Exception e){
 			e.printStackTrace();

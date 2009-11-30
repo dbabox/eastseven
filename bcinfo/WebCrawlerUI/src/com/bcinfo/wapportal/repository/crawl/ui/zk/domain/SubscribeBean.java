@@ -19,6 +19,8 @@ public class SubscribeBean implements Serializable {
 	private Long userId;
 	private String createTime;
 
+	private String operation;
+
 	public Long getMappingId() {
 		return mappingId;
 	}
@@ -75,12 +77,21 @@ public class SubscribeBean implements Serializable {
 		this.createTime = createTime;
 	}
 
+	public String getOperation() {
+		return operation;
+	}
+
+	public void setOperation(String operation) {
+		this.operation = operation;
+	}
+
 	@Override
 	public String toString() {
-		return "SubcribeBean [channelId=" + channelId + ", channelName="
+		return "SubscribeBean [channelId=" + channelId + ", channelName="
 				+ channelName + ", createTime=" + createTime + ", localCode="
 				+ localCode + ", localFolderId=" + localFolderId
-				+ ", mappingId=" + mappingId + ", userId=" + userId + "]";
+				+ ", mappingId=" + mappingId + ", operation=" + operation
+				+ ", userId=" + userId + "]";
 	}
 
 }
