@@ -11,6 +11,8 @@
 			<toolbarbutton label="全部审核" id="addAll" if='${status == "0" }'/>
 			<toolbarbutton label="发布" id="mod" if='${status == "1" }'/>
 			<toolbarbutton label="全部发布" id="modAll" if='${status == "1" }'/>
+			<toolbarbutton label="删除" id="del"/>
+			<toolbarbutton label="全部删除" id="delAll"/>
 		</toolbar>
 		
 		<paging id="resourceListboxPaging" pageSize="30" detailed="true"/>

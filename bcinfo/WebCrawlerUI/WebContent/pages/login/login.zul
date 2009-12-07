@@ -8,7 +8,7 @@
 					<rows>
 						<row>
 							帐号 :
-							<textbox id="nametb" width="200px" constraint="no empty" />
+							<textbox id="nametb" width="200px" constraint="no empty" focus="true"/>
 						</row>
 						<row>
 							密码 :
