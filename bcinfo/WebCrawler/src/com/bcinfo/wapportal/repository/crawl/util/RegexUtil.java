@@ -17,6 +17,21 @@ import java.util.regex.Pattern;
 public class RegexUtil {
 
 	/**
+	 * FORM
+	 */
+	public final static String REGEX_FORM = "<[fF][oO][rR][mM]\\s+[^>]+>|</[fF][oO][rR][mM]>";
+	
+	/**
+	 * INPUT
+	 */
+	public final static String REGEX_INPUT = "<[iI][nN][pP][uU][tT]\\s+[^>]+>|</[iI][nN][pP][uU][tT]>";
+	
+	/**
+	 * TEXTAREA
+	 */
+	public final static String REGEX_TEXTAREA = "<[tT][eE][xX][tT][aA][rR][eE][aA]\\s+[^>]+>|</[tT][eE][xX][tT][aA][rR][eE][aA]>";
+	
+	/**
 	 * IMG±Í«©
 	 */
 	public final static String REGEX_IMG = "<[iI][mM][gG]\\s+[^>]+>";

@@ -47,7 +47,6 @@ public class MainSingle {
 				PropertyConfigurator.configure(properties);
 			
 		}catch(Exception e){
-			System.out.println("加载log4j.properties文件失败");
 			log.error("加载log4j.properties文件失败");
 			log.error(e.getMessage());
 		}
@@ -68,12 +67,12 @@ public class MainSingle {
 			scheduler.scheduleJob(job, trigger);
 			
 			scheduler.start();
-			System.out.println(sdf.format(new Date())+" : 程序启动 ");
+			log.info(sdf.format(new Date())+" : 程序启动 ");
 			 
 			//scheduler.shutdown();
 		}catch(Exception e){
 			if(log.isDebugEnabled()) e.printStackTrace();
-			System.out.println(sdf.format(new Date())+" : 程序启动失败 ");
+			log.info(sdf.format(new Date())+" : 程序启动失败 ");
 		}
 	}
 

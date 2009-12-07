@@ -75,7 +75,8 @@ public abstract class AbstractHtmlParseTemplete {
 		try{
 			content = content.replaceAll(RegexUtil.REGEX_COMMENT, replacement);
 			//SCRIPT
-			content = removeTag(content);
+			//String regex = "(<!-{2,}.*?-{2,}>)|(<[sS][tT][yY][lL][eE]>.*?</[sS][tT][yY][lL][eE]>)|((<[sS][cC][rR][iI][pP][tT]\\s+[^>]+>|<[sS][cC][rR][iI][pP][tT]>).*?</[sS][cC][rR][iI][pP][tT]>)";
+			//content = content.replaceAll(regex, replacement);
 			//STRONG
 			content = content.replaceAll(RegexUtil.REGEX_STRONG, replacement);
 			//CENTER
@@ -88,13 +89,33 @@ public abstract class AbstractHtmlParseTemplete {
 			content = content.replaceAll(RegexUtil.REGEX_FONT, replacement);
 			//B
 			content = content.replaceAll("<[bB]>|<[bB]\\s+[^>]+>|</[bB]>", replacement);
-			//新浪内容
+			//TODO 新浪内容
 			content = content.replaceAll("看明星八卦、查影讯电视节目，上手机新浪网娱乐频道 ent.sina.cn", replacement);
 			content = content.replaceAll("(点击小图看大图)", replacement);
 			content = content.replaceAll("点击此处查看其它图片", replacement);
-			//搜狐内容
+			content = content.replaceAll("我要评论", replacement);
+			content = content.replaceAll("新浪声明：此消息系转载自新浪合作媒体，新浪网登载此文出于传递更多信息之目的，并不意味着赞同其观点或证实其描述。文章内容仅供参考，不构成投资建议。投资者据此操作，风险自担。", replacement);
+			//TODO 搜狐内容
+			content = content.replaceAll("搜狐体育讯", replacement);
 			content = content.replaceAll("<SOHUADCODE></SOHUADCODE>", replacement);
-			//TOM内容
+			content = content.replaceAll("点击图片进入下一页", replacement);
+			content = content.replaceAll("我来说两句： 查看评论", replacement);
+			content = content.replaceAll("<SOHU_AD_LAST>", replacement);
+			content = content.replaceAll("在这里发表评论！", replacement);
+			//TODO 文字内容
+			content = content.replaceAll("与.*?关系最密切的\\d+个人\\(图解\\)", replacement);
+			content = content.replaceAll("NBA频道", replacement);
+			content = content.replaceAll("NBA数据库", replacement);
+			content = content.replaceAll("NBA视频直播", replacement);
+			content = content.replaceAll("NBA视频点播", replacement);
+			content = content.replaceAll("NBA互动直播", replacement);
+			//FORM
+			content = content.replaceAll(RegexUtil.REGEX_FORM, replacement);
+			//INPUT
+			content = content.replaceAll(RegexUtil.REGEX_INPUT, replacement);
+			//TEXTAREA
+			content = content.replaceAll(RegexUtil.REGEX_TEXTAREA, replacement);
+			//TODO TOM内容
 			content = content.replaceAll("声明：泛华娱乐提供专稿，未经tom授权，严禁转载，违者必究！", replacement);
 			//TABLE
 			content = content.replaceAll(RegexUtil.REGEX_TABLE_ALL, replacement);
@@ -118,12 +139,29 @@ public abstract class AbstractHtmlParseTemplete {
 			content = content.replaceAll("<br>", RegexUtil.REGEX_BR);
 			content = content.replaceAll("<br />", RegexUtil.REGEX_BR);
 			content = content.replaceAll("<[bB][rR]>", RegexUtil.REGEX_BR);
+			//&#8212;
+			content = content.replaceAll("&#8212;", "-");
+			//&hellip;
+			content = content.replaceAll("&hellip;", "...");
+			//&rdquo;
+			content = content.replaceAll("&rdquo;", "\"");
+			//&ldquo;
+			content = content.replaceAll("&ldquo;", "\"");
+			
+			//SPAN
+			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
+			
 			//格式化
 			content = content.replaceAll(RegexUtil.REGEX_ENTER, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_ENTER_TAB, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_TAB, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_ESC_SPACE, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_FORMAT_SPACE, "><");
+			
+			//再次剔除SCRIPT
+			//content = content.replaceAll(regex, replacement);
+			
+			//特殊字符
 			content = CrawlerUtil.formatSpecialWords(content);
 			
 		}catch(Exception e){
