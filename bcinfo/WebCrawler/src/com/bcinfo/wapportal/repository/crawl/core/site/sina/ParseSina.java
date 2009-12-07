@@ -67,7 +67,9 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 		
 		try{
 			content = this.getPageContent(link, "id", "artibody");
+			//System.out.println(content);
 			content = this.commonParseContent(content);
+			System.out.println(content);
 			//内容中包含脚本标签
 			if(content.contains("<style") 
 					|| content.contains("<span") 
@@ -101,4 +103,12 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 		return content;
 	}
 
+	//TODO TEST
+	public static void main(String[] args) {
+		System.out.println("start");
+		String link = "http://tech.sina.com.cn/d/2009-12-03/10003645879.shtml";
+		ParseSina p = new ParseSina();
+		System.out.println(p.parse(link));
+		System.out.println("done");
+	}
 }

@@ -70,10 +70,6 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 						continue;
 					}
 					if(content != null){
-						if(log.isDebugEnabled()){
-							System.out.println("------------------------抓取到的内容-------------------------------");
-							System.out.println(content);
-						}
 						//TODO 格式化文本内容
 						content = content.replaceAll(">", "><br/>");
 						String[] tmp = content.split(RegexUtil.REGEX_BR);
@@ -85,10 +81,6 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 							if(cnt==null) continue;
 							cnt = cnt.trim();
 							if(cnt.length()>0){
-								if(log.isDebugEnabled()){
-									System.out.println("  "+i+"按<br/>split格式化[size:"+cnt.length()+";total:"+tmp.length+"]："+cnt);
-								}
-								//cnt = cnt.replaceAll("　", "");
 								if(!cnt.startsWith("<")){
 									cnt = RegexUtil.REGEX_BR + "　" + cnt;
 								}else{
@@ -132,7 +124,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 										}
 										imgPathSet += originUrl+",";//数据库保存实际的图片链接地址
 										//TODO 格式化原IMG标签，只保留src属性
-										img = "<img src="+originUrl+">";
+										img = "<img src="+originUrl+" alt=\"pic\" \\>";
 										cnt = cnt.replace(inputHTML, img);
 
 										if(log.isDebugEnabled()){

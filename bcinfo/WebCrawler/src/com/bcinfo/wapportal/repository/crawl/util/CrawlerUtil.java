@@ -92,8 +92,9 @@ public final class CrawlerUtil {
 			
 			if(log.isDebugEnabled()) System.out.println(url+" | "+parser.getEncoding());
 			
-			if(!"GBK".equalsIgnoreCase(parser.getEncoding()))
-				parser.setEncoding("GBK");
+			System.out.println(" 编码 "+parser.getEncoding());
+			
+			if(!"GBK".equalsIgnoreCase(parser.getEncoding())) parser.setEncoding("GBK");
 				
 			//TODO 该问题待查
 			//解析静态页面内容，这样可以避免链接数据存放在js脚本中的情况
@@ -108,16 +109,26 @@ public final class CrawlerUtil {
 				nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
 			}
 			
+			String httpHeader = CrawlerUtil.extractLinkHeader(url);
+			
 			NodeIterator iter = nodeList.elements();
 			links = new ArrayList<FolderBO>();
 			while(iter.hasMoreNodes()){
 				LinkTag linkTag = (LinkTag)iter.nextNode();
 				String link = linkTag.extractLink();
 				String title = linkTag.getLinkText();
+				
+				//System.out.println("  "+link);
+				
 				if(link == null || "".equals(link)) continue;
 				if(!CrawlerUtil.canCrwal(link)) continue;
-				if(link.equals(url) || link.endsWith("/")) continue;
+				if(link.equals(url)) continue;
 				if(title.contains("详细")||title.contains("更多")) continue;
+				
+				if(!link.startsWith("http://")){
+					link = CrawlerUtil.addLinkHeader(link, httpHeader);
+				}
+				
 				if(log.isDebugEnabled()) System.out.println("     待抓取的链接："+link);
 				FolderBO folder = new FolderBO();
 				folder.setLink(link);

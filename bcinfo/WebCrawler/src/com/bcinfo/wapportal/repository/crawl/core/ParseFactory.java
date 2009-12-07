@@ -10,7 +10,11 @@ import org.apache.log4j.Logger;
 
 import com.bcinfo.wapportal.repository.crawl.core.site.huanqiu.ParseHuanQiu;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCooCook;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseIFeng;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseIZhuti;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseMoxiu;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcladyAstro;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTianya;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseYala;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseZolMobile;
 import com.bcinfo.wapportal.repository.crawl.core.site.pcpop.ParsePcpopMobile;
@@ -20,6 +24,7 @@ import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQForum;
 import com.bcinfo.wapportal.repository.crawl.core.site.sina.ParseSina;
 import com.bcinfo.wapportal.repository.crawl.core.site.sohu.ParseSohu;
 import com.bcinfo.wapportal.repository.crawl.core.site.tom.ParseTom;
+import com.bcinfo.wapportal.repository.crawl.core.site.wangyi.Parse163;
 import com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet.ParseNewsCn;
 import com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet.ParseXinHuaNet;
 
@@ -103,6 +108,31 @@ public final class ParseFactory {
 				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseZolMobile");
 			}
 			return new ParseZolMobile();
+		} else if(url.contains(".moxiu.")) {
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseMoxiu");
+			}
+			return new ParseMoxiu();
+		} else if(url.contains(".izhuti.")) {
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseIZhuti");
+			}
+			return new ParseIZhuti();
+		} else if(url.contains("sports.163.com")) {
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类Parse163");
+			}
+			return new Parse163();
+		} else if(url.contains("news.ifeng.com")) {
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseIFeng");
+			}
+			return new ParseIFeng();
+		} else if (url.contains(".tianya.")) {
+			if(log.isDebugEnabled()){
+				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseTianya");
+			}
+			return new ParseTianya();
 		} else {
 			return null;
 		}

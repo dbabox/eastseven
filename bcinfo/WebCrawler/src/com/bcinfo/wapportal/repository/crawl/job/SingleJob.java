@@ -16,6 +16,7 @@ import com.bcinfo.wapportal.repository.crawl.core.WebCrawler;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerAstroSohuImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerLotteryImpl;
+import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerMobileZhutiImpl;
 import com.bcinfo.wapportal.repository.crawl.dao.DaoService;
 import com.bcinfo.wapportal.repository.crawl.dao.impl.DaoServiceDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
@@ -57,6 +58,7 @@ public class SingleJob implements Job {
 				WebCrawler webCrawler = new WebCrawlerDefaultImpl();
 				WebCrawler webCrawlerLottery = new WebCrawlerLotteryImpl();
 				WebCrawler webCrawlerAstro = new WebCrawlerAstroSohuImpl();
+				WebCrawler webCrawlerMobileZhuti = new WebCrawlerMobileZhutiImpl();
 				for(CrawlList obj : list){
 					List<FolderBO> folders = null;
 
@@ -73,6 +75,9 @@ public class SingleJob implements Job {
 					}else if(url.contains("astro.women.sohu.com")){
 						//TODO 针对星座占卜特殊处理
 						folders = webCrawlerAstro.crawl(channelId.toString(), url);
+					}else if(url.contains("www.moxiu.com")||url.contains("www.izhuti.com")) {
+						//TODO 针对手机主题下载处理
+						folders = webCrawlerMobileZhuti.crawl(channelId.toString(), url);
 					}else{
 						//TODO 通用频道处理
 						folders = webCrawler.crawl(channelId.toString(), url);

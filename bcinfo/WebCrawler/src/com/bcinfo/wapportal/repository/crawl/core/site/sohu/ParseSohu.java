@@ -63,6 +63,8 @@ public class ParseSohu extends AbstractHtmlParseTemplete implements Parse {
 			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_EM, replacement);
 			content = content.replaceAll("\\[我来说两句\\]", replacement);
+			content = content.replaceAll("我来说两句： 查看评论", replacement);
+			content = content.replaceAll("组图 数据 投篮点调查 实录辩论视频", replacement);
 			content = RegexUtil.eliminateString(RegexUtil.REGEX_SCRIPT_START, RegexUtil.REGEX_SCRIPT_END, content);
 		}catch(Exception e){
 			System.out.println("解析sohu页面["+link+"]内容失败");
@@ -72,5 +74,12 @@ public class ParseSohu extends AbstractHtmlParseTemplete implements Parse {
 		}
 		
 		return content;
+	}
+	
+	//TODO TEST
+	public static void main(String[] args) {
+		String link = "http://sports.sohu.com/20091201/n268575103.shtml";
+		ParseSohu p = new ParseSohu();
+		System.out.println(p.parse(link));
 	}
 }

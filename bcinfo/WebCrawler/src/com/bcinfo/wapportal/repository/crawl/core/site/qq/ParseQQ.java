@@ -49,10 +49,16 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 		try{
 			//ArticleCnt
 			content = this.getPageContent(link, "id", "ArticleCnt");
+			if(content == null || "".equals(content)){
+				content = this.getPageContent(link, "id", "Cnt-Main-Article-QQ");
+			}
 			content = this.commonParseContent(content);
 			
 			//视频链接Object标签
 			content = RegexUtil.eliminateString("<[oO][bB][jJ][eE][cC][tT]\\s+[^>]+>", "</[oO][bB][jJ][eE][cC][tT]>", content);
+			content = content.replaceAll("搜索华尔兹--今日热辣资讯Top100", replacement);
+			content = content.replaceAll("<style>.*?</style>", replacement);
+			//content = 
 		}catch(Exception e){
 			System.out.println("解析QQ页面["+link+"]内容失败");
 		}
@@ -60,4 +66,10 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 		return content;
 	}
 
+	//TODO TEST
+	public static void main(String[] args) {
+		String link = "http://sports.qq.com/a/20091130/000761.htm";
+		ParseQQ p = new ParseQQ();
+		System.out.println(p.parse(link));
+	}
 }

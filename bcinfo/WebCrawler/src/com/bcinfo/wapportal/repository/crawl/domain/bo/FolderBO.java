@@ -21,6 +21,7 @@ public class FolderBO implements Serializable {
 	private String link;
 	private String content;
 	private String imgPathSet;
+	private String filePathSet;
 	private List<ResourceBO> resources;
 
 	private Long id;
@@ -103,11 +104,20 @@ public class FolderBO implements Serializable {
 		this.id = id;
 	}
 
+	public String getFilePathSet() {
+		return filePathSet;
+	}
+
+	public void setFilePathSet(String filePathSet) {
+		this.filePathSet = filePathSet;
+	}
+
 	@Override
 	public String toString() {
-		return "FolderBO [content=" + content + ", folderId=" + folderId
-				+ ", imgPathSet=" + imgPathSet + ", link=" + link
-				+ ", resources=" + resources + ", title=" + title + "]";
+		return "FolderBO [content=" + content + ", filePathSet=" + filePathSet
+				+ ", folderId=" + folderId + ", id=" + id + ", imgPathSet="
+				+ imgPathSet + ", link=" + link + ", resources=" + resources
+				+ ", title=" + title + "]";
 	}
 
 }
