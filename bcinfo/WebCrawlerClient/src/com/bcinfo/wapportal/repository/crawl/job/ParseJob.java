@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -21,6 +18,7 @@ import com.bcinfo.wapportal.repository.crawl.domain.Folder;
 import com.bcinfo.wapportal.repository.crawl.domain.Resource;
 import com.bcinfo.wapportal.repository.crawl.util.HandleContent;
 import com.bcinfo.wapportal.repository.crawl.util.OperationDB;
+import com.bcinfo.wapportal.repository.crawl.util.ParseXML;
 import com.bcinfo.wapportal.repository.crawl.util.ResourceType;
 
 /**
@@ -58,6 +56,7 @@ public class ParseJob implements Job {
 					String fileName = "";
 					DaoService dao = new DaoService();
 					List<String> fileLogs = dao.getAllFileLog();
+					ParseXML parseXML = new ParseXML();
 					for(File resFile : resFiles){
 						
 						fileName = resFile.getName();
@@ -65,7 +64,6 @@ public class ParseJob implements Job {
 							log.info("非资源文件["+fileName+"]不予解析入库");
 							continue;
 						}
-						log.info("解析资源文件："+fileName);
 						
 						if(!fileLogs.contains(fileName)){
 							//记录
@@ -74,35 +72,9 @@ public class ParseJob implements Job {
 						}else{
 							continue;
 						}
-						
-						folder = new Folder();
-						folder.setResFileName(resFile.getName());
-						SAXBuilder sb = new SAXBuilder(); 
-					    Document doc = sb.build(resFile); //构造文档对象
-					    Element root = doc.getRootElement(); //获取根元素
-					    
-					    List children = root.getChildren();
-					    for(int index=0;index<children.size();index++){
-					    	Element e = (Element)children.get(index);
-					    	String name = e.getName();
-					    	if("localChannelId".equals(name)){
-					    		folder.setId(e.getText());
-					    	}else if("title".equals(name)){
-					    		folder.setTitle(e.getText());
-					    	}else if("link".equals(name)){
-					    		folder.setUrl(e.getText());
-					    	}else if("createTime".equals(name)){
-					    		//TODO 暂不处理，备用
-					    	}else if("content".equals(name)){
-					    		folder.setContent(e.getText());
-					    	}else if("imgPath".equals(name)){
-					    		//TODO 暂不处理，备用
-					    	}
-//					    	System.out.println(" ");
-//					    	System.out.println("XML节点名称"+e.getName());
-//					    	System.out.println("XML节点名称"+e.getText());
-					    }
-					    list.add(folder);
+						log.info("解析资源文件："+fileName);
+						folder = parseXML.parse(resFile);
+						if(folder!=null) list.add(folder);
 					}
 				}else{
 					log.info("不是存放资源文件的目录...");
@@ -122,7 +94,6 @@ public class ParseJob implements Job {
 								for(int i=0;i<res.size();i++){
 									Resource r = (Resource)res.get(i);
 									if(r.getResourceType()==ResourceType.PIC){
-										
 										System.out.println(index+" : "+i+"|"+r.getResourcePath());
 									}else{
 										System.out.println(index+" : "+i+"|"+r.getResourceContent());

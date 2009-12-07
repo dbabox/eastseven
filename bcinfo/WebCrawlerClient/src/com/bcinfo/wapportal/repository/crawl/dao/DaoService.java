@@ -4,6 +4,7 @@
 package com.bcinfo.wapportal.repository.crawl.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -50,6 +51,33 @@ public class DaoService {
 		return list;
 	}
 
+	public synchronized List<String> getAllFileLog(String flag) {
+		List<String> list = new ArrayList<String>();
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "select file_name from internal_file_log where flag = ?";
+
+		try {
+			conn = JavaInternal.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, flag);
+			rs = pst.executeQuery();
+
+			while (rs.next()) {
+				list.add(rs.getString("file_name"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		} finally {
+			close(rs, pst, conn);
+		}
+
+		return list;
+	}
+	
 	/**
 	 * ÅúÁ¿±£´æ
 	 * 
@@ -148,6 +176,36 @@ public class DaoService {
 		return bln;
 	}
 
+	public synchronized Boolean deleteInternalFileLog() {
+		boolean bln = false;
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "delete from internal_file_log where flag = ? and create_time < ?";
+
+		try {
+			
+			Date date = new Date(System.currentTimeMillis()-24*60*60*1000);
+			
+			conn = JavaInternal.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, "1");
+			pst.setDate(2, date);
+			pst.executeUpdate();
+			conn.commit();
+			bln = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			rollback(conn);
+		} finally {
+			close(rs, pst, conn);
+		}
+
+		return bln;
+	}
+	
 	public synchronized Boolean deleteInternalFileLog(String fileName) {
 		boolean bln = false;
 
@@ -163,6 +221,39 @@ public class DaoService {
 			pst.executeUpdate();
 			conn.commit();
 			bln = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			rollback(conn);
+		} finally {
+			close(rs, pst, conn);
+		}
+
+		return bln;
+	}
+	
+	public synchronized Boolean deleteInternalFileLog(List<String> list) {
+		boolean bln = false;
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "delete from internal_file_log where file_name = ?";
+
+		try {
+			if(list!=null&&!list.isEmpty()){
+				conn = JavaInternal.getConnection();
+				conn.setAutoCommit(false);
+				pst = conn.prepareStatement(sql);
+				for(String fileName : list){
+					pst.setString(1, fileName);
+					pst.addBatch();
+				}
+				pst.executeBatch();
+				conn.setAutoCommit(true);
+				conn.commit();
+				bln = true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);

@@ -15,6 +15,8 @@ import java.util.List;
 public class Folder implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	public static int INSERT = 1;
+	public static int UPDATE = 2;
 
 	private String id;
 	private String url;
@@ -22,6 +24,7 @@ public class Folder implements Serializable {
 	private String content;
 
 	private String resFileName;
+	private String operation;
 
 	private List resources;
 
@@ -98,10 +101,18 @@ public class Folder implements Serializable {
 		this.resFileName = resFileName;
 	}
 
+	public String getOperation() {
+		return operation;
+	}
+
+	public void setOperation(String operation) {
+		this.operation = operation;
+	}
+
 	@Override
 	public String toString() {
-		return "Folder [content=" + content + ", id=" + id + ", resFileName="
-				+ resFileName + ", resources=" + resources + ", title=" + title
+		return "Folder [id=" + id + ", operation=" + operation
+				+ ", resFileName=" + resFileName + ", title=" + title
 				+ ", url=" + url + "]";
 	}
 
