@@ -26,13 +26,45 @@ import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.ResourceBean;
  */
 public class ResourceDao extends Dao {
 
+	public Boolean delete(List<String> list) {
+		Boolean bln = false;
+
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " delete twap_public_crawl_resource a where a.res_id = ? ";
+
+		try {
+			if(list != null && !list.isEmpty()){
+				conn = OracleUtil.getConnection();
+				conn.setAutoCommit(false);
+				pst = conn.prepareStatement(sql);
+				for(String resId : list){
+					pst.setLong(1, Long.parseLong(resId));
+					pst.addBatch();
+				}
+				pst.executeBatch();
+				conn.setAutoCommit(true);
+				conn.commit();
+				bln = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			rollback(conn);
+		} finally {
+			close(conn, pst, rs);
+		}
+
+		return bln;
+	}
+	
 	public Boolean modifyResourceContentOrTitle(Long resId, String title, String content) {
 		Boolean bln = false;
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " update twap_public_crawl_resource a set a.res_title = ?,a.res_text = ? where a.res_id = ? ";
+		String sql = " update twap_public_crawl_resource a set a.res_title = ?,a.res_text = ?,a.res_status = '1' where a.res_id = ? ";
 		String version = null;
 		
 		try{
@@ -158,7 +190,7 @@ public class ResourceDao extends Dao {
 		
 		String condition = " and 1 = 1 ";
 		if(title != null && !"".equals(title)){
-			condition = " and a.res_title like '%"+title+"%' ";
+			condition = " and a.res_title like '"+title+"%' ";
 		}
 		//TODO Orcale9i与10g在使用connect by时9i不能使用nocycle关键字，估计是9i还没有该关键字的缘故
 		String sql = " select a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and to_char(a.create_time,'yyyy-mm-dd') = ? "+condition+" order by a.create_time desc,a.res_id desc ";
@@ -205,11 +237,11 @@ public class ResourceDao extends Dao {
 		ResultSet rs = null;
 		String condition = " and 1 = 1 ";
 		if(title != null && !"".equals(title)){
-			condition = " and a.res_title like '%"+title+"%' ";
+			condition = " and a.res_title like '"+title+"%' ";
 		}
 		String sql = " select rownum row_num,a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_text,a.res_img_path_set,decode(a.res_status,'0','未审','1','已审') res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and to_char(a.create_time,'yyyy-mm-dd') = ? "+condition+" and rownum <= ? order by a.create_time desc,a.res_id desc ";
 		sql = " select * from ( select * from ( " + sql
-				+ " ) b ) c where c.row_num >= ? order by c.res_id desc";
+				+ " ) b ) c where c.row_num >= ? order by c.create_time desc,c.res_id desc";
 		try {
 			System.out.println(sql);
 			conn = OracleUtil.getConnection();
