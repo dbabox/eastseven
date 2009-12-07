@@ -121,9 +121,9 @@ public final class HandleContent {
 						}
 					}else{
 						//文字第一段不加换行符
-						if(resContent.startsWith("<")){
-							resContent = resContent.substring(resContent.indexOf(">")+1);
-						}
+						//resContent = formatContent(resContent);
+						resContent = resContent.replaceFirst(RegexUtil.REGEX_BR, "");
+						
 						//TODO 在资源的最后一段加消息来源
 						if(i == resourceList.size()-1){
 							//最后一段
@@ -142,6 +142,7 @@ public final class HandleContent {
 				usableFolder.setUrl(url);
 				usableFolder.setResources(resources);
 				usableFolder.setResFileName(folder.getResFileName());
+				usableFolder.setOperation(folder.getOperation());
 			}
 		}
 		return usableFolder;
@@ -154,13 +155,8 @@ public final class HandleContent {
 			content = "";
 			for(int i=0; i<cnt.length; i++){
 				String cntSplit = cnt[i].trim();
-				if(cntSplit != "" || !"".equals(cntSplit) || !"null".equals(cntSplit)){
-					if(!cntSplit.contains("<img") || !cntSplit.contains("<IMG")){
-						content += RegexUtil.REGEX_BR + cntSplit;
-					}else{
-						content += cntSplit;
-					}
-				}
+				if(i == 0) content += cntSplit;
+				else content += RegexUtil.REGEX_BR + cntSplit;
 			}
 		}catch(Exception e){
 			content = targetCnt;
@@ -168,71 +164,111 @@ public final class HandleContent {
 		return content;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List sliptWithImageTag(String content) throws Exception{
-		List resource = null;
-		if(content == null) throw new Exception("resource content is null");
-		if(content.indexOf("<img ") != -1 || content.indexOf("<IMG") != -1){
-			//图文混排处理
-			resource = new ArrayList();
+	public List<String> sliptWithImageTag(String content) throws Exception {
+		List<String> resource = null;
+		
+		List<String> list = null;
+		if(content.contains("<img")||content.contains("<IMG")){
 			int start = 0;
-			//有图片链接
 			String imgRegex = "<[iI][mM][gG]\\s+[^>]+>";
 			Matcher matcher = Pattern.compile(imgRegex).matcher(content);
-			
-			/*
-			 * 以img标签为分段标识，将文字和img拆分
-			 * */
+			list = new ArrayList<String>();
 			while(matcher.find()){
 				int imgBegin = matcher.start();
 				int imgEnd = matcher.end();
-				
-				//IMG之前的文字，若IMG之前还是IMG,即连续多个IMG
 				String words = content.substring(start, imgBegin).trim();
-				if(words.length()>0 && words.length() <= MAX_LENGTH ){
-					//2000字内,避免只是<br/>标签
-					if(words.length() != "<br/>".length() && !words.matches("<br/>"))
-						resource.add(words);
-				}else if(words.length() > MAX_LENGTH){
-					//超过2000
-					List wordsList = splitWords(content, MAX_LENGTH);
-					if(wordsList != null) resource.addAll(wordsList);
-				}
-				//IMG
+				if(words!=null&&words.length()>0) list.add(words);
 				String imgString = content.substring(imgBegin, imgEnd);
-				resource.add(imgString);
-				//point move to next position
+				if(imgString!=null&&imgString.length()>0) list.add(imgString);
 				start = imgEnd;
 			}
 			//IMG之后的文字
 			String last = content.substring(start);
-			if(last.length()>0 && last.length() <= MAX_LENGTH)
-				resource.add(last);
-			else{
-				//超过2000
-				List wordsList = splitWords(last, MAX_LENGTH);
-				if(wordsList != null) resource.addAll(wordsList);
-			}
+			list.add(last);
 		}else{
-			//全是文字
-			resource = new ArrayList();
-			if(content.length() > MAX_LENGTH){
-				List wordsList = splitWords(content, MAX_LENGTH);
-				if(wordsList != null) resource.addAll(wordsList);
-			}else
-				resource.add(content);
-				
+			list = new ArrayList<String>();
+			list.add(content);
 		}
+		
+		if(list!=null && !list.isEmpty()){
+			resource = new ArrayList<String>();
+			for(String cnt : list){
+				if(cnt.startsWith("<img")||cnt.startsWith("<IMG"))
+					resource.add(cnt);
+				else{
+					List<String> tmp = splitWords(cnt, MAX_LENGTH);
+					if(tmp != null && !tmp.isEmpty()) resource.addAll(tmp);
+				}
+			}
+		}
+		
 		return resource;
 	}
 	
+//	@SuppressWarnings("unchecked")
+//	public List sliptWithImageTag(String content) throws Exception{
+//		List resource = null;
+//		if(content == null) throw new Exception("resource content is null");
+//		if(content.indexOf("<img ") != -1 || content.indexOf("<IMG") != -1){
+//			//图文混排处理
+//			resource = new ArrayList();
+//			int start = 0;
+//			//有图片链接
+//			String imgRegex = "<[iI][mM][gG]\\s+[^>]+>";
+//			Matcher matcher = Pattern.compile(imgRegex).matcher(content);
+//			
+//			/*
+//			 * 以img标签为分段标识，将文字和img拆分
+//			 * */
+//			while(matcher.find()){
+//				int imgBegin = matcher.start();
+//				int imgEnd = matcher.end();
+//				
+//				//IMG之前的文字，若IMG之前还是IMG,即连续多个IMG
+//				String words = content.substring(start, imgBegin).trim();
+//				if(words.length()>0 && words.length() <= MAX_LENGTH ){
+//					//2000字内,避免只是<br/>标签
+//					if(words.length() != "<br/>".length() && !words.matches("<br/>"))
+//						resource.add(words);
+//				}else if(words.length() > MAX_LENGTH){
+//					//超过2000
+//					List wordsList = splitWords(content, MAX_LENGTH);
+//					if(wordsList != null) resource.addAll(wordsList);
+//				}
+//				//IMG
+//				String imgString = content.substring(imgBegin, imgEnd);
+//				resource.add(imgString);
+//				//point move to next position
+//				start = imgEnd;
+//			}
+//			//IMG之后的文字
+//			String last = content.substring(start);
+//			if(last.length()>0 && last.length() <= MAX_LENGTH)
+//				resource.add(last);
+//			else{
+//				//超过2000
+//				List wordsList = splitWords(last, MAX_LENGTH);
+//				if(wordsList != null) resource.addAll(wordsList);
+//			}
+//		}else{
+//			//全是文字
+//			resource = new ArrayList();
+//			if(content.length() > MAX_LENGTH){
+//				List wordsList = splitWords(content, MAX_LENGTH);
+//				if(wordsList != null) resource.addAll(wordsList);
+//			}else
+//				resource.add(content);
+//				
+//		}
+//		return resource;
+//	}
+	
 	//将文字按指定数量分段
-	@SuppressWarnings("unchecked")
-	public List splitWords(String content, int limit) {
-		List resource = null;
+	public List<String> splitWords(String content, int limit) {
+		List<String> resource = null;
 		try{
 			if(content != null){
-				resource = new ArrayList();
+				resource = new ArrayList<String>();
 				int length = content.length();
 				int page = (length <= limit) ? 1 : new BigDecimal((double)length/limit).setScale(0, BigDecimal.ROUND_UP).intValue();
 				for(int i=0;i<page;i++){

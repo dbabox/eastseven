@@ -38,8 +38,7 @@ public final class OperationDB {
 
 	private static final Logger log = Logger.getLogger(OperationDB.class);
 
-	public final static SimpleDateFormat sdf = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss");
+	public final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	Properties property;
 	String dir = null;
@@ -63,16 +62,26 @@ public final class OperationDB {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean patchSave(List folders) throws Exception {
+	public synchronized boolean patchSave(List folders) throws Exception {
 		boolean isSuccess = false;
-		if (folders == null)
-			throw new Exception("数据集为空");
+		if (folders == null) throw new Exception("数据集为空");
 		DaoService dao = new DaoService();
 		try {
 			for (int i = 0; i < folders.size(); i++) {
 				Folder folder = (Folder) folders.get(i);
-				boolean bln = save(folder);
-
+				
+				boolean bln = isExsit(folder);
+				log.info(folder.getTitle()+" is exsit :"+bln+"|operation:"+folder.getOperation());
+				if(String.valueOf(Folder.UPDATE).equals(folder.getOperation())){
+					//TODO 050001单独处理,一个子栏目只保存一条记录
+					bln = update(folder);
+					log.info("更新栏目["+folder.getId()+"]["+folder.getTitle()+"]"+bln);
+				}else if(String.valueOf(Folder.INSERT).equals(folder.getOperation())){
+					if(bln) continue;//跳过已经存在的记录
+					bln = save(folder);
+					log.info("添加栏目["+folder.getId()+"]["+folder.getTitle()+"]"+bln);
+				}
+				
 				String fileName = folder.getResFileName();
 				if (bln) {
 					if (dir != null) {
@@ -85,10 +94,10 @@ public final class OperationDB {
 						}
 					}
 					dao.deleteInternalFileLog(fileName);
-					log.info(sdf.format(new Date()) + " : " + folder.getTitle() + " 入库成功 ");
+					log.info(folder.getTitle() + " 入库成功 ");
 				} else{
 					dao.updateInternalFileLog(fileName, "0");
-					log.info(sdf.format(new Date()) + " : " + folder.getTitle() + " 入库失败 ");
+					log.info(folder.getTitle() + " 入库失败 ");
 				}
 			}
 			isSuccess = true;
@@ -101,11 +110,73 @@ public final class OperationDB {
 		return isSuccess;
 	}
 
+	public boolean isExsit(Folder folder) throws Exception{
+		boolean bln = false;//默认是不存在的
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " select count(1) from wap_page_folder where wap_folder_id = ? and folder_name = ? ";
+		
+		try{
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, folder.getId());
+			pst.setString(2, folder.getTitle());
+			rs = pst.executeQuery();
+			if(rs.next()){
+				if(rs.getInt(1) > 0) bln = true;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+		}finally{
+			if(rs != null) rs.close();
+			if(pst != null) pst.close();
+			if(conn != null) conn.close();
+		}
+		return bln;
+	}
+	
+	//针对星座占卜，只更新文字内容
+	public boolean update(Folder folder) throws Exception {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " update wap_resource a set a.res_content = ? where a.res_type_id = ? and a.res_id in (select b.res_id from wap_re_folder_res b where b.folder_id = ?)";
+		
+		try{
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, folder.getContent());
+			pst.setInt(2, ResourceType.WORDS);
+			pst.setString(3, folder.getId());
+			if(pst.executeUpdate() == 1){
+				conn.commit();
+				bln = true;
+				log.info("星座占卜子栏目["+folder.getId()+"]内容更新完成");
+			}else{
+				log.info("星座占卜子栏目["+folder.getId()+"]内容更新失败");
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+			if(conn != null) conn.rollback();
+		}finally{
+			if(rs != null) rs.close();
+			if(pst != null) pst.close();
+			if(conn != null) conn.close();
+		}
+		
+		return bln;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public boolean save(Folder folder) throws Exception {
 		boolean isSuccess = false;
-		if (folder == null)
-			throw new Exception(" folder is null... ");
+		if (folder == null) throw new Exception(" folder is null... ");
 		Connection conn = null;
 		PreparedStatement pstFolder = null;
 		PreparedStatement pstResource = null;
@@ -118,7 +189,7 @@ public final class OperationDB {
 			String wapFolderId = folder.getId();
 			String folderId = wapFolderId + getFolderId(wapFolderId);// 12位
 			String sqlFolder = "insert into wap_page_folder(folder_id,wap_folder_id,folder_name,folder_index,folder_status,folder_desc,folder_level,create_time) ";
-			sqlFolder += " values(?,?,?,0,0,?,3,to_date(?,'yyyy-mm-dd hh24:mi:ss')) ";
+			sqlFolder += " values(?,?,?,0,1,?,3,to_date(?,'yyyy-mm-dd hh24:mi:ss')) ";
 			pstFolder = conn.prepareStatement(sqlFolder);
 			pstFolder.setString(1, folderId);
 			pstFolder.setString(2, wapFolderId);
@@ -137,7 +208,7 @@ public final class OperationDB {
 			// 3.related 1 and 2
 			String sqlResource = "insert into wap_resource"
 					+ "(res_id,spcp_id,res_type_id,firstname,passname,check_flag,res_status,store_filepath,res_size,res_desc,CREATE_TIME,res_content,DOWN_COUNT,CLICK_SUM,RES_AUTHOR,CORP_NAME,COPYRIGHT) ";
-			sqlResource += " values(?,1,?,?,?,'0','1',?,?,?,to_date(?,'yyyy-mm-dd hh24:mi:ss'),?,0,0,'web crwaler','web crwaler','web crwaler') ";
+			sqlResource += " values(?,1,?,?,?,'0','1',?,?,?,to_date(?,'yyyy-mm-dd hh24:mi:ss'),?,0,0,'web crawler',to_char(sysdate,'yy/mm/dd hh24:mi:ss'),'web crawler') ";
 			/*
 			 * RES_ID INTEGER not null,SPCP_ID INTEGER,RES_TYPE_ID INTEGER,
 			 * SPCP_CODE VARCHAR2(20),FIRSTNAME VARCHAR2(120),PASSNAME
