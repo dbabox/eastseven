@@ -138,6 +138,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 		}
 	}
 
+	//全部审核
 	public void onClick$addAll() {
 		int size = resourceListboxPaging.getPageSize();
 		List<Long> list = new ArrayList<Long>();
@@ -214,6 +215,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 		}
 	}
 
+	//全部发布
 	public void onClick$modAll() {
 		//TODO 多选
 		try{
@@ -250,6 +252,73 @@ public class ResourceListComposer extends GenericForwardComposer {
 		}
 	}
 	
+	//删除
+	public void onClick$del() {
+		//TODO 多选
+		try{
+			UserBean user = (UserBean)session.getAttribute("user");
+			if(user == null){
+				alert("长时间未操作，请重新登录");
+				Executions.sendRedirect("/pages/index.zul");
+			}
+			int size = resourceListboxPaging.getPageSize();
+			List<String> list = new ArrayList<String>();
+			for (int row = 0; row < size; row++) {
+				Component comp = resourceGrid.getCell(row, 1);
+				if (comp instanceof Checkbox) {
+					Checkbox ckb = (Checkbox) comp;
+					if (ckb.isChecked())
+						list.add(ckb.getId());
+				}
+			}
+			if (list != null && !list.isEmpty()) {
+				boolean bln = false;
+				bln = dao.delete(list);
+				if(bln){
+					alert("删除成功");
+				}else{
+					alert("删除失败");
+				}
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+			alert("删除报错");
+		}
+	}
+	
+	//全部删除
+	public void onClick$delAll() {
+		//TODO 多选
+		try{
+			UserBean user = (UserBean)session.getAttribute("user");
+			if(user == null){
+				alert("长时间未操作，请重新登录");
+				Executions.sendRedirect("/pages/index.zul");
+			}
+			int size = resourceListboxPaging.getPageSize();
+			List<String> list = new ArrayList<String>();
+			for (int row = 0; row < size; row++) {
+				Component comp = resourceGrid.getCell(row, 1);
+				if (comp instanceof Checkbox) {
+					Checkbox ckb = (Checkbox) comp;
+					list.add(ckb.getId());
+				}
+			}
+			if (list != null && !list.isEmpty()) {
+				boolean bln = false;
+				bln = dao.delete(list);
+				if(bln){
+					alert("删除成功");
+				}else{
+					alert("删除失败");
+				}
+		}
+		}catch(Exception e){
+			e.printStackTrace();
+			alert("删除报错");
+		}
+	}
+	
 	//查询
 	public void onClick$search(){
 		List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()));
@@ -257,7 +326,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 			
 			resourceListboxPaging.setTotalSize(list.size());
 			resourceListboxPaging.addEventListener(ZulEvents.ON_PAGING, new ResourceListboxPagingListener());
-			System.out.println("search condition : "+title.getValue()+"|"+sdf.format(currentDate.getValue()));
+			//System.out.println("search condition : "+title.getValue()+"|"+sdf.format(currentDate.getValue()));
 			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), 1, resourceListboxPaging.getPageSize());
 			ListModel listModel = new ListModelList(list, live);
 			
@@ -397,6 +466,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 
 	}
 
+	//修改保存
 	class SaveButtonEventListener implements EventListener {
 		
 		Window win;
@@ -431,10 +501,10 @@ public class ResourceListComposer extends GenericForwardComposer {
 						end = start + resourceListboxPaging.getPageSize();
 					}
 					
-					List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), start, end);
+					List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, "", sdf.format(currentDate.getValue()), start, end);
 					resourceGrid.setModel(new ListModelList(list, live));
-					System.out.println(resId.getValue()+"|"+title.getValue()+"|"+cnt);
-					alert("保存成功");
+					System.out.println(resId.getValue()+"|"+"["+start+"-"+end+"]"+"|"+cnt);
+					//alert("保存成功");
 				}else{
 					alert("保存失败");
 				}
