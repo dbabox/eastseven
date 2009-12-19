@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="quartz" default="init">
+	<property file="${basedir}/config/config.properties"/>
+	<target name="init">
+		<sql driver="${db.className}" password="${db.password}" url="${db.url}" userid="${db.user}">
+			<classpath>
+				<fileset dir="${basedir}/lib/">
+					<filename name="oracle9i.jar" />
+				</fileset>
+			</classpath>
+			<transaction src="${basedir}/config/tables_oracle.sql" />
+		</sql>
+	</target>
+</project>
