@@ -45,6 +45,7 @@ public class Parse163 extends AbstractHtmlParseTemplete implements Parse {
 			
 		}catch(Exception e){
 			log.info("½âÎö163Ò³Ãæ["+link+"]ÄÚÈÝÊ§°Ü");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -65,6 +66,6 @@ public class Parse163 extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://sports.163.com/09/1202/04/5PGHPCLM00051CCL.html";
 		Parse163 p = new Parse163();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }

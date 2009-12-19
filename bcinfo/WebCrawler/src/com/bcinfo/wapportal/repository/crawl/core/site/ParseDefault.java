@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.bcinfo.wapportal.repository.crawl.core.site.others;
+package com.bcinfo.wapportal.repository.crawl.core.site;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +14,22 @@ import com.bcinfo.wapportal.repository.crawl.core.Parse;
 /**
  * @author dongq
  * 
- *         create time : 2009-11-11 上午09:18:58<br>
- *         www.51yala.com
+ *         create time : 2009-12-9 下午01:09:45
  */
-public class ParseYala extends AbstractHtmlParseTemplete implements Parse {
+public class ParseDefault extends AbstractHtmlParseTemplete implements Parse{
 
-	private static Logger log = Logger.getLogger(ParseYala.class);
+	private static final Logger log = Logger.getLogger(ParseDefault.class);
 	
 	@Override
 	public List<String> checkPageOfLinks(String link) {
 		List<String> links = null;
-		try {
+		try{
 			links = new ArrayList<String>();
 			links.add(link);
-		} catch (Exception e) {
+		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			//System.out.println("取51yala[" + link + "]分页失败");
-			if(log.isDebugEnabled()) e.printStackTrace();
+			log.info("取["+link+"]分页失败");
 		}
 		return links;
 	}
@@ -39,18 +37,14 @@ public class ParseYala extends AbstractHtmlParseTemplete implements Parse {
 	@Override
 	public String getTargetContent(String link) {
 		String content = null;
-
-		try {
-			content = this.getPageContent(link, "span", "class", "STYLE3");
-			content = this.commonParseContent(content);
+		
+		try{
 			
-			content = content.replaceAll("<xoYu_CMS_CODE:NEWS:NEWS_INFO>", replacement);
-			content = content.replaceAll("</xoYu_CMS_CODE:NEWS:NEWS_INFO>", replacement);
-		} catch (Exception e) {
-			//System.out.println("解析51YALA页面[" + link + "]内容失败");
+		}catch(Exception e){
+			log.info("解析页面["+link+"]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
-
+		
 		return content;
 	}
 
@@ -65,9 +59,8 @@ public class ParseYala extends AbstractHtmlParseTemplete implements Parse {
 		return null;
 	}
 
+	//TODO TEST
 	public static void main(String[] args) {
-		String link = "http://www.51yala.com/Html/20071522056-1.html";
-		String cnt = new ParseYala().parse(link);
-		//System.out.println(cnt);
+
 	}
 }

@@ -29,7 +29,7 @@ public class ParsePcpopMovie extends AbstractHtmlParseTemplete implements Parse 
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取MOVIE.PCPOP[" + link + "]分页失败");
+			//System.out.println("取MOVIE.PCPOP[" + link + "]分页失败");
 		}
 		return links;
 	}
@@ -56,7 +56,7 @@ public class ParsePcpopMovie extends AbstractHtmlParseTemplete implements Parse 
 			
 
 		} catch (Exception e) {
-			System.out.println("解析MOVIE.PCPOP页面[" + link + "]内容失败");
+			//System.out.println("解析MOVIE.PCPOP页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -81,6 +81,6 @@ public class ParsePcpopMovie extends AbstractHtmlParseTemplete implements Parse 
 		String url = "http://movie.pcpop.com/197039_1_0_197.html";
 		ParsePcpopMovie p = new ParsePcpopMovie();
 		String cnt =  p.parse(url);
-		System.out.println(cnt);
+		//System.out.println(cnt);
 	}
 }

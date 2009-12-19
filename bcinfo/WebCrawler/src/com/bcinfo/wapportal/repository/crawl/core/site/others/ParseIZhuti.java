@@ -40,7 +40,7 @@ public class ParseIZhuti extends AbstractHtmlParseTemplete implements Parse{
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取IZHUTI[" + link + "]分页失败");
+			//System.out.println("取IZHUTI[" + link + "]分页失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		return links;
@@ -115,7 +115,7 @@ public class ParseIZhuti extends AbstractHtmlParseTemplete implements Parse{
 			}
 			
 		} catch (Exception e) {
-			System.out.println("解析IZHUTI页面[" + link + "]内容失败");
+			//System.out.println("解析IZHUTI页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -137,6 +137,6 @@ public class ParseIZhuti extends AbstractHtmlParseTemplete implements Parse{
 	public static void main(String[] args) {
 		String link = "http://www.izhuti.com/zhuti/46507/";
 		ParseIZhuti p = new ParseIZhuti();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }

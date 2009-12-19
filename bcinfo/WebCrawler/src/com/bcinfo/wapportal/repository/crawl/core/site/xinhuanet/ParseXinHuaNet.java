@@ -80,7 +80,7 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取新华网["+link+"]分页失败");
+			//System.out.println("取新华网["+link+"]分页失败");
 		}
 		return links;
 	}
@@ -114,14 +114,12 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 			//分页标签:[1][2][3][4]
 			content = content.replaceAll("\\[\\d+\\]", replacement);
 			if(log.isDebugEnabled()){
-				//System.out.println("------------------------"+link+"-------------------------------");
-				//System.out.println(content);
+				////System.out.println("------------------------"+link+"-------------------------------");
+				////System.out.println(content);
 			}
 		}catch(Exception e){
-			System.out.println("解析新华网页面["+link+"]内容失败");
-			if(log.isDebugEnabled()){
-				e.printStackTrace();
-			}
+			//System.out.println("解析新华网页面["+link+"]内容失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -130,6 +128,6 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://news.xinhuanet.com/tech/2009-11/01/content_12368002.htm";
 		ParseXinHuaNet p = new ParseXinHuaNet();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }

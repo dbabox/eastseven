@@ -28,7 +28,7 @@ public class JavaOracle {
 			url = p.getProperty("db.url");
 			user = p.getProperty("db.user");
 			password = p.getProperty("db.password");
-			System.out.println("  数据库连接：url["+url+"],usr["+user+"],pwd["+password+"]");
+			////System.out.println("  数据库连接：url["+url+"],usr["+user+"],pwd["+password+"]");
 			// OracleDriver exist check
 			Class.forName(className);
 			// Get Connection
@@ -69,6 +69,6 @@ public class JavaOracle {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(getConn());
+		//System.out.println(getConn());
 	}
 }

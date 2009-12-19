@@ -6,6 +6,8 @@ package com.bcinfo.wapportal.repository.crawl.core.site.qq;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.bcinfo.wapportal.repository.crawl.core.AbstractHtmlParseTemplete;
 import com.bcinfo.wapportal.repository.crawl.core.Parse;
 import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
@@ -17,6 +19,8 @@ import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
  */
 public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 
+	private static final Logger log = Logger.getLogger(ParseQQ.class);
+	
 	@Override
 	public String parse(String link) {
 		return this.simpleParse(link);
@@ -37,7 +41,7 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取QQ["+link+"]分页失败");
+			//System.out.println("取QQ["+link+"]分页失败");
 		}
 		return links;
 	}
@@ -58,9 +62,9 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 			content = RegexUtil.eliminateString("<[oO][bB][jJ][eE][cC][tT]\\s+[^>]+>", "</[oO][bB][jJ][eE][cC][tT]>", content);
 			content = content.replaceAll("搜索华尔兹--今日热辣资讯Top100", replacement);
 			content = content.replaceAll("<style>.*?</style>", replacement);
-			//content = 
 		}catch(Exception e){
-			System.out.println("解析QQ页面["+link+"]内容失败");
+			//System.out.println("解析QQ页面["+link+"]内容失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -70,6 +74,6 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://sports.qq.com/a/20091130/000761.htm";
 		ParseQQ p = new ParseQQ();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }

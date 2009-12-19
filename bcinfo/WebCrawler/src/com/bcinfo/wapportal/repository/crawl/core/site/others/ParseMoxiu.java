@@ -39,7 +39,7 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取MOXIU[" + link + "]分页失败");
+			//System.out.println("取MOXIU[" + link + "]分页失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		return links;
@@ -108,10 +108,10 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 				content += this.commonParseContent(mobileType) + "|";
 			}
 			if(!"".equals(filePathSet)){
-				content += filePathSet;
+				content += filePathSet.replaceAll("=", filePathSet);
 			}
 		} catch (Exception e) {
-			System.out.println("解析MOXIU页面[" + link + "]内容失败");
+			//System.out.println("解析MOXIU页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -133,8 +133,8 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		//http://www.moxiu.com/themes/22/2009/1123/5889778.shtml
 		//http://www.moxiu.com/themes/2/2009/1128/5925650.shtml
-		String link = "http://www.moxiu.com/themes/2/2009/1128/5925650.shtml";
-		ParseMoxiu p = new ParseMoxiu();
-		System.out.println(p.parse(link));
+		//String link = "http://www.moxiu.com/themes/2/2009/1128/5925650.shtml";
+		//ParseMoxiu p = new ParseMoxiu();
+		//System.out.println(p.parse(link));
 	}
 }

@@ -57,7 +57,7 @@ public class ParseHuanQiu extends AbstractHtmlParseTemplete implements Parse {
 				}
 				if(log.isDebugEnabled()){
 					for(String pageLink : links){
-						System.out.println(link+" 包含的分页地址： "+pageLink);
+						//System.out.println(link+" 包含的分页地址： "+pageLink);
 					}
 				}
 			}
@@ -65,7 +65,7 @@ public class ParseHuanQiu extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取环球网["+link+"]分页失败");
+			////System.out.println("取环球网["+link+"]分页失败");
 			if(log.isDebugEnabled()){
 				e.printStackTrace();
 			}
@@ -89,7 +89,7 @@ public class ParseHuanQiu extends AbstractHtmlParseTemplete implements Parse {
 			content = content.replaceAll("\\[下一页\\]", replacement);
 			content = content.replaceAll("\\[上一页\\]", replacement);
 		}catch(Exception e){
-			System.out.println("解析环球网页面["+link+"]内容失败");
+			//System.out.println("解析环球网页面["+link+"]内容失败");
 			if(log.isDebugEnabled()){
 				e.printStackTrace();
 			}
@@ -113,6 +113,6 @@ public class ParseHuanQiu extends AbstractHtmlParseTemplete implements Parse {
 		String link = "http://world.huanqiu.com/roll/2009-10/616629.html";
 		ParseHuanQiu huanqiu = new ParseHuanQiu();
 		String content = huanqiu.parse(link);
-		System.out.println(content);
+		//System.out.println(content);
 	}
 }

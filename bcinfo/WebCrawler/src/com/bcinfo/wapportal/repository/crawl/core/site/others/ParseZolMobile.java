@@ -31,7 +31,7 @@ public class ParseZolMobile extends AbstractHtmlParseTemplete implements Parse {
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取ZOL.MOBILE[" + link + "]分页失败");
+			//System.out.println("取ZOL.MOBILE[" + link + "]分页失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		return links;
@@ -50,7 +50,7 @@ public class ParseZolMobile extends AbstractHtmlParseTemplete implements Parse {
 			content = RegexUtil.eliminateString(RegexUtil.REGEX_SCRIPT_START, RegexUtil.REGEX_SCRIPT_END, content);
 			
 		} catch (Exception e) {
-			System.out.println("解析ZOL.MOBILE页面[" + link + "]内容失败");
+			//System.out.println("解析ZOL.MOBILE页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -73,6 +73,6 @@ public class ParseZolMobile extends AbstractHtmlParseTemplete implements Parse {
 		//http://mobile.zol.com.cn/156/1566229.html
 		String url = "http://mobile.zol.com.cn/156/1566229.html";
 		ParseZolMobile p = new ParseZolMobile();
-		System.out.println(p.parse(url));
+		//System.out.println(p.parse(url));
 	}
 }

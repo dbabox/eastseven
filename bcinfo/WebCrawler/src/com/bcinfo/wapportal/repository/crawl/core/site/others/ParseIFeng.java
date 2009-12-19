@@ -65,6 +65,6 @@ public class ParseIFeng extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://news.ifeng.com/sports/pinglun/200912/1201_4687_1457658.shtml";
 		ParseIFeng p = new ParseIFeng();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }

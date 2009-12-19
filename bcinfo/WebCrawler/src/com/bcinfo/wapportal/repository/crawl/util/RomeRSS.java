@@ -54,7 +54,7 @@ public final class RomeRSS {
 				links.add(folder);
 			}
 		}catch(Exception e){
-			System.out.println("通过RSS取得页面["+rssUrl+"]内的所有超链接地址失败");
+			//System.out.println("通过RSS取得页面["+rssUrl+"]内的所有超链接地址失败");
 		}
 		return links;
 	}

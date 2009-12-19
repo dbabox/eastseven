@@ -50,7 +50,7 @@ public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 			content = RegexUtil.eliminateString(RegexUtil.REGEX_SCRIPT_START,
 					RegexUtil.REGEX_SCRIPT_END, content);
 		} catch (Exception e) {
-			System.out.println("解析sohu页面[" + link + "]内容失败");
+			//System.out.println("解析sohu页面[" + link + "]内容失败");
 			if (log.isDebugEnabled()) {
 				log.debug(e);
 			}
@@ -102,8 +102,8 @@ public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 		String link = "http://act1.astro.women.sohu.com/yuncheng_xingzuo_new.php?type=d&day_select=tomorrow&xingzuo=1";
 		WebCrawlerAstroSohuImpl crawler = new WebCrawlerAstroSohuImpl();
 		String content = crawler.getTargetContent(link);
-		System.out.println(content);
+		//System.out.println(content);
 		String title = RegexUtil.extractContentWithRegex("\\d+年\\d+月\\d+日", content);
-		System.out.println(title);
+		//System.out.println(title);
 	}
 }

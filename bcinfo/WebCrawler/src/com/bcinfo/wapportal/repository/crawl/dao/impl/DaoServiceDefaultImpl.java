@@ -5,6 +5,8 @@ package com.bcinfo.wapportal.repository.crawl.dao.impl;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.StringReader;
 import java.io.Writer;
 import java.sql.Connection;
@@ -24,7 +26,9 @@ import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.ResourceBO;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.ResourceType;
+import com.bcinfo.wapportal.repository.crawl.domain.internal.AppLog;
 import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
+import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 
 /**
  * @author dongq
@@ -66,15 +70,16 @@ public class DaoServiceDefaultImpl implements DaoService {
 	}
 	
 	@Override
-	public List<CrawlList> getCrawlLists() {
+	public List<CrawlList> getCrawlLists(String status) {
 		List<CrawlList> list = null;
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = "select a.crawl_id,a.channel_id,a.crawl_url,a.crawl_status,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_crawl_list a where a.crawl_status = '1' order by a.channel_id,a.create_time,a.crawl_id";
+		String sql = "select a.crawl_id,a.channel_id,a.crawl_url,a.crawl_status,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time from twap_public_crawl_list a where a.crawl_status = ? order by a.channel_id,a.create_time,a.crawl_id";
 		try{
 			conn = JavaOracle.getConn();
 			pst = conn.prepareStatement(sql);
+			pst.setString(1, status);
 			rs = pst.executeQuery();
 			list = new ArrayList<CrawlList>();
 			while(rs.next()){
@@ -142,18 +147,19 @@ public class DaoServiceDefaultImpl implements DaoService {
 	@Override
 	public Boolean saveCrawlResource(List<FolderBO> folders) {
 		Boolean bln = false;
-		
+		if(folders==null) return bln;
 		Connection conn = null;
 		PreparedStatement pst = null;
 		//PreparedStatement pstUpdate = null;
 		ResultSet rs = null;//res_content,RES_IMG_PATH_SET
-		String sql = "insert into twap_public_crawl_resource(channel_id,res_title,res_link,res_img_path_set,res_id,res_text) values(?,?,?,?,?,empty_clob())";
+		String sql = "insert into twap_public_crawl_resource(channel_id,res_title,res_link,res_img_path_set,res_file_path_set,res_id,res_text) values(?,?,?,?,?,empty_clob())";
 		
 		String link = "";
 		String title = "";
 		String channelId = "";
 		String content = "";
 		String imgPathSet="";
+		String filePathSet="";
 		try{
 			/**/
 			conn = JavaOracle.getConn();
@@ -171,25 +177,23 @@ public class DaoServiceDefaultImpl implements DaoService {
 					link = folder.getLink();
 					title = folder.getTitle();
 					channelId = folder.getFolderId();
+					//TODO 关键字提示 <font style="color: #ff0000"></font>
 					content = folder.getContent();
 					imgPathSet = folder.getImgPathSet();
+					filePathSet = folder.getFilePathSet();
 					pst.setLong(1, Long.valueOf(channelId));
 					pst.setString(2, title);
 					pst.setString(3, link);
 					pst.setString(4, imgPathSet);
-					pst.setLong(5, ids.get(count));
+					pst.setString(5, filePathSet);
+					pst.setLong(6, ids.get(count));
 					pst.addBatch();
 					
 					folder.setId(ids.get(count));
 					list.add(folder);
 					
 					count++;
-					if(log.isDebugEnabled())
-						System.out.println("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
-				}
-				
-				if(log.isDebugEnabled()){
-					System.out.println("-------------------insert:"+folders.size());
+					//if(log.isDebugEnabled()) //System.out.println("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
 				}
 				
 				pst.executeBatch();
@@ -204,10 +208,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 				}
 				pst.executeBatch();
 				
-				if(log.isDebugEnabled()){
-					System.out.println("-------------------update:"+list.size());
-				}
-				
 				conn.commit();
 				conn.setAutoCommit(true);
 				bln = true;
@@ -217,10 +217,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 				if(list!=null && !list.isEmpty()){
 					for(FolderBO folder : list){
 						boolean flag = update(folder);
-						
-						if(log.isDebugEnabled()){
-							System.out.println("  "+folder.getId()+" update is "+flag);
-						}
 					}
 					bln = true;
 				}
@@ -278,7 +274,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 			if(ids !=null && !ids.isEmpty()){
 				conn = JavaOracle.getConn();
 				conn.setAutoCommit(false);
-				pst = conn.prepareStatement("insert into twap_public_crawl_resource(channel_id,res_title,res_link,res_img_path_set,res_text,res_id) values(?,?,?,?,empty_clob(),?)");
+				pst = conn.prepareStatement("insert into twap_public_crawl_resource(channel_id,res_title,res_link,res_img_path_set,res_text,res_id,res_file_path_set) values(?,?,?,?,empty_clob(),?,?)");
 				pst.clearBatch();
 				folders = new ArrayList<FolderBO>();
 				int index = 0;
@@ -288,14 +284,11 @@ public class DaoServiceDefaultImpl implements DaoService {
 					pst.setString(3, folder.getLink());
 					pst.setString(4, folder.getImgPathSet());
 					pst.setLong(5, ids.get(index));
+					pst.setString(6, folder.getFilePathSet());
 					pst.addBatch();
 					
 					folder.setId(ids.get(index));
 					folders.add(folder);
-					
-					if(log.isDebugEnabled()){
-						System.out.println(" batch insert data: "+folder.getId()+" | "+folder.getLink()+" | "+folder.getTitle());
-					}
 					
 					index++;
 				}
@@ -303,7 +296,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 			pst.executeBatch();
 			conn.commit();
 			conn.setAutoCommit(true);
-			System.out.println(" -----batch insert finish----- ");
 		}catch(Exception e){
 			e.printStackTrace();
 			if(conn != null)
@@ -332,6 +324,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 			pst.setLong(1, folder.getId());
 			rs = pst.executeQuery();
 			if(rs.next()){
+				//TODO 关键字提示 <font style="color: #ff0000"></font>
 				content = folder.getContent();
 				CLOB clob = (CLOB)rs.getClob("res_text");
 				//Oracle 9i 写法
@@ -355,10 +348,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 			}
 			conn.setAutoCommit(true);
 			conn.commit();
-			
-			if(log.isDebugEnabled()){
-				System.out.println(" update data: "+folder.getId()+" | "+folder.getLink()+" | "+folder.getTitle());
-			}
 			
 			bln = true;
 		}catch(Exception e){
@@ -393,16 +382,11 @@ public class DaoServiceDefaultImpl implements DaoService {
 				
 				pst.addBatch();
 				
-				if(log.isDebugEnabled()){
-					System.out.println(" batch update data: "+folder.getId()+" | "+folder.getLink()+" | "+folder.getTitle());
-				}
 			}
 			
 			pst.executeBatch();
 			conn.commit();
 			conn.setAutoCommit(true);
-			
-			System.out.println(" -----batch update finish----- ");
 			
 			bln = true;
 		}catch(Exception e){
@@ -428,50 +412,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 		PreparedStatement pstResource = null;
 		ResultSet rs = null;
 		
-		/*
-		  FOLDER_ID           NUMBER(11) not null,
-		  CHANNEL_ID          NUMBER(11),
-		  FOLDERNAME          VARCHAR2(64),
-		  FATHER_FOLDER_INDEX VARCHAR2(256),
-		  FOLDER_INDEX        VARCHAR2(256),
-		  STATUS              VARCHAR2(1) default '1',
-		  FOLDER_DESC         VARCHAR2(256),
-		  FOLDER_LEVEL        NUMBER(5),
-		  FOLDERPATH          VARCHAR2(256),
-		  FOLDERURL           VARCHAR2(256),
-		  FOLDERPAGECONF      VARCHAR2(256),
-		  CONTENTPAGECONF     VARCHAR2(256),
-		  CREATE_TIME         DATE default SYSDATE,
-		  SHOW_TYPE           VARCHAR2(1) default '1',
-		  FOLDER_LOGO         VARCHAR2(256),
-		  FOLDER_ICON         VARCHAR2(256),
-		  KEYWORD             VARCHAR2(512),
-		  PAGE_WORD_SIZE      NUMBER(6),
-		  PAGE_IMAGE_SIZE     NUMBER(6),
-		  MODIFYTIME          DATE,
-		  MEMO                VARCHAR2(256) 
-		*/
 		String sqlFolder = "insert into TWAP_PUBLIC_FOLDER(FOLDER_ID,FOLDERNAME,FATHER_FOLDER_INDEX,FOLDER_INDEX,SHOW_TYPE,MODIFYTIME,MEMO) values(?,?,?,?,'0',sysdate,?)";
-		/*
-		  PAGES_ID     NUMBER(15) not null,
-		  SPCP_ID      NUMBER(11),
-		  FOLDER_ID    NUMBER(11),
-		  TITLE        VARCHAR2(128),
-		  STATUS       VARCHAR2(1),
-		  PRICE        NUMBER(9,3),
-		  POST_DATE    DATE,
-		  RES_AUTHOR   VARCHAR2(64),
-		  AVAIL_DATE   DATE,
-		  FILE_PATH    VARCHAR2(256),
-		  RES_SIZE     NUMBER(11),
-		  COPYRIGHT    VARCHAR2(128),
-		  CREATE_TIME  DATE default SYSDATE,
-		  KEYWORD      VARCHAR2(512),
-		  BROWSE_COUNT NUMBER(11),
-		  DOWN_COUNT   NUMBER(11),
-		  RES_DESC     VARCHAR2(256),
-		  MODIFYTIME   DATE
-		*/
 		String sqlResource = "insert into TWAP_PUBLIC_FILE_RESOURCE(PAGES_ID,SPCP_ID,FOLDER_ID,TITLE,STATUS,PRICE,POST_DATE,RES_AUTHOR,AVAIL_DATE,FILE_PATH,RES_SIZE,COPYRIGHT,KEYWORD,BROWSE_COUNT,DOWN_COUNT,RES_DESC,MODIFYTIME) " +
 				" values(seq_twap_public_file_resource.nextval,'0',?,?,'0',0,sysdate,'web crawler',sysdate+365*3,?,?,'admin',?,0,0,?,sysdate)";
 		String sql = "select seq_twap_public_folder.nextval from dual";
@@ -626,6 +567,155 @@ public class DaoServiceDefaultImpl implements DaoService {
 				}
 			}
 		}finally{
+			close(rs, pst, conn);
+		}
+		
+		return bln;
+	}
+	
+	@Override
+	public synchronized Boolean saveLog(AppLog appLog) {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try{
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement("insert into twap_app_log_webcrawler(log_id,log_message,log_channel_id,log_url,log_catch_count) values(seq_twap_app_log_webcrawler.nextval,?,?,?,?)");
+			pst.setString(1, appLog.getLogMessage());
+			pst.setLong(2, appLog.getLogChannelId());
+			pst.setString(3, appLog.getUrl());
+			pst.setLong(4, appLog.getCatchCount());
+			pst.executeUpdate();
+			conn.commit();
+			bln = true;
+		}catch(Exception e){
+			e.printStackTrace();
+			log.error(e);
+			if(conn!=null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					log.error(e1);
+				}
+			}
+		}finally{
+			close(rs, pst, conn);
+		}
+		
+		return bln;
+	}
+	
+	@Override
+	public Boolean isAnyTriggerFired() {
+		boolean bln = true;//执行中
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement("select count(1) from qrtz_fired_triggers");
+			rs = pst.executeQuery();
+			if(rs.next()){
+				if(rs.getInt(1)==0) bln = false;//未执行
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		} finally {
+			close(rs, pst, conn);
+		}
+		
+		return bln;
+	}
+	
+	@Override
+	public Boolean initQuartzDatabase(String sqlFile) {
+		boolean bln = true;//执行中
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			String replacement = "";
+			File file = new File(sqlFile);
+			FileInputStream fis = new FileInputStream(file);
+			byte[] buf = new byte[1024];
+			StringBuffer sb = new StringBuffer();
+			while ((fis.read(buf)) != -1) {
+				sb.append(new String(buf));
+				buf = new byte[1024];// 重新生成，避免和上次读取的数据重复
+			}
+			String content = sb.toString();
+			content = content.replaceAll(RegexUtil.REGEX_ENTER, replacement);
+			content = content.replaceAll(RegexUtil.REGEX_ENTER_TAB, replacement);
+			content = content.replaceAll(RegexUtil.REGEX_TAB, replacement);
+			content = content.replaceAll(RegexUtil.REGEX_ESC_SPACE, replacement);
+			content = content.substring(0, content.lastIndexOf(";")+1);
+			log.debug("Quartz Database SQL:"+content);
+			String[] sqls = content.split(";");
+			bln = batchExecuteSQLSentence(sqls);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			if(conn != null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					log.error(e1);
+				}
+			}
+		} finally {
+			close(rs, pst, conn);
+		}
+		
+		return bln;
+	}
+	
+	boolean batchExecuteSQLSentence(String[] sqlScript) {
+		boolean bln = true;//执行中
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			if(sqlScript!=null&&sqlScript.length>0){
+				conn = JavaOracle.getConn();
+				conn.setAutoCommit(false);
+				
+				pst = conn.prepareStatement("select sysdate from dual");
+				for(String sql : sqlScript){
+					sql = sql.trim();
+					if(sql!=null&&!"".equals(sql)){
+						log.debug("Batch Execution SQL:"+sql);
+						pst.executeQuery(sql);
+					}
+				}
+				
+				conn.setAutoCommit(true);
+				conn.commit();
+				bln = true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			if(conn != null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					log.error(e1);
+				}
+			}
+		} finally {
 			close(rs, pst, conn);
 		}
 		

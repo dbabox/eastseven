@@ -56,7 +56,7 @@ public class ParsePcladyAstro extends AbstractHtmlParseTemplete implements
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取ASTRO.PCLADY[" + link + "]分页失败");
+			//System.out.println("取ASTRO.PCLADY[" + link + "]分页失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		return links;
@@ -85,7 +85,7 @@ public class ParsePcladyAstro extends AbstractHtmlParseTemplete implements
 			content = content.replaceAll("PClady独家专稿 未经许可请勿转载！", replacement);
 			content = content.replaceAll("\\(图片来源：PConline摄影部落\\)", replacement);
 		} catch (Exception e) {
-			System.out.println("解析ASTRO.PCLADY页面[" + link + "]内容失败");
+			//System.out.println("解析ASTRO.PCLADY页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -108,6 +108,6 @@ public class ParsePcladyAstro extends AbstractHtmlParseTemplete implements
 		String url = "http://astro.pclady.com.cn/horoscopes/love/lovers/0910/464515.html";
 		ParsePcladyAstro p = new ParsePcladyAstro();
 		String cnt =  p.parse(url);
-		System.out.println(cnt);
+		//System.out.println(cnt);
 	}
 }

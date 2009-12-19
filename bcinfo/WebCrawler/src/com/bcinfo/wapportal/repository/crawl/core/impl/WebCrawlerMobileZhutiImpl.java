@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.htmlparser.Parser;
 
 import com.bcinfo.wapportal.repository.crawl.core.HtmlParse;
 import com.bcinfo.wapportal.repository.crawl.core.Parse;
@@ -70,6 +71,14 @@ public class WebCrawlerMobileZhutiImpl implements WebCrawler {
 								break;
 							case 2:
 								filePathSet = strs[index];
+								filePathSet = filePathSet.replace(",", "").trim();
+								if(filePathSet.contains("izhuti")){
+									System.setProperty("sun.net.client.defaultConnectTimeout", "5000");
+							        System.setProperty("sun.net.client.defaultReadTimeout", "5000");
+									filePathSet = new Parser(filePathSet).getURL();
+								}else if(filePathSet.contains("moxiu")){
+									filePathSet = "http://d2.imoxiu.com:8080/"+filePathSet.substring(filePathSet.lastIndexOf("="));
+								}
 								break;
 							default:
 								break;

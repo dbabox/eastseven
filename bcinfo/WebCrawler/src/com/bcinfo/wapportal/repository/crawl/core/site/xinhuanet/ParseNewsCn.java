@@ -35,7 +35,7 @@ public class ParseNewsCn extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取新华网["+link+"]分页失败");
+			//System.out.println("取新华网["+link+"]分页失败");
 		}
 		return links;
 	}
@@ -67,10 +67,8 @@ public class ParseNewsCn extends AbstractHtmlParseTemplete implements Parse {
 				content = content.replaceAll("&nbsp;", " ");
 			}
 		}catch(Exception e){
-			System.out.println("解析新华网页面["+link+"]内容失败");
-			if(log.isDebugEnabled()){
-				e.printStackTrace();
-			}
+			//System.out.println("解析新华网页面["+link+"]内容失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
