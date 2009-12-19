@@ -115,8 +115,8 @@ public class ChannelManagementComposer extends GenericForwardComposer {
 
 	@SuppressWarnings("unchecked")
 	public void onClick$del() {
-		// 多选
-		if(channelListbox.getSelectedCount() > 0){
+		// 单选
+		if(channelListbox.getSelectedCount() == 1){
 			try {
 				if(Messagebox.show("确定要删除?", "TODO", Messagebox.YES|Messagebox.NO, Messagebox.QUESTION) == Messagebox.YES){
 					Set<Listitem> set = channelListbox.getSelectedItems();
@@ -126,7 +126,7 @@ public class ChannelManagementComposer extends GenericForwardComposer {
 						Listitem item = (Listitem)iter.next();
 						list.add(Long.valueOf(item.getValue().toString()));
 					}
-					boolean bln = dao.delete(list);
+					boolean bln = false;// dao.delete(list);
 					if(bln){
 						channelListbox.setModel(new ListModelList(dao.getChannelList(bean.getChannelId()), live));
 						alert("删除成功");
@@ -138,7 +138,7 @@ public class ChannelManagementComposer extends GenericForwardComposer {
 				e.printStackTrace();
 			}
 		}else{
-			alert("请选择要删除的一条或多条记录");
+			alert("请选择要删除的记录");
 		}
 	}
 

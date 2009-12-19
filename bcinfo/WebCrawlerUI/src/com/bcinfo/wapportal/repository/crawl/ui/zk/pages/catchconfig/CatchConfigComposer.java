@@ -2,6 +2,7 @@ package com.bcinfo.wapportal.repository.crawl.ui.zk.pages.catchconfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import org.zkoss.zk.ui.Component;
@@ -12,8 +13,10 @@ import org.zkoss.zul.Listbox;
 import org.zkoss.zul.Listcell;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.ListitemRenderer;
+import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 
+import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
 import com.bcinfo.wapportal.repository.crawl.ui.zk.dao.CrawlDao;
 import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.CrawlBean;
 
@@ -54,20 +57,57 @@ public class CatchConfigComposer extends GenericForwardComposer {
 			catchList.setMultiple(true);
 		}
 	}
-
+	
 	//添加配置
 	public void onClick$add(){
+		
 		if(crawlUrl.getValue()!= null && !"".equals(crawlUrl.getValue())){
-			boolean bln = dao.save(channelId, crawlUrl.getValue());
+			String url = crawlUrl.getValue();
+			//提示Tip
+			boolean bln = tip(url);
 			if(bln){
-				catchList.setModel(new ListModelList(dao.getCrawlList(channelId), live));
-				alert("操作成功");
-			}else{
-				alert("操作失败");
+				bln = dao.save(channelId, url);
+				if(bln){
+					catchList.setModel(new ListModelList(dao.getCrawlList(channelId), live));
+					alert("操作成功,网址"+url+"下的内容将在1小时后开始抓取,若24小时内未抓取到任何内容,请联系技术部.");
+				}else{
+					alert("操作失败");
+				}
 			}
 		}else{
 			alert("抓取地址不能为空");
 		}
+	}
+	
+	boolean tip(String url){
+		boolean bln = false;
+		Properties property = ConfigPropertyUtil.property;
+		if(property!=null){
+			String canCrawl = property.getProperty("can.crawl.website");
+			if(canCrawl!=null&&!"".equals(canCrawl)){
+				String[] website = canCrawl.split(",");
+				for(String site : website){
+					System.out.println("site:"+site);
+					if(url.contains(site)){
+						bln = true;
+						break;
+					}
+				}
+				if(!bln){
+					try {
+						String msg = "目前还不能抓取"+url+"下的内容,可向技术部发起该网址的抓取需求.确定还要添加该网址?";
+						if(Messagebox.show(msg, "友情提示", Messagebox.YES|Messagebox.NO, Messagebox.QUESTION) == Messagebox.YES){
+							bln = true;
+						}else{
+							bln = false;
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return bln;
 	}
 	
 	//启用

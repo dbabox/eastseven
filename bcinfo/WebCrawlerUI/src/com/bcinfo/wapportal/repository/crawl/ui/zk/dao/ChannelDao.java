@@ -6,8 +6,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
 import com.bcinfo.wapportal.repository.crawl.dao.util.OracleUtil;
 import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.ChannelBean;
+import common.Logger;
 
 /**
  * 
@@ -17,6 +19,45 @@ import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.ChannelBean;
  */
 public class ChannelDao extends Dao {
 
+	private static final Logger log = Logger.getLogger(ChannelDao.class);
+	
+	public boolean batchExecuteSQLSentence(String[] sqlScript) {
+		boolean bln = true;//Ö´ÐÐÖÐ
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			if(sqlScript!=null&&sqlScript.length>0){
+				conn = JavaOracle.getConn();
+				conn.setAutoCommit(false);
+				
+				pst = conn.prepareStatement("select sysdate from dual");
+				for(String sql : sqlScript){
+					sql = sql.trim();
+					if(sql!=null&&!"".equals(sql)){
+						pst.executeUpdate(sql);
+						log.debug("Batch Execution SQL:"+sql);
+					}
+				}
+				
+				conn.setAutoCommit(true);
+				conn.commit();
+				bln = true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			rollback(conn);
+		} finally {
+			close(conn, pst, rs);
+		}
+		
+		return bln;
+	}
+	
 	public Boolean isLeaf(ChannelBean bean) {
 		boolean leaf = false;
 
@@ -144,7 +185,7 @@ public class ChannelDao extends Dao {
 		return bln;
 	}
 
-	public Boolean delete(List<Long> list) {
+	public Boolean delete(Long channelId) {
 		boolean bln = false;
 
 		Connection conn = null;
@@ -152,33 +193,13 @@ public class ChannelDao extends Dao {
 		ResultSet rs = null;
 
 		try {
-			if (list != null && !list.isEmpty()) {
-				conn = OracleUtil.getConnection();
-				for(Long id : list){
-					//twap_public_crawl_resource
-					pst = conn.prepareStatement("delete twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
-					pst.setLong(1, id);
-					pst.executeUpdate();
-					//twap_public_crawl_list
-					pst = conn.prepareStatement("delete twap_public_crawl_list a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
-					pst.setLong(1, id);
-					pst.executeUpdate();
-					//twap_public_channel_mapping_a
-					pst = conn.prepareStatement("delete twap_public_channel_mapping_a a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
-					pst.setLong(1, id);
-					pst.executeUpdate();
-					//twap_public_channel_mapping
-					pst = conn.prepareStatement("delete twap_public_channel_mapping a where exists(select 1 from twap_public_channel b where a.channel_id=b.channel_id start with b.channel_id=? connect by prior b.channel_id=b.channel_pid)");
-					pst.setLong(1, id);
-					pst.executeUpdate();
-					//twap_public_channel
-					pst = conn.prepareStatement("delete twap_public_channel a start with a.channel_id = ? connect by prior a.channel_id=a.channel_pid");
-					pst.setLong(1, id);
-					pst.executeUpdate();
-				}
-				conn.commit();
-				bln = true;
-			}
+			String[] sqlScript = {"delete twap_app_log_webcrawler a where exists(select 1 from twap_public_channel b where a.log_channel_id = b.channel_id start with b.channel_id="+channelId+" connect by prior b.channel_id=b.channel_pid)",
+									"delete twap_public_channel_mapping a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id="+channelId+" connect by prior b.channel_id=b.channel_pid)",
+									"delete twap_public_channel_mapping_a a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id="+channelId+" connect by prior b.channel_id=b.channel_pid)",
+									"delete twap_public_crawl_list a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id="+channelId+" connect by prior b.channel_id=b.channel_pid)",
+									"delete twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id="+channelId+" connect by prior b.channel_id=b.channel_pid)",
+									"delete twap_public_channel a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id="+channelId+" connect by prior b.channel_id=b.channel_pid)"};
+			bln = batchExecuteSQLSentence(sqlScript);
 		} catch (Exception e) {
 			e.printStackTrace();
 			rollback(conn);

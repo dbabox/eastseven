@@ -124,9 +124,9 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource, int operation){
 		boolean bln = false;
 		try{
-			
+			log.debug("生成资源包:"+resource);
 			//生成资源内容XML文件
-			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getCreateTime(), operation);
+			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getFilePathSet(), resource.getCreateTime(), operation);
 			System.out.println("生成资源内容XML文件:"+localFileName);
 			
 			//TODO 暂时将生成的文件包FTP到地方服务器上
@@ -169,14 +169,16 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	 * @param title
 	 * @param link
 	 * @param localChannelId
-	 * @param imgPath
+	 * @param imgPathSet
+	 * @param filePathSet
 	 * @param date
 	 * @param operation
 	 * @return
 	 */
-	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPath, String date, int operation){
+	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPathSet, String filePathSet, String date, int operation){
 		String fileName = null;
 		try{
+			
 			Element root = new Element("resource");
 			Document document = new Document(root);
 			
@@ -196,14 +198,19 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			eContent.addContent(new CDATA(content));
 			
 			Element eImgPath = new Element("imgPath");
-			if(imgPath!=null){
-				String[] imgStr = imgPath.split(",");
+			if(imgPathSet!=null){
+				String[] imgStr = imgPathSet.split(",");
 				Element ePath = null;
 				for(int i=0;i<imgStr.length;i++){
 					ePath = new Element("path");
 					ePath.setText(imgStr[i]);
 					eImgPath.addContent(ePath);
 				}
+			}
+			
+			Element eFilePath = new Element("filePath");
+			if(filePathSet!=null&&!"".equals(filePathSet)){
+				eFilePath.addContent(filePathSet);
 			}
 			
 			Element eOperation = new Element("operation");
@@ -215,6 +222,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			root.addContent(eCreateTime);
 			root.addContent(eContent);
 			root.addContent(eImgPath);
+			root.addContent(eFilePath);
 			root.addContent(eOperation);
 			
 			XMLOutputter outputter = new XMLOutputter();

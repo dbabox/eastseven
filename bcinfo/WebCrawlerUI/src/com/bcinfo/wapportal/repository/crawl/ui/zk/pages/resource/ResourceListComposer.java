@@ -32,9 +32,11 @@ import org.zkoss.zul.Paging;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.RowRenderer;
 import org.zkoss.zul.Textbox;
+import org.zkoss.zul.Toolbarbutton;
 import org.zkoss.zul.Window;
 import org.zkoss.zul.event.ZulEvents;
 
+import com.bcinfo.wapportal.repository.crawl.dao.WapDao;
 import com.bcinfo.wapportal.repository.crawl.service.CrawlResourceService;
 import com.bcinfo.wapportal.repository.crawl.service.impl.CrawlResourceServiceDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.ui.zk.dao.ResourceDao;
@@ -55,6 +57,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 	private ChannelBean bean;
 	private String status;
 	private ResourceDao dao;
+	private WapDao filterDao;
 	private CrawlResourceService service;
 
 	private Paging resourceListboxPaging;
@@ -62,11 +65,18 @@ public class ResourceListComposer extends GenericForwardComposer {
 	private Grid resourceGrid;
 	private Div resourceDiv;
 	
+	private Toolbarbutton add;
+	private Toolbarbutton addAll;
+	private Toolbarbutton mod;
+	private Toolbarbutton modAll;
+	
 	private Textbox title;
 	private Datebox currentDate;
+	private Datebox currentDateEnd;
 	
 	public ResourceListComposer() {
 		dao = new ResourceDao();
+		filterDao = new WapDao();
 		service = new CrawlResourceServiceDefaultImpl();
 	}
 
@@ -81,17 +91,15 @@ public class ResourceListComposer extends GenericForwardComposer {
 		bean = (ChannelBean) map.get("bean");
 		status = (String)map.get("status");
 
-		List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()));
+		List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()),sdf.format(currentDateEnd.getValue()));
 		if(list != null && !list.isEmpty()){
 			
 			resourceListboxPaging.setTotalSize(list.size());
 			resourceListboxPaging.addEventListener(ZulEvents.ON_PAGING, new ResourceListboxPagingListener());
 			
-			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), 1, resourceListboxPaging.getPageSize());
+			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()), 1, resourceListboxPaging.getPageSize());
 			ListModel listModel = new ListModelList(list, live);
 			
-			// resourceListbox.setModel(listModel);
-			// resourceListbox.setItemRenderer(new ResourceListitemRenderer());
 			resourceGrid.setModel(listModel);
 			resourceGrid.setRowRenderer(new ResourceGridRowRenderer());
 		}
@@ -112,27 +120,40 @@ public class ResourceListComposer extends GenericForwardComposer {
 		}
 		if (list != null && !list.isEmpty()) {
 			boolean bln = false;
-			if (list.size() == 1) {
-				bln = dao.updateResource(list.get(0));
-			} else if (list.size() > 1) {
-				bln = dao.updateResource(list);
+			for(Long id : list){
+				ResourceBean bean = dao.getResource(id);
+				String cnt = filterHandle(bean.getContent());
+				String tle = filterHandle(bean.getTitle());
+				if(cnt.contains("<font style=\"color: #ff0000\">")||tle.contains("<font style=\"color: #ff0000\">")){
+					alert("当前内容或标题有需屏蔽的关键字,请重新审核!");
+					break;
+				}else{
+					bln = true;
+				}
 			}
 			if(bln){
-				List<ResourceBean> _list;
-				int active, start, end;
-				active = resourceListboxPaging.getActivePage();
-				if (active == 0) {
-					start = 1;
-					end = resourceListboxPaging.getPageSize();
-				} else {
-					start = active * resourceListboxPaging.getPageSize();
-					end = start + resourceListboxPaging.getPageSize();
+				if (list.size() == 1) {
+					bln = dao.updateResource(list.get(0));
+				} else if (list.size() > 1) {
+					bln = dao.updateResource(list);
 				}
-				_list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), start, end);
-				resourceGrid.setModel(new ListModelList(_list, live));
-				alert("审核成功");
-			}else{
-				alert("审核失败");
+				if(bln){
+					List<ResourceBean> _list;
+					int active, start, end;
+					active = resourceListboxPaging.getActivePage();
+					if (active == 0) {
+						start = 1;
+						end = resourceListboxPaging.getPageSize();
+					} else {
+						start = active * resourceListboxPaging.getPageSize();
+						end = start + resourceListboxPaging.getPageSize();
+					}
+					_list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()), start, end);
+					resourceGrid.setModel(new ListModelList(_list, live));
+					alert("审核成功");
+				}else{
+					alert("审核失败");
+				}
 			}
 			
 		}
@@ -151,27 +172,40 @@ public class ResourceListComposer extends GenericForwardComposer {
 		}
 		if (list != null && !list.isEmpty()) {
 			boolean bln = false;
-			if (list.size() == 1) {
-				bln = dao.updateResource(list.get(0));
-			} else if (list.size() > 1) {
-				bln = dao.updateResource(list);
+			for(Long id : list){
+				ResourceBean bean = dao.getResource(id);
+				String cnt = filterHandle(bean.getContent());
+				String tle = filterHandle(bean.getTitle());
+				if(cnt.contains("<font style=\"color: #ff0000\">")||tle.contains("<font style=\"color: #ff0000\">")){
+					alert("当前内容或标题有需屏蔽的关键字,请重新审核!");
+					break;
+				}else{
+					bln = true;
+				}
 			}
 			if(bln){
-				List<ResourceBean> _list;
-				int active, start, end;
-				active = resourceListboxPaging.getActivePage();
-				if (active == 0) {
-					start = 1;
-					end = resourceListboxPaging.getPageSize();
-				} else {
-					start = active * resourceListboxPaging.getPageSize();
-					end = start + resourceListboxPaging.getPageSize();
+				if (list.size() == 1) {
+					bln = dao.updateResource(list.get(0));
+				} else if (list.size() > 1) {
+					bln = dao.updateResource(list);
 				}
-				_list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), start, end);
-				resourceGrid.setModel(new ListModelList(_list, live));
-				alert("审核成功");
-			}else{
-				alert("审核失败");
+				if(bln){
+					List<ResourceBean> _list;
+					int active, start, end;
+					active = resourceListboxPaging.getActivePage();
+					if (active == 0) {
+						start = 1;
+						end = resourceListboxPaging.getPageSize();
+					} else {
+						start = active * resourceListboxPaging.getPageSize();
+						end = start + resourceListboxPaging.getPageSize();
+					}
+					_list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()), start, end);
+					resourceGrid.setModel(new ListModelList(_list, live));
+					alert("审核成功");
+				}else{
+					alert("审核失败");
+				}
 			}
 			
 		}
@@ -208,6 +242,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 				}else{
 					alert("发布失败");
 				}
+				
 		}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -321,17 +356,35 @@ public class ResourceListComposer extends GenericForwardComposer {
 	
 	//查询
 	public void onClick$search(){
-		List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()));
+		List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()));
 		if(list != null && !list.isEmpty()){
 			
 			resourceListboxPaging.setTotalSize(list.size());
 			resourceListboxPaging.addEventListener(ZulEvents.ON_PAGING, new ResourceListboxPagingListener());
 			//System.out.println("search condition : "+title.getValue()+"|"+sdf.format(currentDate.getValue()));
-			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), 1, resourceListboxPaging.getPageSize());
+			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()), 1, resourceListboxPaging.getPageSize());
 			ListModel listModel = new ListModelList(list, live);
 			
 			resourceGrid.setModel(listModel);
 			resourceGrid.setRowRenderer(new ResourceGridRowRenderer());
+		}
+	}
+	
+	private String filterHandle(String content) {
+		try {
+			String cnt = content;
+			List<String> list = filterDao.getAll();
+			if(list!=null&&!list.isEmpty()){
+				for(String key : list){
+					//key = new String(key.getBytes("GBK"));
+					//System.out.println("key["+key+"]");
+					cnt = cnt.replace(key, "<font style=\"color: #ff0000\">"+key+"</font>");
+				}
+			}
+			return cnt;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return content;
 		}
 	}
 	
@@ -372,10 +425,16 @@ public class ResourceListComposer extends GenericForwardComposer {
 		public void render(Row row, Object data) throws Exception {
 			if (data instanceof ResourceBean) {
 				ResourceBean bean = (ResourceBean) data;
-
+				String content = bean.getContent();
+				String title = bean.getTitle();
+				//TODO <font style="color: #ff0000"></font>
+				content = filterHandle(content);
+				bean.setContent(content);
+				title = filterHandle(title);
+				bean.setTitle(title);
+				
 				detail = new Detail();
-				detail.addEventListener(Events.ON_OPEN, new DetailEventListener(detail,bean.getContent()));
-				//detail.appendChild(new Html(bean.getContent()));
+				detail.addEventListener(Events.ON_OPEN, new DetailEventListener(detail,content));
 
 				checkbox = new Checkbox();
 				checkbox.setId(bean.getResId().toString());
@@ -383,7 +442,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 				row.appendChild(detail);
 				row.appendChild(checkbox);
 				row.appendChild(new Label(bean.getChannelName()));
-				row.appendChild(new Html("<a href='"+bean.getLink()+"' target='_blank'>"+bean.getTitle()+"</a>"));
+				row.appendChild(new Html("<a href='"+bean.getLink()+"' target='_blank'>"+title+"</a>"));
 				
 				Button btn = new Button("编辑");
 				btn.addEventListener(Events.ON_CLICK, new EditButtonEventListener(bean));
@@ -457,7 +516,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 				start = active * resourceListboxPaging.getPageSize();
 				end = start + resourceListboxPaging.getPageSize();
 			}
-			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), start, end);
+			list = dao.getResourceList(bean.getChannelId(), status, title.getValue(), sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()), start, end);
 			resourceGrid.setModel(new ListModelList(list, live));
 			System.out.println(event.getName() + "[" + active + "][" + start
 					+ "-" + end + "][" + resourceListboxPaging.getPageCount()
@@ -487,9 +546,12 @@ public class ResourceListComposer extends GenericForwardComposer {
 				resId = (Longbox)win.getFellow("resId");
 				title = (Textbox)win.getFellow("title");
 				content = (FCKeditor)win.getFellow("content");
-				String cnt = content.getValue();//(String)content.getAttribute("value");
+				String cnt = content.getValue();
+				String tle = title.getValue();
 				cnt = cnt.replaceAll("<p>|</p>", "");
-				boolean bln = dao.modifyResourceContentOrTitle(resId.getValue(), title.getValue(), cnt);
+				System.out.println("标题："+tle);
+				System.out.println("内容："+cnt);
+				boolean bln = dao.modifyResourceContentOrTitle(resId.getValue(), tle, cnt);
 				if(bln){
 					
 					active = resourceListboxPaging.getActivePage();
@@ -501,7 +563,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 						end = start + resourceListboxPaging.getPageSize();
 					}
 					
-					List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, "", sdf.format(currentDate.getValue()), start, end);
+					List<ResourceBean> list = dao.getResourceList(bean.getChannelId(), status, "", sdf.format(currentDate.getValue()), sdf.format(currentDateEnd.getValue()), start, end);
 					resourceGrid.setModel(new ListModelList(list, live));
 					System.out.println(resId.getValue()+"|"+"["+start+"-"+end+"]"+"|"+cnt);
 					//alert("保存成功");

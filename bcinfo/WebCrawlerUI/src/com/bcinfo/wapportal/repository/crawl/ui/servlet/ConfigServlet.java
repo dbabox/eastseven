@@ -3,7 +3,6 @@ package com.bcinfo.wapportal.repository.crawl.ui.servlet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -13,10 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerFactory;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -91,8 +90,11 @@ public final class ConfigServlet extends HttpServlet {
 			
 			//业务Job
 			JobDetail job = new JobDetail("autoSendJob", Scheduler.DEFAULT_GROUP, AutoSendJob.class);
-			long repeatInterval = 60 * 60 * 1000L;//TODO 60分钟一次
-			Trigger trigger = new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
+			//TODO 60分钟一次
+			//long repeatInterval = 60 * 60 * 1000L;
+			Trigger trigger = null;
+			//new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
+			trigger = new CronTrigger("autoSendTrigger", Scheduler.DEFAULT_GROUP, "0 0 0/12 ? * *");
 			scheduler.scheduleJob(job, trigger);
 			
 			scheduler.start();
