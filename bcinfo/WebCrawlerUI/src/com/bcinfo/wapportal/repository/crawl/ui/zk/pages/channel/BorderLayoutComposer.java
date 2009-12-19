@@ -12,6 +12,7 @@ import org.zkoss.zk.ui.util.GenericForwardComposer;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Longbox;
+import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Tree;
 import org.zkoss.zul.TreeModel;
@@ -40,7 +41,10 @@ public class BorderLayoutComposer extends GenericForwardComposer {
 	private TreeModel model = new ChannelTreeModel(0L);
 	private TreeitemRenderer renderer = new ChannelTreeitemRenderer();
 	
+	private ChannelDao dao;
+	
 	public BorderLayoutComposer() {
+		dao = new ChannelDao();
 	}
 	
 	@Override
@@ -67,6 +71,28 @@ public class BorderLayoutComposer extends GenericForwardComposer {
 			Button save = (Button)form.getFellow("save");
 			save.addEventListener(Events.ON_CLICK, new SaveButtonEventListener(form));
 			form.doModal();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void onClick$delRootChannel(){
+		//单选
+		try {
+			Treeitem selected = channelTree.getSelectedItem();
+			if(selected!=null){
+				ChannelBean bean = (ChannelBean)selected.getValue();
+				if(Messagebox.show("确定要删除"+selected.getLabel()+"频道?", "TODO", Messagebox.YES|Messagebox.NO, Messagebox.QUESTION) == Messagebox.YES){
+					boolean bln = dao.delete(bean.getChannelId());
+					if(bln){
+						channelTree.setModel(new ChannelTreeModel(0L));
+					}else{
+						alert("操作失败");
+					}
+				}
+			}else{
+				alert("请选择要删除的频道");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

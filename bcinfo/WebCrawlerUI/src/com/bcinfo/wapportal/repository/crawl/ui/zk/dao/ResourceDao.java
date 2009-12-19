@@ -64,7 +64,7 @@ public class ResourceDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " update twap_public_crawl_resource a set a.res_title = ?,a.res_text = ?,a.res_status = '1' where a.res_id = ? ";
+		String sql = " update twap_public_crawl_resource a set a.res_title = ?,a.res_text = ?,a.res_status = '0' where a.res_id = ? ";
 		String version = null;
 		
 		try{
@@ -180,8 +180,8 @@ public class ResourceDao extends Dao {
 		return bln;
 	}
 
-	public List<ResourceBean> getResourceList(Long channelId, String status, String title, String date) {
-		System.out.println("getResourceList(Long "+channelId+", String "+status+", String "+title+", String "+date+")");
+	public List<ResourceBean> getResourceList(Long channelId, String status, String title, String date, String dateEnd) {
+		System.out.println("getResourceList(Long "+channelId+", String "+status+", String "+title+", String "+date+", String "+dateEnd+")");
 		List<ResourceBean> list = new ArrayList<ResourceBean>();
 
 		Connection conn = null;
@@ -193,7 +193,7 @@ public class ResourceDao extends Dao {
 			condition = " and a.res_title like '"+title+"%' ";
 		}
 		//TODO Orcale9i与10g在使用connect by时9i不能使用nocycle关键字，估计是9i还没有该关键字的缘故
-		String sql = " select a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and to_char(a.create_time,'yyyy-mm-dd') = ? "+condition+" order by a.create_time desc,a.res_id desc ";
+		String sql = " select a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and (to_char(a.create_time,'yyyy-mm-dd') <= ? and to_char(a.create_time,'yyyy-mm-dd') >= ?) "+condition+" order by a.create_time desc,a.res_id desc ";
 
 		try {
 			System.out.println(sql);
@@ -201,7 +201,8 @@ public class ResourceDao extends Dao {
 			pst = conn.prepareStatement(sql);
 			pst.setLong(1, channelId);
 			pst.setString(2, status);
-			pst.setString(3, date);
+			pst.setString(4, date);
+			pst.setString(3, dateEnd);
 			rs = pst.executeQuery();
 			ResourceBean bean = null;
 			while (rs.next()) {
@@ -228,7 +229,49 @@ public class ResourceDao extends Dao {
 		return list;
 	}
 
-	public List<ResourceBean> getResourceList(Long channelId, String status, String title, String date, int start, int end) {
+	public ResourceBean getResource(Long crawlId){
+		ResourceBean bean = null;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_file_path_set,a.res_text,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where a.res_id=?";
+		try {
+			conn = OracleUtil.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, crawlId);
+			rs = pst.executeQuery();
+			if(rs.next()){
+				bean = new ResourceBean();
+				Clob clob = rs.getClob("res_text");
+				Reader inStream = clob.getCharacterStream();
+				char[] c = new char[(int) clob.length()];
+				inStream.read(c);
+				// data是读出并需要返回的数据，类型是String
+				String data = new String(new String(c).getBytes(), "GBK");
+
+				inStream.close();
+				
+				bean.setChannelId(rs.getLong("channel_id"));
+				//bean.setChannelName(rs.getString("channel_name"));
+				bean.setContent(data);
+				bean.setCreateTime(rs.getString("create_time"));
+				bean.setLink(rs.getString("res_link"));
+				bean.setResId(rs.getLong("res_id"));
+				bean.setStatus(rs.getString("res_status"));
+				bean.setTitle(rs.getString("res_title"));
+				bean.setImgPathSet(rs.getString("res_img_path_set"));
+				
+				bean.setPics((rs.getString("res_img_path_set")!=null && !"".equals(rs.getString("res_img_path_set"))?String.valueOf(rs.getString("res_img_path_set").split(",").length):"0"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(conn, pst, rs);
+		}
+		return bean;
+	}
+	
+	public List<ResourceBean> getResourceList(Long channelId, String status, String title, String date, String dateEnd, int start, int end) {
 		System.out.println("getResourceList(Long "+channelId+", String "+status+", String "+title+", String "+date+", int "+start+", int "+end+")");
 		List<ResourceBean> list = new ArrayList<ResourceBean>();
 
@@ -239,18 +282,19 @@ public class ResourceDao extends Dao {
 		if(title != null && !"".equals(title)){
 			condition = " and a.res_title like '"+title+"%' ";
 		}
-		String sql = " select rownum row_num,a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_text,a.res_img_path_set,decode(a.res_status,'0','未审','1','已审') res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and to_char(a.create_time,'yyyy-mm-dd') = ? "+condition+" and rownum <= ? order by a.create_time desc,a.res_id desc ";
+		String sql = " select rownum row_num,a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_text,a.res_img_path_set,decode(a.res_status,'0','未审','1','已审') res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and( to_char(a.create_time,'yyyy-mm-dd') <= ? and to_char(a.create_time,'yyyy-mm-dd')>=?)"+condition+" and rownum <= ? order by a.create_time desc,a.res_id desc ";
 		sql = " select * from ( select * from ( " + sql
 				+ " ) b ) c where c.row_num >= ? order by c.create_time desc,c.res_id desc";
 		try {
-			System.out.println(sql);
+			//System.out.println(sql);
 			conn = OracleUtil.getConnection();
 			pst = conn.prepareStatement(sql);
 			pst.setLong(1, channelId);
 			pst.setString(2, status);
-			pst.setString(3, date);
-			pst.setInt(4, end);
-			pst.setInt(5, start);
+			pst.setString(4, date);
+			pst.setString(3, dateEnd);
+			pst.setInt(5, end);
+			pst.setInt(6, start);
 			rs = pst.executeQuery();
 			ResourceBean bean = null;
 			Reader inStream = null;

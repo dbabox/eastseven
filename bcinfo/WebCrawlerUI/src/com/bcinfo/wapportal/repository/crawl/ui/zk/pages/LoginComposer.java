@@ -30,6 +30,10 @@ public class LoginComposer extends GenericForwardComposer {
 		super.doAfterCompose(comp);
 	}
 	
+	public void onOK$pwdtb(){
+		onClick$login();
+	}
+	
 	public void onClick$login(){
 		UserBean user = dao.getUser(nametb.getValue());
 		if(user!=null){

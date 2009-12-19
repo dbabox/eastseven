@@ -65,7 +65,7 @@ public class CrawlResourceDao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_text,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time,a.res_status,a.res_img_path_set from twap_public_crawl_resource a where a.res_id = ? ";
+		String sql = " select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_text,to_char(a.create_time,'yyyy-mm-dd hh24:mi:ss') create_time,a.res_status,a.res_img_path_set,a.res_file_path_set from twap_public_crawl_resource a where a.res_id = ? ";
 		
 		try{
 			conn = JavaOracle.getConn();
@@ -92,6 +92,7 @@ public class CrawlResourceDao {
 				resource.setStatus(rs.getString("res_status"));
 				resource.setTitle(rs.getString("res_title"));
 				resource.setImgPathSet(rs.getString("res_img_path_set"));
+				resource.setFilePathSet(rs.getString("res_file_path_set"));
 			}
 		}catch(Exception e){
 			e.printStackTrace();

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class Dao {
 
-	void rollback(Connection conn){
+	public void rollback(Connection conn){
 		if(conn != null){
 			try {
 				conn.rollback();
@@ -17,7 +17,7 @@ public class Dao {
 		}
 	}
 	
-	void close(Connection conn, PreparedStatement pst, ResultSet rs) {
+	public void close(Connection conn, PreparedStatement pst, ResultSet rs) {
 		if (rs != null) {
 			try {
 				rs.close();
