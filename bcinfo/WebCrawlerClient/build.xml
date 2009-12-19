@@ -9,7 +9,7 @@
      ====================================================================== -->
 <project name="WebCrawlerClient" default="default">
 
-	<target name="default" depends="dist" description="description">
+	<target name="default" depends="jar" description="description">
 
 	</target>
 
@@ -21,7 +21,7 @@
 			</fileset>
 			<fileset dir="${basedir}">
 				<include name="*.bat" />
-				<include name="*.txt"/>
+				<include name="*.txt" />
 			</fileset>
 		</copy>
 
@@ -64,6 +64,9 @@
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${basedir}/lib/quartz/">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${basedir}/lib/http/">
 			<include name="*.jar" />
 		</fileset>
 	</path>
