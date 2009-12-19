@@ -84,6 +84,8 @@ public final class CrawlerUtil {
 			content = content.replaceAll("&apos;", "'");
 			content = content.replaceAll("&quot;", "\"");
 			//content = content.replaceAll("$$", "$");
+			content = content.replaceAll("&ldquo;", "\"");
+			content = content.replaceAll("&rdquo;", "\"");
 			content = content.replaceAll("&nbsp;", " ");//&nbsp;
 			content = content.replaceAll("&shy;", "-");
 		}catch(Exception e){

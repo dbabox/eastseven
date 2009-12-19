@@ -58,9 +58,13 @@ public class ParseXML {
 		    	}else if("createTime".equals(name)){
 		    		//TODO 暂不处理，备用
 		    	}else if("content".equals(name)){
-		    		folder.setContent(e.getText());
+		    		String cnt = CrawlerUtil.formatSpecialWords(e.getText());
+		    		folder.setContent(cnt);
 		    	}else if("imgPath".equals(name)){
 		    		//TODO 暂不处理，备用
+		    	}else if("filePath".equals(name)){
+		    		folder.setDownloadFile(e.getText().replaceAll("=", ""));
+		    		log.debug("要下载的文件路径："+folder.getDownloadFile());
 		    	}else if("operation".equals(name)){
 		    		folder.setOperation(e.getText());
 		    	}

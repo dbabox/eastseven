@@ -25,6 +25,7 @@ public class Folder implements Serializable {
 
 	private String resFileName;
 	private String operation;
+	private String downloadFile;
 
 	private List resources;
 
@@ -109,10 +110,19 @@ public class Folder implements Serializable {
 		this.operation = operation;
 	}
 
+	public String getDownloadFile() {
+		return downloadFile;
+	}
+
+	public void setDownloadFile(String downloadFile) {
+		this.downloadFile = downloadFile;
+	}
+
 	@Override
 	public String toString() {
-		return "Folder [id=" + id + ", operation=" + operation
-				+ ", resFileName=" + resFileName + ", title=" + title
+		return "Folder [content=" + content + ", downloadFile=" + downloadFile
+				+ ", id=" + id + ", operation=" + operation + ", resFileName="
+				+ resFileName + ", resources=" + resources + ", title=" + title
 				+ ", url=" + url + "]";
 	}
 

@@ -70,7 +70,10 @@ public class Main {
 			scheduler.scheduleJob(parseJob, trigger_1);
 			//监控Job,每60分钟扫描一次,目前未使用
 			JobDetail monitorJob = new JobDetail("monitorJob", Scheduler.DEFAULT_GROUP, MonitorJob.class);
-			Trigger trigger_60 = new SimpleTrigger("trigger_60", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 60 * 60 * 1000L);
+			Trigger trigger_60 = null;
+			trigger_60 = new SimpleTrigger("trigger_60", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 60 * 60 * 1000L);
+			//每天凌晨3点执行
+			//trigger_60 = new CronTrigger("monitorTrigger", Scheduler.DEFAULT_GROUP, "0 0 3 ? * *");
 			scheduler.scheduleJob(monitorJob, trigger_60);
 			
 			scheduler.start();
