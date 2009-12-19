@@ -5,6 +5,7 @@ package com.bcinfo.wapportal.repository.crawl.job;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,17 +25,17 @@ public class MonitorJob implements Job {
 
 	private static Logger log = Logger.getLogger(MonitorJob.class);
 	
-	static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
+	static final SimpleDateFormat sdf = new SimpleDateFormat("HH");
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		System.out.println("扫描开始...");
 		try{
 			DaoService dao = new DaoService();
+			String dir = System.getProperty("user.dir")+"/remotedir/";
 			//取出处理失败的文件名
 			List<String> list = dao.getAllFileLog("0");
 			if(list!=null&&!list.isEmpty()){
-				String dir = System.getProperty("user.dir")+"/remotedir/";
 				boolean delFile = false;
 				boolean delFileName = false;
 				if(dir!=null&&!"".equals(dir)){
@@ -53,6 +54,16 @@ public class MonitorJob implements Job {
 					}
 				}
 				log.info("删除无效文件[物理文件删除："+delFile+"][数据库保存的文件名："+delFileName+"]");
+			}
+			if("03".equals(sdf.format(new Date(System.currentTimeMillis())))){
+				File remotedir = new File(dir);
+				File[] xmlFiles = remotedir.listFiles();
+				if(xmlFiles!=null){
+					for(File xmlFile : xmlFiles){
+						if(xmlFile.exists()) xmlFile.delete();
+					}
+				}
+				log.info("删除所以XML文件");
 			}
 		}catch(Exception e){
 			System.out.println(" 本地扫描失败... ");

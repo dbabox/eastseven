@@ -73,6 +73,7 @@ public final class HandleContent {
 			String content = folder.getContent();
 			String title = folder.getTitle();
 			String url = folder.getUrl();
+			String downloadFile = folder.getDownloadFile();
 			System.out.println(folder.getId()+" | "+url+" | "+title);
 			if(content == null) throw new Exception(folder.getUrl()+" folder content is null");
 			//格式化Content
@@ -133,6 +134,17 @@ public final class HandleContent {
 					}
 					if(resource != null) resources.add(resource);
 				}
+				//下载文件:手机主题或软件
+				if(downloadFile!=null&&!"".equals(downloadFile)){
+					String filePath = oper.downloadFile(downloadFile);
+					Resource resource = new Resource();
+					resource.setFolder(folder);
+					resource.setResourcePath(filePath);
+					resource.setResourceType(ResourceType.SOFTWARE);
+					resource.setResourceContent(downloadFile);
+					resources.add(resource);
+					log.info(" 下载文件:"+filePath);
+				}
 			}
 			if(resources != null){
 				usableFolder = new Folder();
@@ -143,6 +155,7 @@ public final class HandleContent {
 				usableFolder.setResources(resources);
 				usableFolder.setResFileName(folder.getResFileName());
 				usableFolder.setOperation(folder.getOperation());
+				usableFolder.setDownloadFile(folder.getDownloadFile());
 			}
 		}
 		return usableFolder;
