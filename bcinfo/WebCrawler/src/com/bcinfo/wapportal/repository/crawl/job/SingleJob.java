@@ -4,6 +4,7 @@
 package com.bcinfo.wapportal.repository.crawl.job;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,14 +13,15 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.bcinfo.wapportal.repository.crawl.core.CacheQueue;
 import com.bcinfo.wapportal.repository.crawl.core.WebCrawler;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerAstroSohuImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerLotteryImpl;
 import com.bcinfo.wapportal.repository.crawl.core.impl.WebCrawlerMobileZhutiImpl;
-import com.bcinfo.wapportal.repository.crawl.dao.DaoService;
 import com.bcinfo.wapportal.repository.crawl.dao.impl.DaoServiceDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
+import com.bcinfo.wapportal.repository.crawl.domain.internal.AppLog;
 import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
 
 /**
@@ -36,87 +38,84 @@ public class SingleJob implements Job {
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
+
 		String message = "";
 		Date start = new Date(System.currentTimeMillis());
 		String version = new SimpleDateFormat("yyMMddHHmmss").format(start);
-		int count = 0;
-		try{
-			message = sdf.format(start)+" : 抓取[v:"+version+"]开始";
-			System.out.println(message);
+		try {
+			message = "抓取[v:" + version + "]开始";
 			log.info(message);
-			//加载抓取地址
-			DaoService daoService = new DaoServiceDefaultImpl();
-			List<CrawlList> list = daoService.getCrawlLists();
-			if(list!=null && !list.isEmpty()){
-				
-				message = sdf.format(new Date())+" : 抓取[v:"+version+"]地址共"+list.size()+"条";
-				System.out.println(message);
-				log.info(message);
-				
-				Long channelId = null;
-				String url = null;
-				WebCrawler webCrawler = new WebCrawlerDefaultImpl();
-				WebCrawler webCrawlerLottery = new WebCrawlerLotteryImpl();
-				WebCrawler webCrawlerAstro = new WebCrawlerAstroSohuImpl();
-				WebCrawler webCrawlerMobileZhuti = new WebCrawlerMobileZhutiImpl();
-				for(CrawlList obj : list){
-					List<FolderBO> folders = null;
+			// 加载抓取地址
+			List<CrawlList> list = new ArrayList<CrawlList>();
+			list.add((CrawlList) context.getJobDetail().getJobDataMap().get("crawlList"));
+			message = "抓取[v:" + version + "]地址共" + list.size() + "条";
+			log.info(message);
 
-					channelId = obj.getChannelId();
-					url = obj.getCrawlUrl();
-					
-					message = sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]开始";
-					System.out.println(message);
-					log.info(message);
-					
-					if(url.contains("lottery.sports.sohu.com")){
-						//TODO 针对彩票特殊处理
-						folders = webCrawlerLottery.crawl(channelId.toString(), url);
-					}else if(url.contains("astro.women.sohu.com")){
-						//TODO 针对星座占卜特殊处理
-						folders = webCrawlerAstro.crawl(channelId.toString(), url);
-					}else if(url.contains("www.moxiu.com")||url.contains("www.izhuti.com")) {
-						//TODO 针对手机主题下载处理
-						folders = webCrawlerMobileZhuti.crawl(channelId.toString(), url);
-					}else{
-						//TODO 通用频道处理
-						folders = webCrawler.crawl(channelId.toString(), url);
-					}
-					
-					if(folders!=null && !folders.isEmpty()){
-						boolean bln = daoService.saveCrawlResource(folders);
-						if(bln) count += folders.size();
-						
-						message = sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]共"+folders.size()+"条记录，入库操作"+(bln?"成功":"失败");
-						System.out.println(message);
-						log.info(message);
-						
-					}else{
-						message = sdf.format(new Date())+" : 抓取[v:"+version+"]频道["+channelId+"]地址["+url+"]资源对象集合为空";
-						System.out.println(message);
-						log.info(message);
-					}
-				}
-			}else{
-				message = sdf.format(new Date())+" : 抓取[v:"+version+"]地址未取到";
-				System.out.println(message);
+			Long channelId = null;
+			String url = null;
+			WebCrawler webCrawler = new WebCrawlerDefaultImpl();
+			WebCrawler webCrawlerLottery = new WebCrawlerLotteryImpl();
+			WebCrawler webCrawlerAstro = new WebCrawlerAstroSohuImpl();
+			WebCrawler webCrawlerMobileZhuti = new WebCrawlerMobileZhutiImpl();
+			int size = 0;
+			for (CrawlList obj : list) {
+				List<FolderBO> folders = new ArrayList<FolderBO>();
+
+				channelId = obj.getChannelId();
+				url = obj.getCrawlUrl();
+
+				message = "抓取[v:" + version + "]频道[" + channelId + "]地址[" + url + "]开始";
 				log.info(message);
+
+				if (url.contains("lottery.sports.sohu.com")) {
+					// TODO 针对彩票特殊处理
+					folders = webCrawlerLottery.crawl(channelId.toString(), url);
+				} else if (url.contains("astro.women.sohu.com")) {
+					// TODO 针对星座占卜特殊处理
+					folders = webCrawlerAstro.crawl(channelId.toString(), url);
+				} else if (url.contains("www.moxiu.com") || url.contains("www.izhuti.com")) {
+					// TODO 针对手机主题下载处理
+					folders = webCrawlerMobileZhuti.crawl(channelId.toString(), url);
+				} else {
+					// TODO 通用频道处理
+					folders = webCrawler.crawl(channelId.toString(), url);
+				}
+				if (folders != null && !folders.isEmpty()) {
+					message = "抓取[v:" + version + "]频道[" + channelId + "]地址[" + url + "]共" + folders.size() + "条记录";
+					log.info(message);
+					new DaoServiceDefaultImpl().saveLog(new AppLog(message, channelId, url, Long.valueOf(folders.size())));
+					CacheQueue.getQueue().addAll(folders);
+					size = folders.size();
+				} else {
+					message = "抓取[v:" + version + "]频道[" + channelId + "]地址[" + url + "]共" + 0 + "条记录";
+					log.info(message);
+				}
+				
+				log.info("CacheQueue:[" + size + "," + CacheQueue.getQueue().size() + "][" + url + "]");
+
 			}
-			
-			Date end = new Date(System.currentTimeMillis());
-			double minutes = (double)((end.getTime()-start.getTime())/(60*1000));
-			
-			message = sdf.format(end)+" : 抓取[v:"+version+"]完成,耗时"+minutes+"分,共入库数据:"+count+"条,下次执行时间:"+sdf.format(context.getNextFireTime());
-			System.out.println(message);
-			log.info(message);
-			
-		}catch(Exception e){
-			if(log.isDebugEnabled()) e.printStackTrace();
-			message = sdf.format(new Date())+" : 抓取[v:"+version+"]失败";
-			System.out.println(message);
+
+		} catch (Exception e) {
+			if (log.isDebugEnabled()) e.printStackTrace();
+			message = sdf.format(new Date()) + " : 抓取[v:" + version + "]失败";
 			log.error(e);
+			if (e instanceof NullPointerException) {
+				e.printStackTrace();
+			}
 		}
 
 	}
 
+	@Deprecated
+	boolean filterHandle(List<FolderBO> folders){
+		boolean bln = false;
+		
+		try {
+			
+		} catch (Exception e) {
+			
+		}
+		
+		return bln;
+	}
 }

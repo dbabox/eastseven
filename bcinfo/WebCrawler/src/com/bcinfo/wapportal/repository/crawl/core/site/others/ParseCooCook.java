@@ -30,7 +30,7 @@ public class ParseCooCook extends AbstractHtmlParseTemplete implements Parse {
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取CooCook[" + link + "]分页失败");
+			////System.out.println("取CooCook[" + link + "]分页失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		return links;
@@ -63,7 +63,7 @@ public class ParseCooCook extends AbstractHtmlParseTemplete implements Parse {
 			content = content.replaceAll("收藏这篇菜谱：将本文收藏到我的个人空间中", replacement);
 			content = content.replaceAll("编辑推荐.*?文章", replacement);
 		} catch (Exception e) {
-			System.out.println("解析MOVIE.PCPOP页面[" + link + "]内容失败");
+			////System.out.println("解析MOVIE.PCPOP页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -84,6 +84,6 @@ public class ParseCooCook extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://www.coocook.com/index.php/action_viewnews_itemid_65295.html";
 		ParseCooCook p = new ParseCooCook();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }

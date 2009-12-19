@@ -33,7 +33,7 @@ public class ConfigPropertyUtil {
 				}
 			}else{
 				//未找到工程路径
-				System.out.println("未找到工程路径,无法加载log4j.properties文件");
+				//System.out.println("未找到工程路径,无法加载log4j.properties文件");
 			}
 			property = new Properties();
 			property.load(in);
@@ -63,7 +63,37 @@ public class ConfigPropertyUtil {
 				}
 			}else{
 				//未找到工程路径
-				System.out.println("未找到工程路径,无法加载config.properties文件");
+				//System.out.println("未找到工程路径,无法加载config.properties文件");
+			}
+			
+			property = new Properties();
+			property.load(in);
+			in.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return property;
+	}
+	
+	public static Properties getConfigProperty(String fileName){
+		Properties property = null;
+		InputStream in = null;
+		try{
+			//取得当前工程所在的根目录
+			String userDir = System.getProperty("user.dir");
+			
+			if(userDir != null && !"".equals(userDir)){
+				File configFolder = new File(userDir+"/config");
+				if(configFolder.exists()){
+					//生产环境,Windows or Linux
+					in = new BufferedInputStream(new FileInputStream(userDir+"/config/"+fileName));
+				}else{
+					//开发环境
+					in = new BufferedInputStream(new FileInputStream(userDir+"/src/"+fileName));
+				}
+			}else{
+				//未找到工程路径
+				//System.out.println("未找到工程路径,无法加载"+fileName+"文件");
 			}
 			
 			property = new Properties();

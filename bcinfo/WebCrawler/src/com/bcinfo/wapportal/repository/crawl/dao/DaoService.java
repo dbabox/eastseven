@@ -6,6 +6,7 @@ package com.bcinfo.wapportal.repository.crawl.dao;
 import java.util.List;
 
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
+import com.bcinfo.wapportal.repository.crawl.domain.internal.AppLog;
 import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
 
 /**
@@ -17,7 +18,7 @@ import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
  */
 public interface DaoService {
 
-	public List<CrawlList> getCrawlLists();
+	public List<CrawlList> getCrawlLists(String status);
 
 	public List<CrawlList> getCrawlLists(Long folderId);
 
@@ -44,9 +45,27 @@ public interface DaoService {
 	public Boolean clearCrawlResource();
 	
 	/**
-	 * 删除频道下的所有数据
+	 * 删除频道下的所有数据,改用存储过程实现,次方法废弃
 	 * @param channelId
 	 * @return
 	 */
 	public Boolean deleteCrawlResource(Long channelId);
+	
+	/**
+	 * 抓取日志记录
+	 * @param appLog
+	 * @return
+	 */
+	public Boolean saveLog(AppLog appLog);
+	
+	@Deprecated
+	public Boolean isAnyTriggerFired();
+	
+	/**
+	 * 初始化Quartz数据库
+	 * @param sqlFile
+	 * @return
+	 */
+	public Boolean initQuartzDatabase(String sqlFile);
+	
 }

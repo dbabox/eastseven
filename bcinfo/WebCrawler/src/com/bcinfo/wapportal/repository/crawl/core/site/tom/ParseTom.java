@@ -66,7 +66,7 @@ public class ParseTom extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取TOM["+link+"]分页失败");
+			//System.out.println("取TOM["+link+"]分页失败");
 		}
 		return links;
 	}
@@ -93,7 +93,8 @@ public class ParseTom extends AbstractHtmlParseTemplete implements Parse {
 			//视频链接Object标签
 			content = RegexUtil.eliminateString("<[oO][bB][jJ][eE][cC][tT]\\s+[^>]+>", "</[oO][bB][jJ][eE][cC][tT]>", content);
 		}catch(Exception e){
-			System.out.println("解析TOM页面["+link+"]内容失败");
+			//System.out.println("解析TOM页面["+link+"]内容失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;

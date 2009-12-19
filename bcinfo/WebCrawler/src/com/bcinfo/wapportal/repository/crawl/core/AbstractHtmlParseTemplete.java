@@ -55,10 +55,8 @@ public abstract class AbstractHtmlParseTemplete {
 			
 			content = mergeTargetContent(link, links);
 		}catch(Exception e){
-			System.out.println("页面["+link+"]解析失败");
-			if(log.isDebugEnabled()){
-				log.debug(e);
-			}
+			////System.out.println("页面["+link+"]解析失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -165,10 +163,8 @@ public abstract class AbstractHtmlParseTemplete {
 			content = CrawlerUtil.formatSpecialWords(content);
 			
 		}catch(Exception e){
-			System.out.println("处理失败");
-			if(log.isDebugEnabled()){
-				log.debug(e);
-			}
+			//System.out.println("处理失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -197,8 +193,7 @@ public abstract class AbstractHtmlParseTemplete {
 			}
 			return content;
 		}catch(Exception e){
-			e.printStackTrace();
-			log.error(e);
+			if(log.isDebugEnabled()) e.printStackTrace();
 			return "";
 		}
 	}
@@ -251,10 +246,8 @@ public abstract class AbstractHtmlParseTemplete {
 			
 			return content;
 		}catch(Exception e){
-			System.out.println("去除指定标签失败");
-			if(log.isDebugEnabled()){
-				log.debug(e);
-			}
+			//System.out.println("去除指定标签失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 			return targetCnt;
 		}
 	}
@@ -274,10 +267,8 @@ public abstract class AbstractHtmlParseTemplete {
 				content += getTargetContent(pageLink);
 			}
 		}catch(Exception e){
-			System.out.println("合并页面["+link+"]解析失败");
-			if(log.isDebugEnabled()){
-				log.debug(e);
-			}
+			//System.out.println("合并页面["+link+"]解析失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -351,10 +342,8 @@ public abstract class AbstractHtmlParseTemplete {
 				}
 			}
 		}catch(Exception e){
-			System.out.println("取得指定标签下的内容["+link+"]解析失败");
-			if(log.isDebugEnabled()){
-				e.printStackTrace();
-			}
+			//System.out.println("取得指定标签下的内容["+link+"]解析失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -378,7 +367,7 @@ public abstract class AbstractHtmlParseTemplete {
 		try{
 			nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(Div.class));
 		}catch(EncodingChangeException e){
-			//System.out.println(link+" 编码被设置为GBK");
+			////System.out.println(link+" 编码被设置为GBK");
 			parser.reset();
 			parser.setEncoding("GBK");
 			nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(Div.class));

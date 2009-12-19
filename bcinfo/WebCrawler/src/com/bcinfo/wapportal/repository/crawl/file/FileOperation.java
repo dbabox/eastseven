@@ -127,7 +127,7 @@ public final class FileOperation {
 			}
 			br.close();
 		}catch(Exception e){
-			System.out.println("读取"+logPath+"失败");
+			//System.out.println("读取"+logPath+"失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -148,7 +148,7 @@ public final class FileOperation {
 				}
 			}
 		}catch(Exception e){
-			System.out.println("剔除"+logPath+"中的重复链接失败");
+			//System.out.println("剔除"+logPath+"中的重复链接失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -214,7 +214,7 @@ public final class FileOperation {
 			out.write(link.getBytes());
 			out.close();
 		} catch (Exception e) {
-			System.out.println("向"+logPath+"写入"+link+"失败");
+			//System.out.println("向"+logPath+"写入"+link+"失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -233,7 +233,7 @@ public final class FileOperation {
 		try{
 			return log_dir + folderId + ".txt";
 		}catch(Exception e){
-			System.out.println(" 获取 "+ folderId + ".txt日志文件失败");
+			//System.out.println(" 获取 "+ folderId + ".txt日志文件失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -288,7 +288,7 @@ public final class FileOperation {
 				list.add(info);
 			}
 		} catch (Exception e) {
-			System.out.println(" 配置文件读取失败 ");
+			//System.out.println(" 配置文件读取失败 ");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -308,7 +308,7 @@ public final class FileOperation {
 				}
 			}
 		}catch(Exception e){
-			System.out.println(" 筛选可用配置信息失败 ");
+			//System.out.println(" 筛选可用配置信息失败 ");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -327,7 +327,7 @@ public final class FileOperation {
 				}
 			}
 		}catch(Exception e){
-			System.out.println(" 筛选可用配置信息失败 ");
+			//System.out.println(" 筛选可用配置信息失败 ");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -346,12 +346,13 @@ public final class FileOperation {
 				}else{
 					oldCount++;
 				}
-				System.out.println(info);
+				//System.out.println(info);
 				
 			}
-			System.out.println("old:"+oldCount+"|new:"+newCount);
-		}else
-			System.out.println(" 没有要打印的数据 ");
+			//System.out.println("old:"+oldCount+"|new:"+newCount);
+		}else{
+			//System.out.println(" 没有要打印的数据 ");
+		}
 	}
 	
 	/**
@@ -396,7 +397,7 @@ public final class FileOperation {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}catch(NullPointerException e){
-			System.out.println("下载 "+destImgUrl + subDir + fileName+" 文件不存在");
+			//System.out.println("下载 "+destImgUrl + subDir + fileName+" 文件不存在");
 		}
 		return path;
 	}

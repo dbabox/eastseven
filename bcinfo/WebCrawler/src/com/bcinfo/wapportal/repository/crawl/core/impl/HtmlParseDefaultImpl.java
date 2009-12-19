@@ -59,7 +59,7 @@ public class HtmlParseDefaultImpl implements HtmlParse {
 			}
 			
 		}catch(Exception e){
-			System.out.println("筛选["+url+"]可用爬取地址失败");
+			//System.out.println("筛选["+url+"]可用爬取地址失败");
 		}
 		return usableLinks;
 	}

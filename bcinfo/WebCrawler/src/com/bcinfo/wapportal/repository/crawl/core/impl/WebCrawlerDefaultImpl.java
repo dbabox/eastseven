@@ -65,7 +65,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 					
 					if(content == null || "".equals(content) || "null".equals(content)){
 						if(log.isDebugEnabled()){
-							System.out.println("未取得内容： LINK:"+link+" | TITLE:"+title);
+							//System.out.println("未取得内容： LINK:"+link+" | TITLE:"+title);
 						}
 						continue;
 					}
@@ -106,8 +106,8 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 										String originUrl = imgTag.getImageURL();
 										
 										if(log.isDebugEnabled()){
-											System.out.println("------------------------抓取到[ "+link+" ]图片地址-------------------------------");
-											System.out.println("原始图片地址："+originUrl);
+											//System.out.println("------------------------抓取到[ "+link+" ]图片地址-------------------------------");
+											//System.out.println("原始图片地址："+originUrl);
 										}
 										//TOM的图片链接有些是相对路径，此时要手动添加成绝对路径，否则，下载图片是会报空指针错误
 										if(!originUrl.contains("http://")){
@@ -128,7 +128,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 										cnt = cnt.replace(inputHTML, img);
 
 										if(log.isDebugEnabled()){
-											System.out.println("格式化后的图片地址："+originUrl);
+											//System.out.println("格式化后的图片地址："+originUrl);
 											//TODO 图片保存至本地，备用
 											//String fileName = originUrl.substring(originUrl.lastIndexOf("/")+1);
 											//fileOperation.writeFile(originUrl, fileName);
@@ -141,13 +141,13 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 						}
 						
 						if(log.isDebugEnabled()){
-							System.out.println("------------------------抓取-------------------------------");
-							System.out.println(link+" | "+title);
+							//System.out.println("------------------------抓取-------------------------------");
+							//System.out.println(link+" | "+title);
 							
-//							System.out.println("------------------------格式化文本内容-------------------------------");
-							System.out.println("内容                      :"+content);
-//							System.out.println("图片存放路径  :"+imgPathSet);
-							System.out.println(" ");
+//							//System.out.println("------------------------格式化文本内容-------------------------------");
+							//System.out.println("内容                      :"+content);
+//							//System.out.println("图片存放路径  :"+imgPathSet);
+							//System.out.println(" ");
 						}
 						/**/
 						folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
@@ -159,10 +159,10 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 				}
 				
 			}else{
-				System.out.println(" 抓取地址["+url+"]目前还不能解析... ");
+				//System.out.println(" 抓取地址["+url+"]目前还不能解析... ");
 			}
 		}catch(Exception e){
-			System.out.println("[目标栏目:"+folderId+" "+url+"]抓取失败");
+			//System.out.println("[目标栏目:"+folderId+" "+url+"]抓取失败");
 			if(log.isDebugEnabled()){
 				e.printStackTrace();
 			}

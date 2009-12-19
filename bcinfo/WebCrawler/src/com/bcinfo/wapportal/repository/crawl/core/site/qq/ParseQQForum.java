@@ -6,6 +6,8 @@ package com.bcinfo.wapportal.repository.crawl.core.site.qq;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.bcinfo.wapportal.repository.crawl.core.AbstractHtmlParseTemplete;
 import com.bcinfo.wapportal.repository.crawl.core.Parse;
 
@@ -16,6 +18,8 @@ import com.bcinfo.wapportal.repository.crawl.core.Parse;
  */
 public class ParseQQForum extends AbstractHtmlParseTemplete implements Parse {
 
+	private static final Logger log = Logger.getLogger(ParseQQForum.class);
+	
 	@Override
 	public String parse(String link) {
 		return this.simpleParse(link);
@@ -37,7 +41,7 @@ public class ParseQQForum extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取QQ论坛["+link+"]分页失败");
+			//System.out.println("取QQ论坛["+link+"]分页失败");
 		}
 		return links;
 	}
@@ -51,8 +55,8 @@ public class ParseQQForum extends AbstractHtmlParseTemplete implements Parse {
 			content = this.commonParseContent(content);
 			
 		}catch(Exception e){
-			System.out.println("解析QQ论坛页面["+link+"]内容失败");
-			content = null;
+			//System.out.println("解析QQ论坛页面["+link+"]内容失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;

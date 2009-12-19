@@ -16,6 +16,7 @@ import com.bcinfo.wapportal.repository.crawl.core.AbstractHtmlParseTemplete;
  *         ²ÊÆ±<br>
  *         http://lottery.sports.sohu.com/open<br>
  */
+@Deprecated
 public class ParseSohuLottery extends AbstractHtmlParseTemplete{
 
 	private static Logger log = Logger.getLogger(ParseSohuLottery.class);

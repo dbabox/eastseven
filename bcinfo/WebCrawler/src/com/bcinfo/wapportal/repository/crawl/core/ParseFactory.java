@@ -44,93 +44,93 @@ public final class ParseFactory {
 		
 		if (url.contains(".qq.") && !url.contains("bbs.ent.qq")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseQQ");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseQQ");
 			}
 			return new ParseQQ();
 		} else if (url.contains("bbs.ent.qq")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseQQForum");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseQQForum");
 			}
 			return new ParseQQForum();
 		} else if (url.contains(".tom.")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseTom");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseTom");
 			}
 			return new ParseTom();
 		} else if (url.contains(".sohu.")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseSohu");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseSohu");
 			}
 			return new ParseSohu();
 		} else if (url.contains(".sina.")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseSina");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseSina");
 			}
 			return new ParseSina();
 		} else if (url.contains(".xinhuanet.")/*||url.contains("/xinhua/")*/) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseXinHuaNet");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseXinHuaNet");
 			}
 			return new ParseXinHuaNet();
 		} else if(url.contains("www.news.cn")){
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseNewsCn");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseNewsCn");
 			}
 			return new ParseNewsCn();
 		} else if(url.contains(".huanqiu.")){
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseHuanQiu");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseHuanQiu");
 			}
 			return new ParseHuanQiu();
 		} else if(url.contains("www.pcpop.com")){
-			System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMobile");
+			////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMobile");
 			return new ParsePcpopMobile();
 		}else if(url.contains("movie.pcpop.")){
-			System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMovie");
+			////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcpopMovie");
 			return new ParsePcpopMovie();
 		} else if(url.contains("astro.pclady.")){
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcladyAstro");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParsePcladyAstro");
 			}
 			return new ParsePcladyAstro();
 		} else if(url.contains(".coocook.")){
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseCooCook");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseCooCook");
 			}
 			return new ParseCooCook();
 		} else if(url.contains(".51yala.")){
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseYala");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseYala");
 			}
 			return new ParseYala();
 		} else if(url.contains("mobile.zol.")){
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseZolMobile");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseZolMobile");
 			}
 			return new ParseZolMobile();
 		} else if(url.contains(".moxiu.")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseMoxiu");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseMoxiu");
 			}
 			return new ParseMoxiu();
 		} else if(url.contains(".izhuti.")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseIZhuti");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseIZhuti");
 			}
 			return new ParseIZhuti();
 		} else if(url.contains("sports.163.com")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类Parse163");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类Parse163");
 			}
 			return new Parse163();
 		} else if(url.contains("news.ifeng.com")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseIFeng");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseIFeng");
 			}
 			return new ParseIFeng();
 		} else if (url.contains(".tianya.")) {
 			if(log.isDebugEnabled()){
-				System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseTianya");
+				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseTianya");
 			}
 			return new ParseTianya();
 		} else {

@@ -112,6 +112,7 @@ public class WebCrawlerLotteryImpl extends AbstractHtmlParseTemplete implements 
 		}catch(Exception e){
 			e.printStackTrace();
 			log.error(e);
+			log.info(" ²ÊÆ±×¥È¡Ê§°Ü["+url+"]");
 			//log.error("");
 		}
 		

@@ -71,7 +71,7 @@ public final class CrawlerUtil {
 				linkTags.add(linkTag);
 			}
 		}catch(Exception e){
-			System.out.println("取得页面["+url+"]内的所有超链接地址失败");
+			//System.out.println("取得页面["+url+"]内的所有超链接地址失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -90,11 +90,11 @@ public final class CrawlerUtil {
 		try{
 			Parser parser = new Parser(url);
 			
-			if(log.isDebugEnabled()) System.out.println(url+" | "+parser.getEncoding());
+			if(log.isDebugEnabled()) //System.out.println(url+" | "+parser.getEncoding());
 			
-			System.out.println(" 编码 "+parser.getEncoding());
+			//System.out.println(" 编码 "+parser.getEncoding());
 			
-			if(!"GBK".equalsIgnoreCase(parser.getEncoding())) parser.setEncoding("GBK");
+			if("ISO-8859-1".equalsIgnoreCase(parser.getEncoding())) parser.setEncoding("GBK");
 				
 			//TODO 该问题待查
 			//解析静态页面内容，这样可以避免链接数据存放在js脚本中的情况
@@ -118,7 +118,7 @@ public final class CrawlerUtil {
 				String link = linkTag.extractLink();
 				String title = linkTag.getLinkText();
 				
-				//System.out.println("  "+link);
+				////System.out.println("  "+link);
 				
 				if(link == null || "".equals(link)) continue;
 				if(!CrawlerUtil.canCrwal(link)) continue;
@@ -129,14 +129,16 @@ public final class CrawlerUtil {
 					link = CrawlerUtil.addLinkHeader(link, httpHeader);
 				}
 				
-				if(log.isDebugEnabled()) System.out.println("     待抓取的链接："+link);
+				if(log.isDebugEnabled()){
+					//System.out.println("     待抓取的链接："+link);
+				}
 				FolderBO folder = new FolderBO();
 				folder.setLink(link);
 				folder.setTitle(title);
 				links.add(folder);
 			}
 		}catch(Exception e){
-			System.out.println("取得页面["+url+"]内的所有超链接地址失败");
+			//System.out.println("取得页面["+url+"]内的所有超链接地址失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -150,7 +152,7 @@ public final class CrawlerUtil {
 			Parser parser = new Parser(url);
 			if(log.isDebugEnabled()){
 				log.debug(url+" | "+parser.getEncoding());
-				System.out.println(parser.parse(null).toHtml());
+				//System.out.println(parser.parse(null).toHtml());
 				//parser.reset();
 			}
 			if(!"GBK".equalsIgnoreCase(parser.getEncoding()))
@@ -162,7 +164,7 @@ public final class CrawlerUtil {
 				ScriptTag node = (ScriptTag)iter.nextNode();
 				
 				if(log.isDebugEnabled()){
-					System.out.println("script   :"+node.getScriptCode());
+					//System.out.println("script   :"+node.getScriptCode());
 				}
 				
 				if(node.getScriptCode().contains("var data=[")){
@@ -197,10 +199,10 @@ public final class CrawlerUtil {
 					links.add(folder);
 				}
 			}else{
-				System.out.println("未取得页面["+url+"]脚本数据");
+				//System.out.println("未取得页面["+url+"]脚本数据");
 			}
 		}catch(Exception e){
-			System.out.println("取得新浪四川页面["+url+"]内的所有超链接地址失败");
+			//System.out.println("取得新浪四川页面["+url+"]内的所有超链接地址失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}

@@ -53,10 +53,8 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
-			System.out.println("取sina["+link+"]分页失败");
-			if(log.isDebugEnabled()){
-				log.debug(e);
-			}
+			//System.out.println("取sina["+link+"]分页失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		return links;
 	}
@@ -67,9 +65,9 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 		
 		try{
 			content = this.getPageContent(link, "id", "artibody");
-			//System.out.println(content);
+			////System.out.println(content);
 			content = this.commonParseContent(content);
-			System.out.println(content);
+			//System.out.println(content);
 			//内容中包含脚本标签
 			if(content.contains("<style") 
 					|| content.contains("<span") 
@@ -94,10 +92,8 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 			content = content.replaceAll(RegexUtil.REGEX_ESC_SPACE, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_FORMAT_SPACE, replacement);
 		}catch(Exception e){
-			System.out.println("解析sina页面["+link+"]内容失败");
-			if(log.isDebugEnabled()){
-				log.debug(e);
-			}
+			//System.out.println("解析sina页面["+link+"]内容失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 		
 		return content;
@@ -105,10 +101,10 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 
 	//TODO TEST
 	public static void main(String[] args) {
-		System.out.println("start");
+		//System.out.println("start");
 		String link = "http://tech.sina.com.cn/d/2009-12-03/10003645879.shtml";
 		ParseSina p = new ParseSina();
-		System.out.println(p.parse(link));
-		System.out.println("done");
+		//System.out.println(p.parse(link));
+		//System.out.println("done");
 	}
 }

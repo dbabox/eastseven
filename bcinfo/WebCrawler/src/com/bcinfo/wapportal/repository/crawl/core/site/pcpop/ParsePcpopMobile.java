@@ -49,8 +49,8 @@ public class ParsePcpopMobile extends AbstractHtmlParseTemplete implements Parse
 		} catch (Exception e) {
 			links = new ArrayList<String>();
 			links.add(link);
-			e.printStackTrace();
-			System.out.println("取MOBILE.PCPOP[" + link + "]分页失败");
+			if(log.isDebugEnabled()) e.printStackTrace();
+			log.info("取MOBILE.PCPOP[" + link + "]分页失败");
 		}
 		return links;
 	}
@@ -60,7 +60,6 @@ public class ParsePcpopMobile extends AbstractHtmlParseTemplete implements Parse
 		String content = null;
 
 		try {
-			//content = this.removeScritpTag(link);
 			content = this.getPageContent(link, "div", "id", "contentDiv");
 			if("".equals(content)){
 				content = this.getPageContent(link, "div", "class", "pop_2_1_5");
@@ -70,7 +69,7 @@ public class ParsePcpopMobile extends AbstractHtmlParseTemplete implements Parse
 			
 			content = content.replaceFirst("泡泡网手机频道", replacement);
 		} catch (Exception e) {
-			System.out.println("解析MOBILE.PCPOP页面[" + link + "]内容失败");
+			//System.out.println("解析MOBILE.PCPOP页面[" + link + "]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
 
@@ -93,8 +92,8 @@ public class ParsePcpopMobile extends AbstractHtmlParseTemplete implements Parse
 		//http://www.pcpop.com/doc/0/468/468713.shtml 分页A[在本页阅读全文]
 		//http://www.pcpop.com/doc/0/466/466595.shtml 分页B[第二页内容是参数信息，不管]
 		//http://www.pcpop.com/doc/0/468/468094.shtml
-		String link = "http://www.pcpop.com/doc/0/466/466595.shtml";
-		ParsePcpopMobile p = new ParsePcpopMobile();
-		System.out.println(p.parse(link));
+		//String link = "http://www.pcpop.com/doc/0/466/466595.shtml";
+		//ParsePcpopMobile p = new ParsePcpopMobile();
+		//System.out.println(p.parse(link));
 	}
 }

@@ -68,6 +68,6 @@ public class ParseTianya extends AbstractHtmlParseTemplete implements Parse{
 	public static void main(String[] args) {
 		String link = "http://www.tianya.cn/publicforum/content/fans/1/173695.shtml";
 		ParseTianya p = new ParseTianya();
-		System.out.println(p.parse(link));
+		//System.out.println(p.parse(link));
 	}
 }
