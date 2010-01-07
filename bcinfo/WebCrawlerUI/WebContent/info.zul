@@ -1,0 +1,16 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<zscript language="Java">
+	String version = application.getVersion();
+	Date currentDate = new Date();
+</zscript>
+	<hbox align="center">
+		<vbox align="start">
+			<label value="${currentDate }" />
+		</vbox>
+		<vbox></vbox>
+		<vbox align="end">
+			<label value="${version }" />
+		</vbox>
+	</hbox>
+</zk>
