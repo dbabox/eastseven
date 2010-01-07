@@ -18,10 +18,12 @@ public class ResourceBean implements Serializable {
 	private String content;
 	private String text;
 	private String imgPathSet;
+	private String filePathSet;
 	private String status;
 	private String createTime;
 
 	private String pics;// 非数据库字段
+	private String words;// 字数
 
 	public Long getResId() {
 		return resId;
@@ -109,6 +111,22 @@ public class ResourceBean implements Serializable {
 
 	public void setChannelName(String channelName) {
 		this.channelName = channelName;
+	}
+
+	public String getWords() {
+		return words;
+	}
+
+	public void setWords(String words) {
+		this.words = words;
+	}
+
+	public String getFilePathSet() {
+		return filePathSet;
+	}
+
+	public void setFilePathSet(String filePathSet) {
+		this.filePathSet = filePathSet;
 	}
 
 	@Override

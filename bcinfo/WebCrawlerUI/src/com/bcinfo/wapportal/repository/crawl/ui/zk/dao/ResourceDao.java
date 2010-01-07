@@ -64,7 +64,7 @@ public class ResourceDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " update twap_public_crawl_resource a set a.res_title = ?,a.res_text = ?,a.res_status = '0' where a.res_id = ? ";
+		String sql = " update twap_public_crawl_resource a set a.res_title = ?,a.res_text = ?,a.res_status = '0',a.create_time=sysdate where a.res_id = ? ";
 		String version = null;
 		
 		try{
@@ -80,7 +80,7 @@ public class ResourceDao extends Dao {
 				pst.setLong(3, resId);
 				pst.executeUpdate();
 			}else{
-				pst = conn.prepareStatement(" update twap_public_crawl_resource a set a.res_title = ?,a.res_text = EMPTY_CLOB() where a.res_id = ? ");
+				pst = conn.prepareStatement(" update twap_public_crawl_resource a set a.res_title = ?,a.res_text = EMPTY_CLOB(),a.create_time=sysdate where a.res_id = ? ");
 				pst.setString(1, title);
 				pst.setLong(2, resId);
 				pst.executeUpdate();
@@ -127,7 +127,7 @@ public class ResourceDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " update twap_public_crawl_resource a set a.res_status = '1' where a.res_id = ? ";
+		String sql = " update twap_public_crawl_resource a set a.res_status = '1',a.create_time=sysdate where a.res_id = ? ";
 
 		try {
 			conn = OracleUtil.getConnection();
@@ -154,7 +154,7 @@ public class ResourceDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " update twap_public_crawl_resource a set a.res_status = '1' where a.res_id = ? ";
+		String sql = " update twap_public_crawl_resource a set a.res_status = '1',a.create_time=sysdate where a.res_id = ? ";
 
 		try {
 			if(list != null && !list.isEmpty()){
@@ -193,7 +193,7 @@ public class ResourceDao extends Dao {
 			condition = " and a.res_title like '"+title+"%' ";
 		}
 		//TODO Orcale9i与10g在使用connect by时9i不能使用nocycle关键字，估计是9i还没有该关键字的缘故
-		String sql = " select a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and (to_char(a.create_time,'yyyy-mm-dd') <= ? and to_char(a.create_time,'yyyy-mm-dd') >= ?) "+condition+" order by a.create_time desc,a.res_id desc ";
+		String sql = " select a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time,dbms_lob.getlength(a.res_text) res_words from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and (to_char(a.create_time,'yyyy-mm-dd') <= ? and to_char(a.create_time,'yyyy-mm-dd') >= ?) "+condition+" order by a.create_time desc,a.res_id desc ";
 
 		try {
 			System.out.println(sql);
@@ -217,7 +217,8 @@ public class ResourceDao extends Dao {
 				bean.setStatus(rs.getString("res_status"));
 				bean.setTitle(rs.getString("res_title"));
 				bean.setImgPathSet(rs.getString("res_img_path_set"));
-
+				bean.setWords(rs.getObject("res_words").toString());
+				
 				list.add(bean);
 			}
 
@@ -234,7 +235,7 @@ public class ResourceDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = "select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_img_path_set,a.res_file_path_set,a.res_text,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where a.res_id=?";
+		String sql = "select a.res_id,a.channel_id,a.res_title,a.res_link,a.res_content,a.res_img_path_set,nvl(a.res_file_path_set,'') res_file_path_set,a.res_text,a.res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where a.res_id=?";
 		try {
 			conn = OracleUtil.getConnection();
 			pst = conn.prepareStatement(sql);
@@ -260,6 +261,7 @@ public class ResourceDao extends Dao {
 				bean.setStatus(rs.getString("res_status"));
 				bean.setTitle(rs.getString("res_title"));
 				bean.setImgPathSet(rs.getString("res_img_path_set"));
+				bean.setFilePathSet(rs.getString("res_file_path_set"));
 				
 				bean.setPics((rs.getString("res_img_path_set")!=null && !"".equals(rs.getString("res_img_path_set"))?String.valueOf(rs.getString("res_img_path_set").split(",").length):"0"));
 			}
@@ -282,7 +284,7 @@ public class ResourceDao extends Dao {
 		if(title != null && !"".equals(title)){
 			condition = " and a.res_title like '"+title+"%' ";
 		}
-		String sql = " select rownum row_num,a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_text,a.res_img_path_set,decode(a.res_status,'0','未审','1','已审') res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and( to_char(a.create_time,'yyyy-mm-dd') <= ? and to_char(a.create_time,'yyyy-mm-dd')>=?)"+condition+" and rownum <= ? order by a.create_time desc,a.res_id desc ";
+		String sql = " select rownum row_num,a.res_id,a.channel_id,(select c.channel_name from twap_public_channel c where a.channel_id=c.channel_id) channel_name,a.res_title,a.res_link,a.res_content,a.res_text,a.res_img_path_set,decode(a.res_status,'0','未审','1','已审') res_status,to_char(a.create_time,'yy/mm/dd hh24:mi:ss') create_time,dbms_lob.getlength(a.res_text) res_words from twap_public_crawl_resource a where exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid) and a.res_status = ? and( to_char(a.create_time,'yyyy-mm-dd') <= ? and to_char(a.create_time,'yyyy-mm-dd')>=?)"+condition+" and rownum <= ? order by a.create_time desc,a.res_id desc ";
 		sql = " select * from ( select * from ( " + sql
 				+ " ) b ) c where c.row_num >= ? order by c.create_time desc,c.res_id desc";
 		try {
@@ -319,7 +321,7 @@ public class ResourceDao extends Dao {
 				bean.setStatus(rs.getString("res_status"));
 				bean.setTitle(rs.getString("res_title"));
 				bean.setImgPathSet(rs.getString("res_img_path_set"));
-				
+				bean.setWords(rs.getObject("res_words").toString());
 				bean.setPics((rs.getString("res_img_path_set")!=null && !"".equals(rs.getString("res_img_path_set"))?String.valueOf(rs.getString("res_img_path_set").split(",").length):"0"));
 				list.add(bean);
 			}
