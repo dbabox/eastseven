@@ -3,7 +3,8 @@
 
 	<proxool>
 		<alias>oracle</alias>
-		
+		<!-- jdbc:oracle:thin:@127.0.0.1:1521:ZK -->
+		<!-- jdbc:oracle:thin:@218.205.231.65:1521:FXK -->
 		<driver-url>jdbc:oracle:thin:@127.0.0.1:1521:ZK</driver-url>
 		<driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
 		<driver-properties>
