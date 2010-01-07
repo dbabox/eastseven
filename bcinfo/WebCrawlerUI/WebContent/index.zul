@@ -1,20 +1,28 @@
 <?page title="WebCrawlerUI"?>
-<window border="none" width="100%" height="100%" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.BorderLayoutComposer">
+<window border="none" width="100%" height="100%"
+	apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.BorderLayoutComposer">
 	<zscript>
-		Object obj = session.getAttribute("user");
-		boolean isAdmin = false;
-		if(obj != null){
-			com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean bean = (com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean)obj;
-			if(bean.getUserId() == 0L) isAdmin = true;
+	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+			"yyyy-MM-dd");
+	Object obj = session.getAttribute("user");
+	com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean bean;
+	boolean isAdmin = false;
+	if (obj != null) {
+		bean = (com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean) obj;
+		if (bean.getUserId() == 0L)
+			isAdmin = true;
+	}
+	com.bcinfo.wapportal.repository.crawl.ui.zk.dao.ChannelDao channelDao = new com.bcinfo.wapportal.repository.crawl.ui.zk.dao.ChannelDao();
+	com.bcinfo.wapportal.repository.crawl.dao.AppLogDao dao = new com.bcinfo.wapportal.repository.crawl.dao.AppLogDao();
+	String current = sdf.format(new Date());
+	Long count = dao.getCatchSize(0L, current, current);
+	void logout() {
+		if (session.getAttribute("user") != null) {
+			session.removeAttribute("user");
+			execution.sendRedirect("index.zul");
 		}
-		
-		void logout(){
-			if(session.getAttribute("user") != null){
-				session.removeAttribute("user");
-				execution.sendRedirect("index.zul");
-			}
-		}
-	</zscript>
+	}
+</zscript>
 	<menubar id="menubar">
 		<menu label="资源">
 			<menupopup>
@@ -27,12 +35,30 @@
 		<menu label="订购">
 			<menupopup>
 				<menuitem label="手动" id="mappingMenuItem" />
-				<menuitem label="自动" id="mappingAutoMenuItem" if="${isAdmin }"/>
+				<menuitem label="自动" id="mappingAutoMenuItem"
+					if="${isAdmin }" />
 			</menupopup>
 		</menu>
-		<menuitem label="注销" id="logout" onClick="logout()"/>
+		<menuitem label="SPCP" id="spcpMenuItem" />
+		<menuitem label="文件上传" id="uploadMenuItem" if="${isAdmin }" />
+		<menu label="系统" if="${isAdmin }">
+			<menupopup>
+				<menuitem label="用户" />
+				<menuitem label="日志" id="appLogMenuItem" />
+				<menuitem label="Quartz" id="quartzMenuItem" />
+			</menupopup>
+		</menu>
+		<menuitem label="注销" id="logout" onClick="logout()" />
+
 	</menubar>
+	<!--  -->
 	<div id="contentDiv">
-		
+		登录帐号：${bean.userName } 区域：${bean.localCode }
+		<grid id="grid">
+			<columns>
+				<column label="今日抓取数量" />
+			</columns>
+		</grid>
 	</div>
+
 </window>
