@@ -49,7 +49,7 @@ public class ChannelTreeModel extends AbstractTreeModel{
 	@Override
 	public boolean isLeaf(Object node) {
 		boolean leaf = false;
-		if(node instanceof Long){
+		if(node instanceof ChannelBean){
 			leaf = dao.isLeaf((ChannelBean)node);
 		}
 		return leaf;

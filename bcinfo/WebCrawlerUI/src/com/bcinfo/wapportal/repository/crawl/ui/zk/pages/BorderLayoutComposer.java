@@ -10,6 +10,10 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.ListModelMap;
 import org.zkoss.zul.Menubar;
+import org.zkoss.zul.Tab;
+import org.zkoss.zul.Tabpanel;
+import org.zkoss.zul.Tabpanels;
+import org.zkoss.zul.Tabs;
 
 import com.bcinfo.wapportal.repository.crawl.dao.AppLogDao;
 
@@ -25,6 +29,9 @@ public class BorderLayoutComposer extends GenericForwardComposer {
 	private Div contentDiv;
 	private Menubar menubar;
 	private Map<String, Object> map;
+	
+	private Tabs tabs;
+	private Tabpanels tabpanels;
 
 	public BorderLayoutComposer() {
 	}
@@ -106,9 +113,26 @@ public class BorderLayoutComposer extends GenericForwardComposer {
 		createContent("/pages/system/quartz/quartz_layout.zul", contentDiv, null);
 	}
 	
+	//SPCP
+	public void onClick$spcpMenuItem() {
+		createContent("/pages/spcp/spcp_layout.zul", contentDiv, null);
+	}
+	
 	void createContent(String uri, Component parent, Map<String, Object> map){
 		contentDiv.getChildren().clear();
 		Executions.createComponents(uri, parent, map);
+	}
+	
+	void createContent(String uri, Component parent, Map<String, Object> map, String name){
+		Tab tab = new Tab(name);
+		tab.setClosable(true);
+		tab.setSelected(true);
+		Tabpanel tabpanel = new Tabpanel();
+		Executions.createComponents(uri, tabpanel, map);
+		tabpanel.setHeight("100%");
+		
+		tabs.appendChild(tab);
+		tabpanels.appendChild(tabpanel);
 	}
 	
 	void initGrid(){

@@ -90,11 +90,9 @@ public final class ConfigServlet extends HttpServlet {
 			
 			//业务Job
 			JobDetail job = new JobDetail("autoSendJob", Scheduler.DEFAULT_GROUP, AutoSendJob.class);
-			//TODO 60分钟一次
-			//long repeatInterval = 60 * 60 * 1000L;
 			Trigger trigger = null;
-			//new SimpleTrigger("singleTrigger", Scheduler.DEFAULT_GROUP, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, repeatInterval);
-			trigger = new CronTrigger("autoSendTrigger", Scheduler.DEFAULT_GROUP, "0 0 0/12 ? * *");
+			//TODO 彩票自动发送JOB
+			trigger = new CronTrigger("autoSendTrigger", Scheduler.DEFAULT_GROUP, "1 2 18-22 ? * *");
 			scheduler.scheduleJob(job, trigger);
 			
 			scheduler.start();

@@ -62,7 +62,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 		}
 	}
 	
-	//自动发送
+	//自动发送彩票
 	@Override
 	public Boolean sendResourceAuto() {
 		boolean bln = false;
@@ -78,6 +78,10 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 					mapping.setLocalChannelId(map.get("localChannelId"));
 					mapping.setLocalCode(map.get("localCode"));
 					operation = Integer.parseInt(map.get("operation"));
+					//TODO 彩票无审核直接发布代码10
+					if(operation==1){
+						operation = 10;
+					}
 					generateResourceFile(mapping, resource, operation);
 				}
 			}
