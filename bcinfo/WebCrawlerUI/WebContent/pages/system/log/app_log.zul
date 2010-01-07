@@ -1,0 +1,14 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<borderlayout apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.system.log.AppLogComposer">
+		<west size="150px" splittable="true" collapsible="true" autoscroll="true" title="频道">
+			<tree id="channelTree" />
+		</west>
+		<center autoscroll="true">
+			<tabbox id="tabbox">
+				<tabs id="tabs"/>
+				<tabpanels id="tabpanels"/>
+			</tabbox>
+		</center>
+	</borderlayout>
+</zk>

@@ -1,0 +1,15 @@
+<?page title="SPCP" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<borderlayout
+		apply="com.bcinfo.wapportal.repository.crawl.ui.spcp.pages.BorderLayoutComposer">
+		<west size="30%" splittable="true" collapsible="true" autoscroll="true" title="栏目">
+			<tree id="folderTree" />
+		</west>
+		<center autoscroll="true">
+			<tabbox id="tabbox">
+				<tabs id="tabs" />
+				<tabpanels id="tabpanels" />
+			</tabbox>
+		</center>
+	</borderlayout>
+</zk>

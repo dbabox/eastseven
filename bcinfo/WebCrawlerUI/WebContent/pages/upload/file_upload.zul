@@ -1,0 +1,27 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+<window border="normal" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.upload.FileUploadComposer">
+<button label="上传" id="upload"/>
+<listbox id="listbox" fixedLayout="true">
+	<listhead>
+		<listheader label="A" sort="auto" />
+		<listheader label="B" sort="auto" />
+		<listheader label="C" sort="auto" />
+		<listheader label="D" sort="auto" />
+	</listhead>
+	<listitem>
+		<listcell label="1" />
+		<listcell label="2" />
+		<listcell label="3" />
+		<listcell label="4" />
+	</listitem>
+	<listitem>
+		<listcell label="1" />
+		<listcell label="2" />
+		<listcell label="3" />
+		<listcell label="4" />
+	</listitem>
+</listbox>
+
+</window>
+</zk>

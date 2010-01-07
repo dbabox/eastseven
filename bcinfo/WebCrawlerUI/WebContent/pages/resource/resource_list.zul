@@ -6,7 +6,7 @@
 			Date current = new Date(System.currentTimeMillis());
 		</zscript>
 		<toolbar>
-			<textbox tooltiptext="标题" value="" id="title" width="200px"/><datebox format="yyyy-MM-dd" value="${current }" id="currentDate"/><toolbarbutton label="查询" id="search"/>
+			<textbox tooltiptext="标题" value="" id="title" width="200px"/><datebox format="yyyy-MM-dd" value="${current }" id="currentDate"/><datebox format="yyyy-MM-dd" value="${current }" id="currentDateEnd"/><toolbarbutton label="查询" id="search"/>
 			<toolbarbutton label="审核" id="add" if='${status == "0" }'/>
 			<toolbarbutton label="全部审核" id="addAll" if='${status == "0" }'/>
 			<toolbarbutton label="发布" id="mod" if='${status == "1" }'/>
