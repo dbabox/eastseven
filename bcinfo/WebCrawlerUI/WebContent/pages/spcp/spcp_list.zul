@@ -1,0 +1,14 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window border="normal" apply="com.bcinfo.wapportal.repository.crawl.ui.spcp.pages.SpcpGridComposer">
+		<grid id="grid" fixedLayout="true" mold="paging" pageSize="30">
+			<columns>
+				<column label=" " width="25px" />
+				<column label="序号" width="100px" />
+				<column label="标题" />
+				<column label="状态" width="50px"/>
+				<column label="时间" width="150px" />
+			</columns>
+		</grid>
+	</window>
+</zk>

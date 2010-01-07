@@ -1,0 +1,31 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<!-- quartz<window></window> -->
+
+	<borderlayout apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.quartz.BorderLayoutComposer">
+		<west width="30%" splittable="true" collapsible="true" autoscroll="true" title=" ">
+			<tree id="tree"/>
+		</west>
+		<center id="center" autoscroll="true">
+			<tabbox id="tabbox">
+				<tabs id="tabs">
+					<tab label="System Properties" />
+				</tabs>
+				<tabpanels id="tabpanels">
+					<tabpanel >
+						<grid fixedLayout="true" id="grid">
+							<columns>
+								<column label="Key" width="40%"/>
+								<column label="Value" />
+							</columns>
+							<rows>
+								<row></row>
+							</rows>
+						</grid>
+					</tabpanel>
+				</tabpanels>
+			</tabbox>
+		</center>
+	</borderlayout>
+
+</zk>

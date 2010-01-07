@@ -13,7 +13,7 @@
 			<menuitem label="修改" id="mod"/>
 			<menuitem label="删除" id="del" if="${isAdmin }"/>
 		</menubar>
-		<listbox id="channelListbox" fixedLayout="true" multiple="true" mold="paging" pageSize="30">
+		<listbox id="channelListbox" fixedLayout="true" multiple="false" mold="paging" pageSize="30">
 			<listhead>
 				<listheader label="序号" sort="auto" />
 				<listheader label="频道" sort="auto" />

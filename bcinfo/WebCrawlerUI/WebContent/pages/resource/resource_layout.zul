@@ -1,19 +1,40 @@
 <?page title="" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<window border="normal" height="100%" width="100%"
+	<!--
+		<window border="normal" height="100%" width="100%"
 		apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.resource.BorderLayoutComposer">
-
-		<!--resource layout-->
 		<borderlayout>
-			<west size="150px" splittable="true" collapsible="true" autoscroll="true" title="资源管理">
-				<tree id="channelTree" />
-			</west>
-			<center autoscroll="true">
-				<div id="contentDiv" height="100%" width="100%" />
-			</center>
+		<west size="150px" splittable="true" collapsible="true" autoscroll="true" title="资源管理">
+		<tree id="channelTree" />
+		</west>
+		<center autoscroll="true">
+		<div id="contentDiv" height="100%" width="100%" />
+		</center>
 		</borderlayout>
-
-		<!---->
-	</window>
-
+		</window>
+	-->
+	<borderlayout>
+		<west size="150px" splittable="true" collapsible="true"
+			autoscroll="true" title="资源管理">
+			<tree>
+				<treecols>
+					<treecol label="" />
+				</treecols>
+				<treechildren>
+					<treeitem>
+						<treerow>
+							<treecell label="a" />
+							<treecell label="b" />
+						</treerow>
+					</treeitem>
+				</treechildren>
+			</tree>
+		</west>
+		<center autoscroll="true">
+			<tabbox id="tabbox">
+				<tabs id="tabs" />
+				<tabpanels id="tabpanels" />
+			</tabbox>
+		</center>
+	</borderlayout>
 </zk>

@@ -6,6 +6,7 @@
 				<div>
 					<toolbar>
 						<toolbarbutton label="添加" id="addRootChannel" />
+						<toolbarbutton label="删除" id="delRootChannel" />
 					</toolbar>
 					<tree id="channelTree" />
 				</div>

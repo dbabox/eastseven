@@ -1,0 +1,5 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div apply="com.bcinfo.wapportal.repository.crawl.ui.zk.component.ChannelTreeComposer">
+	</div>
+</zk>

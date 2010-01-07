@@ -1,0 +1,15 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window border="normal" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.catchconfig.CatchConfigComposer">
+		<textbox id="crawlUrl" width="500px" value=""/><button label="添加配置" id="add"/><button label="启用" id="setup"/><button label="停用" id="stop"/>
+		<listbox id="catchList" fixedLayout="true" mold="paging" pageSize="30">
+			<listhead>
+				<listheader label="序号" sort="auto" width="40px"/>
+				<listheader label="频道" width="100px"/>
+				<listheader label="地址" />
+				<listheader label="状态" width="50px"/>
+				<listheader label="时间" width="150px"/>
+			</listhead>
+		</listbox>
+	</window>
+</zk>
