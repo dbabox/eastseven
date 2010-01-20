@@ -1,0 +1,1 @@
+select count(1),max(log_id) from app_log_webcrawler;
