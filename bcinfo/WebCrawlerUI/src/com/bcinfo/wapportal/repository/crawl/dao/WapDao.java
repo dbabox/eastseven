@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bcinfo.wapportal.repository.crawl.dao.util.OracleUtil;
+import com.bcinfo.wapportal.repository.crawl.domain.others.JobBean;
 import com.bcinfo.wapportal.repository.crawl.ui.zk.dao.Dao;
 
 /**
@@ -41,6 +42,12 @@ public class WapDao extends Dao {
 		} finally {
 			close(conn, pst, rs);
 		}
+		
+		return list;
+	}
+	
+	public List<JobBean> getJobList() {
+		List<JobBean> list = new ArrayList<JobBean>();
 		
 		return list;
 	}

@@ -2,7 +2,9 @@ package com.bcinfo.wapportal.repository.crawl.ui.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -137,8 +139,8 @@ public class CrawlResourceServlet extends HttpServlet {
 		String str = request.getParameter("resIds");
 		str = str.substring(0, str.lastIndexOf(","));
 		String[] ids = str.split(",");
-		
-		boolean bln = service.sendResource(userId, channelId, ids);
+		Map<String, Object> map = new HashMap<String, Object>();
+		boolean bln = service.sendResource(userId, channelId, ids, map);
 		
 		PrintWriter out = response.getWriter();
 		out.print("{ msg:\""+bln+"\" }");

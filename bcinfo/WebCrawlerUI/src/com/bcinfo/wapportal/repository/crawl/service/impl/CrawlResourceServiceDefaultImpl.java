@@ -82,7 +82,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 					if(operation==1){
 						operation = 10;
 					}
-					generateResourceFile(mapping, resource, operation);
+					generateResourceFile(mapping, resource, operation, "1");
 				}
 			}
 			bln = true;
@@ -95,42 +95,68 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	}
 	
 	@Override
-	public Boolean sendResource(Long userId, String channelId, String[] resourceIds) {
+	public Boolean sendResource(Long userId, String channelId, List<Long> resourceIds, Map<String, Object> map) {
+		boolean bln = false;
+		String[] _resourceIds;
+		try {
+			_resourceIds = new String[resourceIds.size()];
+			int index = 0;
+			for(Long id : resourceIds){
+				_resourceIds[index] = id.toString();
+				index++;
+			}
+			bln = sendResource(userId, channelId, _resourceIds, map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			log.info("发送失败");
+		}
+		
+		return bln;
+	}
+	
+	@Override
+	public Boolean sendResource(Long userId, String channelId, String[] resourceIds, Map<String, Object> map) {
 		boolean bln = false;
 		Long resId;
 		CrawlResource resource;
 		try{
-			
+			String sendType = (String)map.get("sendType");
 			//取对照表数据
 			List<ChannelMapping> mappingList = this.channelMappingDao.getChannelMappingList(userId, Long.parseLong(channelId));
-			for(ChannelMapping map : mappingList){
-				System.out.println(map);
+			for(ChannelMapping mapping : mappingList){
+				System.out.println(mapping);
 				//取得资源
 				for(int i=0;i<resourceIds.length;i++){
 					resId = Long.parseLong(resourceIds[i]);
 					resource = this.crawlResourceDao.getCrawlResourceDetail(resId);
-					if("0".equals(resource.getStatus())) continue;
+					if("0".equals(resource.getStatus())){
+						System.out.println(resource);
+						continue;
+					}
 					System.out.println(resource);
 					//生成资源包文件XML,默认操作为INSERT
-					generateResourceFile(map, resource, INSERT);
+					generateResourceFile(mapping, resource, INSERT, sendType);
 				}
 			}
 			
 			bln = true;
 		}catch(Exception e){
 			e.printStackTrace();
+			log.error(e);
+			log.info("发送失败");
 		}
 		
 		return bln;
 	}
 
 	//生成资源包
-	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource, int operation){
+	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource, int operation, String sendType){
 		boolean bln = false;
 		try{
 			log.debug("生成资源包:"+resource);
 			//生成资源内容XML文件
-			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getFilePathSet(), resource.getCreateTime(), operation);
+			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getFilePathSet(), resource.getCreateTime(), operation, sendType);
 			System.out.println("生成资源内容XML文件:"+localFileName);
 			
 			//TODO 暂时将生成的文件包FTP到地方服务器上
@@ -177,9 +203,10 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	 * @param filePathSet
 	 * @param date
 	 * @param operation
+	 * @param sendType
 	 * @return
 	 */
-	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPathSet, String filePathSet, String date, int operation){
+	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPathSet, String filePathSet, String date, int operation, String sendType){
 		String fileName = null;
 		try{
 			
@@ -220,6 +247,9 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			Element eOperation = new Element("operation");
 			eOperation.setText(String.valueOf(operation));
 			
+			Element eSendType = new Element("sendType");
+			eSendType.setText(sendType);
+			
 			root.addContent(eLocalChannelId);
 			root.addContent(eTitle);
 			root.addContent(eLink);
@@ -228,6 +258,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			root.addContent(eImgPath);
 			root.addContent(eFilePath);
 			root.addContent(eOperation);
+			root.addContent(eSendType);
 			
 			XMLOutputter outputter = new XMLOutputter();
 			Format format = Format.getPrettyFormat();

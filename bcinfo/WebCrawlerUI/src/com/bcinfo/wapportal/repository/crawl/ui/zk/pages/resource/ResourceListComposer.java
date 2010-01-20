@@ -231,7 +231,8 @@ public class ResourceListComposer extends GenericForwardComposer {
 				for(int index=0;index<list.size();index++){
 					resourceIds[index] = list.get(index);
 				}
-				bln = service.sendResource(user.getUserId(), bean.getChannelId().toString(), resourceIds);
+				Map<String, Object> map = new HashMap<String, Object>();
+				bln = service.sendResource(user.getUserId(), bean.getChannelId().toString(), resourceIds, map);
 				if(bln){
 					alert("发布成功");
 				}else{
@@ -269,7 +270,8 @@ public class ResourceListComposer extends GenericForwardComposer {
 				for(int index=0;index<list.size();index++){
 					resourceIds[index] = list.get(index);
 				}
-				bln = service.sendResource(user.getUserId(), bean.getChannelId().toString(), resourceIds);
+				Map<String, Object> map = new HashMap<String, Object>();
+				bln = service.sendResource(user.getUserId(), bean.getChannelId().toString(), resourceIds, map);
 				if(bln){
 					alert("发布成功");
 				}else{
@@ -552,7 +554,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 				if(cnt.contains("<font style=\"color: #ff0000\">")||tle.contains("<font style=\"color: #ff0000\">")){
 					alert("当前内容或标题有需屏蔽的敏感关键字,请重新审核!");
 				}else{
-					bln = dao.modifyResourceContentOrTitle(resId.getValue(), tle, cnt);
+					bln = dao.modifyResourceContentOrTitle(resId.getValue(), tle, cnt, status);
 					if(bln){
 						
 						active = resourceListboxPaging.getActivePage();

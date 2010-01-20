@@ -15,7 +15,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerFactory;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -44,7 +43,6 @@ public final class ConfigServlet extends HttpServlet {
 		if(configPath!=null || "".equals(configPath)){
 			InputStream in;
 			try {
-				//in = new BufferedInputStream (new FileInputStream(configPath));
 				in = config.getServletContext().getResourceAsStream(configPath);
 				Properties property = new Properties();
 				property = new Properties();
@@ -66,7 +64,6 @@ public final class ConfigServlet extends HttpServlet {
 		if(configPath!=null || "".equals(configPath)){
 			InputStream in;
 			try {
-				//in = new BufferedInputStream (new FileInputStream(configPath));
 				in = config.getServletContext().getResourceAsStream(configPath);
 				Properties property = new Properties();
 				property = new Properties();
@@ -85,14 +82,14 @@ public final class ConfigServlet extends HttpServlet {
 		
 		//启动调度器
 		try{
-			SchedulerFactory factory = new StdSchedulerFactory();
-			Scheduler scheduler = factory.getScheduler();
-			
+			//SchedulerFactory factory = new StdSchedulerFactory();
+			//Scheduler scheduler = factory.getScheduler();
+			Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
 			//业务Job
 			JobDetail job = new JobDetail("autoSendJob", Scheduler.DEFAULT_GROUP, AutoSendJob.class);
 			Trigger trigger = null;
 			//TODO 彩票自动发送JOB
-			trigger = new CronTrigger("autoSendTrigger", Scheduler.DEFAULT_GROUP, "1 2 18-22 ? * *");
+			trigger = new CronTrigger("autoSendTrigger", Scheduler.DEFAULT_GROUP, "1 2,35 9-10,18-22 ? * *");
 			scheduler.scheduleJob(job, trigger);
 			
 			scheduler.start();

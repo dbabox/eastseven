@@ -3,6 +3,9 @@
  */
 package com.bcinfo.wapportal.repository.crawl.service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author dongq
  * 
@@ -15,14 +18,26 @@ public interface CrawlResourceService {
 	 * @return
 	 */
 	public Boolean sendResourceAuto();
+
+	/**
+	 * 返強窟僕
+	 * @param userId
+	 * @param channelId
+	 * @param resourceIds
+	 * @param map
+	 * @return
+	 */
+	public Boolean sendResource(Long userId, String channelId, List<Long> resourceIds, Map<String, Object> map);
 	
 	/**
 	 * 返強窟僕
 	 * @param userId
 	 * @param channelId
 	 * @param resourceIds
+	 * @param map
 	 * @return
 	 */
-	public Boolean sendResource(Long userId, String channelId, String[] resourceIds);
+	public Boolean sendResource(Long userId, String channelId, String[] resourceIds, Map<String, Object> map);
+	
 	
 }

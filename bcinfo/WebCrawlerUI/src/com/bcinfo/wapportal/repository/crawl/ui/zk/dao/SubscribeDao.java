@@ -150,6 +150,45 @@ public class SubscribeDao extends Dao {
 		return bln;
 	}
 	
+	public Boolean deleteSubscribeBeans(List<SubscribeBean> list){
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " delete from twap_public_channel_mapping where channel_id = ? and user_id = ? and local_code = ? and local_channel_id = ? ";
+		
+		try {
+			conn = OracleUtil.getConnection();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement(sql);
+			for(SubscribeBean bean : list){
+				pst.setLong(1, bean.getChannelId());
+				pst.setLong(2, bean.getUserId());
+				
+				if("ËÄ´¨".equals(bean.getLocalCode())){
+					pst.setString(3, "028");
+				}else if("½­Î÷".equals(bean.getLocalCode())){
+					pst.setString(3, "0791");
+				}
+				
+				pst.setString(4, bean.getLocalFolderId());
+				pst.addBatch();
+				System.out.println(sql+"["+bean+"]");
+			}
+			pst.executeBatch();
+			conn.setAutoCommit(true);
+			conn.commit();
+			bln = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			rollback(conn);
+		} finally {
+			close(conn, pst, rs);
+		}
+		return bln;
+	}
+	
 	public Boolean delete(List<Long> list){
 		boolean bln = false;
 		
