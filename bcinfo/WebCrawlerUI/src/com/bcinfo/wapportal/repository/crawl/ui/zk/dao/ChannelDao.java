@@ -143,7 +143,7 @@ public class ChannelDao extends Dao {
 		}
 		return list;
 	}
-
+	
 	public Boolean save(ChannelBean bean) {
 		boolean bln = false;
 
@@ -165,16 +165,25 @@ public class ChannelDao extends Dao {
 					pst.setLong(5, bean.getChannelId());
 					count = pst.executeUpdate();
 				} else {
+					//添加节点时，需要更新节点关系
 					pst = conn.prepareStatement(sql);
+					pst.clearParameters();
 					pst.setLong(1, bean.getChannelPid());
 					pst.setString(2, bean.getChannelName());
 					pst.setString(3, bean.getChannelPath());
-					pst.setString(4, bean.getChannelIndex());
+					pst.setString(4, "1");//index的值暂时用来标识节点关系:0-非叶子节点;1-叶子节点
 					count = pst.executeUpdate();
+					if(bean.getChannelPid()!=null&&bean.getChannelPid()!=0L){
+						conn.commit();
+						pst = conn.prepareStatement("update twap_public_channel a set a.channel_index = ? where a.channel_id = ?");
+						pst.setString(1, "0");
+						pst.setLong(2, bean.getChannelPid());
+						count = pst.executeUpdate();
+					}
 				}
+				System.out.println(count);
 				conn.commit();
-				if (count > 0)
-					bln = true;
+				bln = true;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

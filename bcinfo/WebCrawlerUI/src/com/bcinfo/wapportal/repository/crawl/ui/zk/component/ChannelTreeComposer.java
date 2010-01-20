@@ -3,6 +3,8 @@
  */
 package com.bcinfo.wapportal.repository.crawl.ui.zk.component;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.zkoss.zk.ui.Component;
@@ -37,7 +39,7 @@ public class ChannelTreeComposer extends GenericForwardComposer {
 	private Tabs tabs;
 	private Tabpanel tabpanel;
 	private Tabpanels tabpanels;
-	
+	private Component parentComp;
 	private String cmd;
 	
 	@Override
@@ -45,6 +47,7 @@ public class ChannelTreeComposer extends GenericForwardComposer {
 		System.out.println("doBeforeCompose:parent-"+parent);
 		tabs = (Tabs)parent.getFellowIfAny("contentTabs");
 		tabpanels = (Tabpanels)parent.getFellowIfAny("contentTabpanels");
+		this.parentComp = parent;
 		return super.doBeforeCompose(page, parent, compInfo);
 	}
 	
@@ -67,7 +70,8 @@ public class ChannelTreeComposer extends GenericForwardComposer {
 		channelTree.setModel(new ChannelTreeModel(0L));
 		channelTree.setTreeitemRenderer(new ChannelTreeitemRenderer());
 		channelTree.addEventListener(Events.ON_SELECT, new EventListenerImpl(cmd));
-		
+		//channelTree.setDraggable("true");
+		//channelTree.setDroppable("true");
 		channelTree.setParent(comp);
 		System.out.println("tabs:"+tabs);
 		System.out.println("tabs:"+this.tabpanels);
@@ -81,15 +85,32 @@ public class ChannelTreeComposer extends GenericForwardComposer {
 			this.cmd = cmd;
 		}
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public void onEvent(Event event) throws Exception {
 			Treeitem selected = channelTree.getSelectedItem();
 			ChannelBean bean = (ChannelBean)selected.getValue();
 			String id = cmd + "_" + bean.getChannelId();
-			createPanel(id, selected.getLabel(), null, null);
+			
+			boolean bln = false;
+			List<Tab> list = tabs.getChildren();
+			if(list!=null&&!list.isEmpty()){
+				for(Tab _tab : list){
+					if(id.equals(_tab.getId())){
+						_tab.setSelected(true);
+						bln = true;
+						break;
+					}
+				}
+			}
+			if(!bln){
+				Map<String, ChannelBean> map = new HashMap<String, ChannelBean>();
+				map.put("channelBean", bean);
+				createPanel(id, selected.getLabel(), "pages/component/"+cmd+"_list.zul", map);
+			}
 		}
 		
-		void createPanel(String id, String name, String uri, Map<String, String> map){
+		void createPanel(String id, String name, String uri, Map<String, ChannelBean> map){
 			try {
 				tab = new Tab(name);
 				tab.setId(id);
@@ -97,8 +118,8 @@ public class ChannelTreeComposer extends GenericForwardComposer {
 				tab.setSelected(true);
 				tabpanel = new Tabpanel();
 				tabpanel.setHeight("100%");
-				//Component comp = Executions.createComponents(uri, null, map);
-				//tabpanel.appendChild(comp);
+				Component comp =  Executions.createComponents(uri, parentComp, map);
+				tabpanel.appendChild(comp);
 				
 				tabs.appendChild(tab);
 				tabpanels.appendChild(tabpanel);

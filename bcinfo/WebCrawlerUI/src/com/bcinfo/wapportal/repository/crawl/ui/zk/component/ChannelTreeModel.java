@@ -50,7 +50,8 @@ public class ChannelTreeModel extends AbstractTreeModel{
 	public boolean isLeaf(Object node) {
 		boolean leaf = false;
 		if(node instanceof ChannelBean){
-			leaf = dao.isLeaf((ChannelBean)node);
+			ChannelBean bean = (ChannelBean)node;
+			leaf = "1".equals(bean.getChannelIndex()) ? true : false;
 		}
 		return leaf;
 	}

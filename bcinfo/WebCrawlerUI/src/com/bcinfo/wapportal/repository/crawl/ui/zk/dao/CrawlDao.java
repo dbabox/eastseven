@@ -16,6 +16,10 @@ import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.CrawlBean;
  */
 public class CrawlDao extends Dao {
 
+	public Boolean save(CrawlBean crawlBean) {
+		return save(crawlBean.getChannelId(), crawlBean.getCrawlUrl());
+	}
+	
 	public Boolean save(Long channelId, String url) {
 		boolean bln = false;
 		
@@ -39,6 +43,74 @@ public class CrawlDao extends Dao {
 			close(conn, pst, rs);
 		}
 		
+		return bln;
+	}
+	
+	public Boolean delete(CrawlBean crawlBean) {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " delete from twap_public_crawl_list a where a.crawl_id = ?";
+		
+		try {
+			conn = OracleUtil.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, crawlBean.getCrawlId());
+			pst.executeUpdate();
+			conn.commit();
+			bln = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			rollback(conn);
+		} finally {
+			close(conn, pst, rs);
+		}
+		
+		return bln;
+	}
+	
+	public Boolean delete(List<CrawlBean> crawlBeans) {
+		boolean bln = false;
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " delete from twap_public_crawl_list a where a.crawl_id = ?";
+		
+		try {
+			conn = OracleUtil.getConnection();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement(sql);
+			
+			for(CrawlBean crawlBean : crawlBeans){
+				pst.setLong(1, crawlBean.getCrawlId());
+				pst.addBatch();
+			}
+			pst.executeBatch();
+			conn.setAutoCommit(true);
+			conn.commit();
+			bln = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			rollback(conn);
+		} finally {
+			close(conn, pst, rs);
+		}
+		
+		return bln;
+	}
+	
+	public Boolean updateStatus(List<CrawlBean> crawlBeans) {
+		boolean bln = false;
+		List<Long> list = new ArrayList<Long>();
+		String status = "";
+		for(CrawlBean bean : crawlBeans){
+			list.add(bean.getCrawlId());
+			status = bean.getCrawlStatus();
+		}
+		bln = updateStatus(list, status);
 		return bln;
 	}
 	

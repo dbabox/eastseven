@@ -14,7 +14,7 @@ public class ChannelBean implements Serializable {
 	private Long channelPid;
 	private String channelName;
 	private String channelPath;
-	private String channelIndex;
+	private String channelIndex;//index的值暂时用来标识节点关系:0-非叶子节点;1-叶子节点
 	private String createTime;
 
 	public ChannelBean() {
