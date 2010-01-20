@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     2009-12-9 下午03:24:50                                                        
+
+     job parser    
+     description
+                   
+     dongq                                                                
+     ====================================================================== -->
+<project name="job parser">
+
+	<property name="src.dir" value="${basedir}/src/" description="源文件存放位置" />
+	<property name="build.dir" value="${basedir}/build/" description="class文件存放位置" />
+	<property name="dist.dir" value="${basedir}/dist/" description="war文件存放位置" />
+	<property file="build.properties" />
+
+	<path id="compile.classpath" description="编译路径">
+		<fileset dir="${basedir}/lib/">
+			<filename name="*.jar" />
+		</fileset>
+		<fileset dir="${basedir}/lib/quartz/">
+			<filename name="*.jar" />
+		</fileset>
+
+	</path>
+
+	<target name="init" description="初始化目录">
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<target name="clean" description="删除">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="compile" depends="clean,init" description="编译源文件">
+		<javac destdir="${build.dir}/classes" srcdir="${src.dir}" extdirs="${src.dir}/test" executable="${JDK6.dir}/javac" encoding="GBK" failonerror="true">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${dist.dir}/parse-excel.jar" basedir="${build.dir}/classes/" includes="com/bcinfo/**" manifest="${basedir}/META-INF/MANIFEST.MF">
+			<fileset dir="${src.dir}" includes="com/bcinfo/**" />
+			<manifest>
+				<attribute name="Main-Class" value="com.bcinfo.job.Main" />
+				<attribute name="Class-Path" value="lib/classes12.jar lib/commons-collections-3.2.jar lib/commons-logging-1.1.jar lib/quartz-1.6.5.jar lib/commons-io-1.4.jar lib/jxl.jar lib/log4j-1.2.15.jar " />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="sandbox" depends="jar">
+		<copy todir="${basedir}/sandbox/" file="${dist.dir}/parse-excel.jar"/>
+	</target>
+</project>
