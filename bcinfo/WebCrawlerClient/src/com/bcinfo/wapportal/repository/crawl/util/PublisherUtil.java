@@ -21,6 +21,10 @@ public final class PublisherUtil {
 	 * 新浪体育
 	 */
 	public final static String SINA_SPORTS = "（来源：四川新闻网-新浪体育）";
+	public final static String SOHU_SPORTS = "（来源：四川新闻网-搜狐体育）";
+	public final static String QQ_SPORTS = "（来源：四川新闻网-腾讯体育）";
+	public final static String WANGYI_SPORTS = "（来源：四川新闻网-网易体育）";
+	public final static String IFENG = "（来源：四川新闻网-凤凰网）";
 	
 	/**
 	 * 搜狐娱乐
@@ -59,7 +63,13 @@ public final class PublisherUtil {
 					try{
 						url = url.toLowerCase();
 						if(url.indexOf("sports")!=-1){
-							if(url.indexOf("sina")!=-1) msgOrigin += SINA_SPORTS;
+							//按运营的要求，全部统一成新浪体育
+							msgOrigin += SINA_SPORTS;
+//							if(url.indexOf("sina")!=-1) msgOrigin += SINA_SPORTS;
+//							if(url.indexOf("163")!=-1) msgOrigin += WANGYI_SPORTS;
+//							if(url.indexOf("qq")!=-1) msgOrigin += QQ_SPORTS;
+//							if(url.indexOf("sohu")!=-1) msgOrigin += SOHU_SPORTS;
+//							if(url.indexOf("ifeng")!=-1) msgOrigin += IFENG;
 						}
 						if(url.indexOf("ent")!=-1){
 							if(url.indexOf("qq")!=-1) msgOrigin += QQ_ENT;

@@ -67,6 +67,8 @@ public class ParseXML {
 		    		log.debug("要下载的文件路径："+folder.getDownloadFile());
 		    	}else if("operation".equals(name)){
 		    		folder.setOperation(e.getText());
+		    	}else if("sendType".equals(name)){
+		    		folder.setSendType(e.getText());
 		    	}
 		    }
 		}catch(Exception e){
