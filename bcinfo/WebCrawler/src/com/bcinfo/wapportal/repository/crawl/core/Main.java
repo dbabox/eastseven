@@ -23,6 +23,7 @@ import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
 import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
 import com.bcinfo.wapportal.repository.crawl.job.DefaultJob;
 import com.bcinfo.wapportal.repository.crawl.job.SingleJob;
+import com.bcinfo.wapportal.repository.crawl.job.WeeklyJob;
 
 /**
  * @author dongq
@@ -48,6 +49,7 @@ public final class Main {
 		System.out.println("  程序开始前的内存情况： ");
 		System.out.println("  Total:"+Runtime.getRuntime().totalMemory()/1024);
 		System.out.println("  Free :"+Runtime.getRuntime().freeMemory()/1024);
+		System.out.println("  Used :"+(Runtime.getRuntime().totalMemory()/1024-Runtime.getRuntime().freeMemory()/1024));
 		System.out.println("  Max  :"+Runtime.getRuntime().maxMemory()/1024);
 		System.out.println("  Queue:"+CacheQueue.getQueue().size());
 		System.out.println("  ");
@@ -94,6 +96,11 @@ public final class Main {
 			//守护线程
 			JobDetail monitorJob = new JobDetail("monitor_job", "monitor_group", DefaultJob.class);
 			Trigger trigger = new CronTrigger("monitor_trigger", "monitor_group", "0/59 * * * * ?");
+			scheduler.scheduleJob(monitorJob, trigger);
+			
+			//数据清理
+			monitorJob = new JobDetail("monitor_job_del", "monitor_group", WeeklyJob.class);
+			trigger = new CronTrigger("monitor_trigger_del", "monitor_group", "59 0 1 * * ?");
 			scheduler.scheduleJob(monitorJob, trigger);
 			
 		}catch(Exception e){

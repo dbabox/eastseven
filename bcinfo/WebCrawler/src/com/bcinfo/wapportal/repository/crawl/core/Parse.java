@@ -10,6 +10,10 @@ package com.bcinfo.wapportal.repository.crawl.core;
  */
 public interface Parse {
 	
+	public static final String TAG_NAME = "tagName";
+	public static final String ATTRIBUTE_NAME = "attrName";
+	public static final String ATTRIBUTE_VALUE = "attrValue";
+	
 	/**
 	 * ½âÎöÍøÒ³ÄÚÈİ
 	 * @param link

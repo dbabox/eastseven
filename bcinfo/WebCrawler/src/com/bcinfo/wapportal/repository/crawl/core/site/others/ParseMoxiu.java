@@ -55,9 +55,7 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 			String filePathSet = "";
 			
 			Parser parser = new Parser(link);
-//			if(!"GBK".equalsIgnoreCase(parser.getEncoding())){
-//				parser.setEncoding("GBK");
-//			}
+			
 			//取图片地址
 			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(ImageTag.class));
 			if(nodeList!=null && nodeList.size()>0){
@@ -66,6 +64,7 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 					ImageTag imageTag = (ImageTag)iter.nextNode();
 					if("imgshow".equals(imageTag.getAttribute("id"))){
 						imgPathSet += imageTag.getImageURL() + ",";
+						break;
 					}
 				}
 			}
@@ -82,6 +81,7 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 						String attrValue = bullet.getAttribute("class");
 						if("all".equals(attrValue)&&bullet.getStringText().contains("机型")){
 							mobileType = bullet.getStringText();
+							break;
 						}
 					}
 				}
@@ -96,6 +96,7 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 					LinkTag linkTag = (LinkTag)iter.nextNode();
 					if("免费下载到电脑".equals(linkTag.getLinkText())){
 						filePathSet += linkTag.extractLink() + ",";
+						break;
 					}
 				}
 			}
@@ -108,7 +109,9 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 				content += this.commonParseContent(mobileType) + "|";
 			}
 			if(!"".equals(filePathSet)){
-				content += filePathSet.replaceAll("=", filePathSet);
+				//content += filePathSet.replaceAll("=", filePathSet);
+				filePathSet = "http://d1.tel.moxiu.com:8080/" + filePathSet.substring(filePathSet.lastIndexOf("=")+1);
+				content += filePathSet;
 			}
 		} catch (Exception e) {
 			//System.out.println("解析MOXIU页面[" + link + "]内容失败");
@@ -133,8 +136,11 @@ public class ParseMoxiu extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		//http://www.moxiu.com/themes/22/2009/1123/5889778.shtml
 		//http://www.moxiu.com/themes/2/2009/1128/5925650.shtml
-		//String link = "http://www.moxiu.com/themes/2/2009/1128/5925650.shtml";
-		//ParseMoxiu p = new ParseMoxiu();
-		//System.out.println(p.parse(link));
+		
+		//http://d1.tel.moxiu.com:8080/theme/sisdd/fe/9f3/fe9f3ed6/dream6_lyt.sis
+		//http://www.moxiu.com/down.html?rid=5925650&file=theme/sisdd/fe/9f3/fe9f3ed6/dream6_lyt.sis
+		String link = "http://www.moxiu.com/themes/2/2009/1128/5925650.shtml";
+		ParseMoxiu p = new ParseMoxiu();
+		System.out.println(p.parse(link));
 	}
 }

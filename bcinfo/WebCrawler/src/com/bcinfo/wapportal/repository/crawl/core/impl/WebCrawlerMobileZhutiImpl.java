@@ -60,6 +60,7 @@ public class WebCrawlerMobileZhutiImpl implements WebCrawler {
 						usableFolder.setTitle(title);
 						usableFolder.setLink(link);
 						usableFolder.setFolderId(folderId);
+						
 						String[] strs = content.split("\\|");
 						for (int index = 0; index < strs.length; index++) {
 							switch (index) {
@@ -76,23 +77,29 @@ public class WebCrawlerMobileZhutiImpl implements WebCrawler {
 									System.setProperty("sun.net.client.defaultConnectTimeout", "5000");
 							        System.setProperty("sun.net.client.defaultReadTimeout", "5000");
 									filePathSet = new Parser(filePathSet).getURL();
-								}else if(filePathSet.contains("moxiu")){
-									filePathSet = "http://d2.imoxiu.com:8080/"+filePathSet.substring(filePathSet.lastIndexOf("="));
 								}
+								filePathSet = filePathSet.replaceAll(" ", "%20");
 								break;
 							default:
 								break;
 							}
 						}
 						usableFolder.setFilePathSet(filePathSet);
-						usableFolder.setImgPathSet(imgPathSet);
-						usableFolder.setContent("<img src=\""+imgPathSet.replaceAll(",", "")+"\" alt=\"pic\" />"+content);
+						if("".equals(imgPathSet)){
+							usableFolder.setContent(content);
+						}else{
+							usableFolder.setImgPathSet(imgPathSet);
+							usableFolder.setContent("<img src=\""+imgPathSet.replaceAll(",", "")+"\" alt=\"pic\" />"+content);
+						}
 						
-						folders.add(usableFolder);
+						if(log.isDebugEnabled()) log.debug(usableFolder);
+						
+						if(!"".equals(filePathSet)) folders.add(usableFolder);
 					}
 
 					count++;
 				}
+				log.debug(" ********************************** "+folders.size());
 			}
 		} catch (Exception e) {
 			log.info("[目标栏目:" + folderId + " " + url + "]抓取失败");

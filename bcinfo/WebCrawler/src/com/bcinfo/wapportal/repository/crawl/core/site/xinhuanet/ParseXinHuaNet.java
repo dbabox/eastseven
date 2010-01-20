@@ -4,13 +4,15 @@
 package com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.iterators.UniqueFilterIterator;
 import org.apache.log4j.Logger;
-import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
+import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.LinkTag;
-import org.htmlparser.tags.ParagraphTag;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 
@@ -27,7 +29,11 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 
 	private static Logger log = Logger.getLogger(ParseXinHuaNet.class);
 	
-	private ParagraphTag paragraphTag;
+	private Parser parser;
+	
+	public ParseXinHuaNet() {
+		this.parser = new Parser();
+	}
 	
 	@Override
 	public String parse(String link) {
@@ -40,6 +46,7 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> checkPageOfLinks(String link) {
 		List<String> links = null;
@@ -47,36 +54,29 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 			links = new ArrayList<String>();
 			links.add(link);
 			
-			String content = this.getPageContent(link, "id", "Content");
-			if(content!=null&&!"".equals(content)){
-				//Div id=Content 的页面存在分页
-				Parser parser = new Parser();
-				parser.setInputHTML(content);
-				NodeList nodeList = parser.parse(null);
-				if(nodeList!=null && nodeList.size()>0){
-					NodeIterator iter = nodeList.elements();
-					while(iter.hasMoreNodes()){
-						Node node = iter.nextNode();
-						if(node instanceof ParagraphTag){
-							ParagraphTag p = (ParagraphTag)node;
-							if("pagelink".equals(p.getAttribute("class")))
-								this.paragraphTag = p;
-						}
-					}
+			String name = this.getPageName(link);
+			parser.setURL(link);
+			NodeFilter filter = new TagNameFilter("a");
+			NodeList nodeList = parser.extractAllNodesThatMatch(filter);
+			if(nodeList!=null&&nodeList.size()>0){
+				String pageLink = "";
+				for(NodeIterator iter = nodeList.elements();iter.hasMoreNodes();){
+					LinkTag linkTag = (LinkTag)iter.nextNode();
+				 	pageLink = linkTag.extractLink();
+				 	if(pageLink.contains(name)&&!pageLink.contains(link)){
+				 		links.add(pageLink);
+				 	}
 				}
-				if(paragraphTag!=null){
-					nodeList = paragraphTag.getChildren();
-					NodeIterator iter = nodeList.elements();
-					while(iter.hasMoreNodes()){
-						Node node = iter.nextNode();
-						if(node instanceof LinkTag){
-							LinkTag linkTag = (LinkTag)node;
-							if(!linkTag.getLinkText().contains("1"))
-								links.add(linkTag.extractLink());
-						}
+				if(!links.isEmpty()){
+					Iterator<String> iter = new UniqueFilterIterator(links.iterator());
+					links = new ArrayList<String>();
+					while(iter.hasNext()){
+						links.add(iter.next());
+						
 					}
 				}
 			}
+			parser.reset();
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
@@ -93,9 +93,16 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 			content = this.getPageContent(link, "class", "xilanwz-x");
 			if("".equals(content)){
 				content = this.getPageContent(link, "id", "Content");
-				if(this.paragraphTag!=null){
-					content = content.replaceAll(this.paragraphTag.toHtml(), replacement);
+				/*
+				parser.setURL(link);
+				NodeList nodeList = parser.extractAllNodesThatMatch(new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("id", "Content")));
+				if(nodeList!=null&&nodeList.size()>0){
+					Node[] nodes = nodeList.toNodeArray();
+					for(Node node : nodes){
+						System.out.println(node.getClass()+" : "+node);
+					}
 				}
+				*/
 			}
 			if("".equals(content)){
 				content = this.getPageContent(link, "id", "xhw");
@@ -108,7 +115,7 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 			//新华网
 			content = content.replaceAll("\\[进入.*论坛\\]", replacement);
 			content = content.replaceAll("发表您的观点。请您文明上网、理性发言并遵守相关规定，在注册后发表评论。  留言须知", replacement);
-			content = content.replaceAll("=", replacement);
+			//content = content.replaceAll("=", replacement);
 			content = content.replaceAll("<object\\s+[^>]+>|</object>|<param\\s+[^>]+>|</param>|<embed\\s+[^>]+>|</embed>", replacement);
 			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
 			//分页标签:[1][2][3][4]
@@ -121,13 +128,14 @@ public class ParseXinHuaNet extends AbstractHtmlParseTemplete implements Parse {
 			//System.out.println("解析新华网页面["+link+"]内容失败");
 			if(log.isDebugEnabled()) e.printStackTrace();
 		}
-		
+		 
 		return content;
 	}
 
 	public static void main(String[] args) {
-		String link = "http://news.xinhuanet.com/tech/2009-11/01/content_12368002.htm";
+		//http://news.xinhuanet.com/photo/2010-01/04/content_12751026.htm
+		String link = "http://news.xinhuanet.com/photo/2010-01/05/content_12756132.htm";
 		ParseXinHuaNet p = new ParseXinHuaNet();
-		//System.out.println(p.parse(link));
+		System.out.println(p.parse(link));
 	}
 }

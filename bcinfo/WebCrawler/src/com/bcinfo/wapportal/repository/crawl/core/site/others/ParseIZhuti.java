@@ -135,8 +135,8 @@ public class ParseIZhuti extends AbstractHtmlParseTemplete implements Parse{
 
 	//TODO TEST
 	public static void main(String[] args) {
-		String link = "http://www.izhuti.com/zhuti/46507/";
-		ParseIZhuti p = new ParseIZhuti();
+		//String link = "http://www.izhuti.com/zhuti/46507/";
+		//ParseIZhuti p = new ParseIZhuti();
 		//System.out.println(p.parse(link));
 	}
 }

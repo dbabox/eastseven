@@ -149,6 +149,10 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 //							//System.out.println("图片存放路径  :"+imgPathSet);
 							//System.out.println(" ");
 						}
+						/*2010-01-15：根据运营陈晓强的要求，内容首行不加<br />*/
+						if(content.startsWith(RegexUtil.REGEX_BR)){
+							content = content.replaceFirst(RegexUtil.REGEX_BR, "");
+						}
 						/**/
 						folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
 						

@@ -68,4 +68,10 @@ public interface DaoService {
 	 */
 	public Boolean initQuartzDatabase(String sqlFile);
 	
+	/**
+	 * 取得全部万恶的敏感关键字
+	 * @return
+	 */
+	public List<String> getFilterKeyWordsList();
+	
 }

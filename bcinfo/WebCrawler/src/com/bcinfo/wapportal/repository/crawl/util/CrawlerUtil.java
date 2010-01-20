@@ -8,14 +8,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.iterators.UniqueFilterIterator;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
+import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.LinkTag;
+import org.htmlparser.tags.MetaTag;
 import org.htmlparser.tags.ScriptTag;
-import org.htmlparser.util.EncodingChangeException;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
 
@@ -30,6 +36,33 @@ import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
 public final class CrawlerUtil {
 
 	private static Logger log = Logger.getLogger(CrawlerUtil.class);
+	
+	public static String getFileDownloadAddress(String url){
+		String link = "";
+		
+		try {
+			HttpClient client = new HttpClient();
+			GetMethod method = new GetMethod(url);
+			method.setFollowRedirects(true);
+			int statusCode = client.executeMethod(method);
+			if (statusCode != HttpStatus.SC_OK) {
+				log.info("Method failed: " + method.getStatusLine());
+			}
+			link = method.getURI().toString();
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			//TODO 针对下载文件名含空格的处理
+			if(msg.contains("Invalid redirect location:")&&msg.contains("http:")){
+				//Invalid redirect location: http://down.waptw.com//upload/file/090410/soft/PhatNotes5.4Build5.621.0321 for WM5.cab
+				return msg.substring(msg.indexOf("http:"));
+			} else {
+				if(log.isDebugEnabled()) e.printStackTrace();
+				log.info("取得"+url+"文件下载地址报错");
+			}
+		}
+		
+		return link;
+	}
 	
 	public static Boolean canCrwal(String link){
 		if(link.indexOf("http://blog.")!=-1 
@@ -85,22 +118,68 @@ public final class CrawlerUtil {
 		return bln;
 	}
 	
-	public static List<FolderBO> getAllLinks(String url){
+	/**
+	 * 取入口地址页面内的所有链接<br>
+	 * 
+	 * @param url
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<FolderBO> getAllLinks(String url){
 		List<FolderBO> links = null;
 		try{
 			Parser parser = new Parser(url);
 			
-			if(log.isDebugEnabled()) //System.out.println(url+" | "+parser.getEncoding());
+			//取页面编码，无则默认为GBK
+			String charset = CrawlerUtil.getCharset(url);
+			parser.setEncoding(charset);
+			//计算链接标题的平均长度
+			int avgLength = 3;
+			int words = 0;
+			int linkNum = 1;
+			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
+			if(nodeList!=null&&nodeList.size()>0){
+				Node[] nodes = nodeList.toNodeArray();
+				for(Node node : nodes){
+					LinkTag linkTag = (LinkTag)node;
+					words += linkTag.getLinkText().length();
+					linkNum++;
+				}
+				if(words>0){
+					avgLength = words/linkNum;
+				}
+				links = new ArrayList<FolderBO>();
+				List<LinkTag> list = new ArrayList<LinkTag>();
+				for(Node node : nodes){
+					LinkTag linkTag = (LinkTag)node;
+					int len = linkTag.getLinkText().length();
+					if(len >= avgLength){
+						list.add(linkTag);
+					}
+				}
+				Iterator<LinkTag> iter = new UniqueFilterIterator(list.iterator());
+				while(iter.hasNext()){
+					LinkTag linkTag = iter.next();
+					String link = linkTag.extractLink();
+					String title = linkTag.getLinkText();
+					if(log.isDebugEnabled()){
+						System.out.println(" 待抓取的链接["+link+"]["+title+"]");
+					}
+					FolderBO folder = new FolderBO();
+					folder.setLink(link);
+					folder.setTitle(title);
+					links.add(folder);
+				}
+			}
 			
-			//System.out.println(" 编码 "+parser.getEncoding());
-			
-			if("ISO-8859-1".equalsIgnoreCase(parser.getEncoding())) parser.setEncoding("GBK");
+			//取大于平均长度的链接
+			//if("ISO-8859-1".equalsIgnoreCase(parser.getEncoding())) parser.setEncoding("GBK");
 				
 			//TODO 该问题待查
 			//解析静态页面内容，这样可以避免链接数据存放在js脚本中的情况
 			//String inputHTML = parser.parse(null).toHtml();
 			//parser.setInputHTML(inputHTML);
-			
+			/*
 			NodeList nodeList = new NodeList();
 			try{
 				nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
@@ -118,8 +197,6 @@ public final class CrawlerUtil {
 				String link = linkTag.extractLink();
 				String title = linkTag.getLinkText();
 				
-				////System.out.println("  "+link);
-				
 				if(link == null || "".equals(link)) continue;
 				if(!CrawlerUtil.canCrwal(link)) continue;
 				if(link.equals(url)) continue;
@@ -128,15 +205,14 @@ public final class CrawlerUtil {
 				if(!link.startsWith("http://")){
 					link = CrawlerUtil.addLinkHeader(link, httpHeader);
 				}
-				
-				if(log.isDebugEnabled()){
-					//System.out.println("     待抓取的链接："+link);
-				}
+				//if(!Pattern.matches("http://soft.tompda.com/c/softs/\\d+/s_\\d+.html", link)) continue;
+				if(log.isDebugEnabled()) log.info("     待抓取的链接："+link);
 				FolderBO folder = new FolderBO();
 				folder.setLink(link);
 				folder.setTitle(title);
 				links.add(folder);
 			}
+			*/
 		}catch(Exception e){
 			//System.out.println("取得页面["+url+"]内的所有超链接地址失败");
 			if(log.isDebugEnabled()){
@@ -150,23 +226,15 @@ public final class CrawlerUtil {
 		List<FolderBO> links = null;
 		try{
 			Parser parser = new Parser(url);
-			if(log.isDebugEnabled()){
-				log.debug(url+" | "+parser.getEncoding());
-				//System.out.println(parser.parse(null).toHtml());
-				//parser.reset();
-			}
-			if(!"GBK".equalsIgnoreCase(parser.getEncoding()))
-				parser.setEncoding("GBK");
+			if(log.isDebugEnabled()) log.debug(url+" | "+parser.getEncoding());
+			
+			if(!"GBK".equalsIgnoreCase(parser.getEncoding())) parser.setEncoding("GBK");
+			
 			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(ScriptTag.class));
 			NodeIterator iter = nodeList.elements();
 			String data = "";
 			while(iter.hasMoreNodes()){
 				ScriptTag node = (ScriptTag)iter.nextNode();
-				
-				if(log.isDebugEnabled()){
-					//System.out.println("script   :"+node.getScriptCode());
-				}
-				
 				if(node.getScriptCode().contains("var data=[")){
 					data = node.getScriptCode().trim();
 					break;
@@ -199,10 +267,10 @@ public final class CrawlerUtil {
 					links.add(folder);
 				}
 			}else{
-				//System.out.println("未取得页面["+url+"]脚本数据");
+				log.info("未取得页面["+url+"]脚本数据");
 			}
 		}catch(Exception e){
-			//System.out.println("取得新浪四川页面["+url+"]内的所有超链接地址失败");
+			log.info("取得新浪四川页面["+url+"]内的所有超链接地址失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
@@ -371,4 +439,49 @@ public final class CrawlerUtil {
 		}
 	}
 	
+	public static String getCharset(String link) {
+		String charset = "GBK";
+		
+		try {
+			Parser parser = new Parser(link);
+			
+			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(MetaTag.class));
+			if(nodeList!=null&&nodeList.size()>0){
+				Node[] nodes = nodeList.toNodeArray();
+				for(Node n : nodes){
+					MetaTag meta = (MetaTag)n;
+					String value = meta.getAttribute("content");
+					if(value!=null&&!"".equals(value)&&value.toLowerCase().contains("charset")){
+						charset = value.substring(value.lastIndexOf("=")+1);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return charset.toUpperCase();
+	}
+	
+	//TODO TEST
+	public static void main(String[] args) {
+		//System.out.println(CrawlerUtil.getFileDownloadAddress("http://www.moxiu.com/down.html?rid=6137935&file=theme/sisdd/ce/a1f/cea1f1d6/moxiu1261670130.sis"));
+		try {
+			String link = "http://mobile.zol.com.cn/more/2_426.shtml";
+			Parser parser = new Parser(link);
+			
+			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(MetaTag.class));
+			Node[] nodes = nodeList.toNodeArray();
+			for(Node n : nodes){
+				MetaTag meta = (MetaTag)n;
+				String value = meta.getAttribute("content");
+				if(value!=null&&!"".equals(value)&&value.toLowerCase().contains("charset")){
+					System.out.println(value.substring(value.lastIndexOf("=")+1));
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

@@ -39,7 +39,7 @@ public class HtmlParseDefaultImpl implements HtmlParse {
 			}else{
 				//TODO 貌似HTMLParser又可以将JS数据解析为静态页面了
 				//综合处理页面链接抓取，考虑链接数据存放在js脚本中的情况
-				folders = CrawlerUtil.getAllLinks(url);
+				folders = new CrawlerUtil().getAllLinks(url);
 			}
 			
 			usableLinks = new ArrayList<FolderBO>();
