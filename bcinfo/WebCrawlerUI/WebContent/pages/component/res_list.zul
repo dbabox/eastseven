@@ -1,0 +1,72 @@
+<?page title="Resource Grid" contentType="text/html;charset=UTF-8"?>
+
+<zk>
+	<div apply="com.bcinfo.wapportal.repository.crawl.ui.zk.component.ResourceComposer" height="100%">
+
+		<hbox spacing="0" width="100%">
+			<vbox spacing="0" width="100%">
+				<div>
+					<div>
+						<textbox tooltiptext="标题" value="" id="title" width="200px" />
+						<listbox id="listboxSelectPass" mold="select" rows="1">
+							<listitem label="全部" value="" selected="true"/>
+							<listitem label="已审" value="1"/>
+							<listitem label="未审" value="0"/>
+						</listbox>
+						<datebox format="yyyy-MM-dd" id="currentDate" />
+						<datebox format="yyyy-MM-dd" id="currentDateEnd" />
+						<button label="查询" id="search" />
+						<button label="审核" id="passAll" />
+						<button label="发布" id="sendAll" />
+						<listbox id="listboxSelect" mold="select" rows="1">
+							<listitem label="默认" value="1" selected="true"/>
+							<listitem label="混排" value="2"/>
+						</listbox>
+					</div>
+					<paging id="paging" pageSize="15" detailed="true" mold="os" />
+					<listbox id="listbox" checkmark="true" fixedLayout="true" multiple="true">
+						<listhead>
+							<listheader label="" width="25px" />
+							<listheader label="序号" width="30px" />
+							<listheader label="频道" width="100px" />
+							<listheader label="标题" />
+							<listheader label="状态" width="50px" />
+							<listheader label="图片" width="50px" />
+							<listheader label="字数" width="50px" />
+							<listheader label="时间" width="150px" />
+						</listhead>
+					</listbox>
+				</div>
+				<splitter id="splitter" collapse="after" open="true" />
+				<grid fixedLayout="true">
+					<rows>
+						<row>
+							<div width="100%">
+								<textbox id="tb" width="100%"/>
+							</div>
+						</row>
+						<row>
+							<div width="100%">
+								<button id="fileCheck" label="下载验证" /><label id="fileLocation" width="90%" value="***************"/>
+							</div>
+						</row>
+						<row>
+							<div width="100%">
+								<textbox id="fck" width="100%" rows="10"/>
+							</div>
+						</row>
+						<row>
+							<div>
+								<button id="save" label="保存" />
+								<button id="pass" label="审核通过" />
+								<button id="preview" label="预览工具" href="pages/component/preview.zul" target="_blank" tooltiptext="请将要预览的源代码复制粘贴到弹出框中"/>
+								<button id="send" label="发布" disabled="true"/>
+							</div>
+						</row>
+					</rows>
+				</grid>
+			</vbox>
+		</hbox>
+		<!-- -->
+	</div>
+</zk>

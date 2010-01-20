@@ -1,0 +1,18 @@
+<?page title="channel" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div apply="com.bcinfo.wapportal.repository.crawl.ui.zk.component.ChannelComposer">
+		<label id="channelId" value="编号" />
+		<label value="频道名称" />
+		<textbox id="channelName" value="" constraint="no empty"/>
+		<button id="add" label="添加频道" />
+		<button id="addRoot" label="添加顶级频道" />
+		<button id="mod" label="修改频道名称" />
+		<button id="del" label="删除频道" />
+		<tree id="tree" checkmark="true" fixedLayout="true">
+			<treecols>
+				<treecol label="编号" width="100px" />
+				<treecol label="频道名称" />
+			</treecols>
+		</tree>
+	</div>
+</zk>

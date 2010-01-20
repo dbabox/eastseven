@@ -1,0 +1,10 @@
+<zk>
+	<div height="100%" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.quartz.TriggerComposer">
+		<listbox id="listbox">
+			<listhead>
+				<listheader label="序号" width="30px"/>
+				<listheader label="名称" />
+			</listhead>
+		</listbox>
+	</div>
+</zk>

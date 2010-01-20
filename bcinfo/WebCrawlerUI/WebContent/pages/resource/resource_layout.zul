@@ -1,6 +1,6 @@
 <?page title="" contentType="text/html;charset=UTF-8"?>
 <zk>
-	<!--
+	
 		<window border="normal" height="100%" width="100%"
 		apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.resource.BorderLayoutComposer">
 		<borderlayout>
@@ -12,7 +12,7 @@
 		</center>
 		</borderlayout>
 		</window>
-	-->
+	<!--
 	<borderlayout>
 		<west size="150px" splittable="true" collapsible="true"
 			autoscroll="true" title="资源管理">
@@ -37,4 +37,5 @@
 			</tabbox>
 		</center>
 	</borderlayout>
+	-->
 </zk>

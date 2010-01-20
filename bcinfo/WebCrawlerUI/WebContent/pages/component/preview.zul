@@ -1,0 +1,8 @@
+<?page title="preview" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="preview" border="normal" height="100%" width="100%">
+		<fckeditor height="100%" width="100%">
+			<attribute name="value"></attribute>
+		</fckeditor>
+	</window>
+</zk>
