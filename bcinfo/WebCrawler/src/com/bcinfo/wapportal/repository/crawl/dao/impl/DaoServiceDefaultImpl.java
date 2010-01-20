@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import oracle.sql.CLOB;
 
@@ -28,6 +29,7 @@ import com.bcinfo.wapportal.repository.crawl.domain.bo.ResourceBO;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.ResourceType;
 import com.bcinfo.wapportal.repository.crawl.domain.internal.AppLog;
 import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
+import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
 import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 
 /**
@@ -176,9 +178,11 @@ public class DaoServiceDefaultImpl implements DaoService {
 				for(FolderBO folder : folders){
 					link = folder.getLink();
 					title = folder.getTitle();
+					//TODO 关键字提示 <font style="color: #ff0000"></font>
+					title = filterHandle(title);
 					channelId = folder.getFolderId();
 					//TODO 关键字提示 <font style="color: #ff0000"></font>
-					content = folder.getContent();
+					content = filterHandle(folder.getContent());
 					imgPathSet = folder.getImgPathSet();
 					filePathSet = folder.getFilePathSet();
 					pst.setLong(1, Long.valueOf(channelId));
@@ -193,7 +197,6 @@ public class DaoServiceDefaultImpl implements DaoService {
 					list.add(folder);
 					
 					count++;
-					//if(log.isDebugEnabled()) //System.out.println("channel_id:"+channelId+"|title:"+title+"["+title.length()+"]|link:"+link+"["+link.length()+"]|cntSize:"+content.length());
 				}
 				
 				pst.executeBatch();
@@ -280,7 +283,8 @@ public class DaoServiceDefaultImpl implements DaoService {
 				int index = 0;
 				for(FolderBO folder : list){
 					pst.setLong(1, Long.parseLong(folder.getFolderId()));
-					pst.setString(2, folder.getTitle());
+					//TODO 关键字提示 <font style="color: #ff0000"></font>
+					pst.setString(2, filterHandle(folder.getTitle()));
 					pst.setString(3, folder.getLink());
 					pst.setString(4, folder.getImgPathSet());
 					pst.setLong(5, ids.get(index));
@@ -326,6 +330,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 			if(rs.next()){
 				//TODO 关键字提示 <font style="color: #ff0000"></font>
 				content = folder.getContent();
+				content = filterHandle(content);
 				CLOB clob = (CLOB)rs.getClob("res_text");
 				//Oracle 9i 写法
 				Writer w = clob.getCharacterOutputStream();
@@ -507,7 +512,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 		ResultSet rs = null;
 		
 		try{
-			String sql = " delete from twap_public_crawl_resource a where a.res_status = '0' and to_char(a.create_time,'yyyymmdd') < to_char(sysdate-7,'yyyymmdd') ";
+			String sql = " delete from twap_public_crawl_resource a where to_char(a.create_time,'yyyymmdd') < to_char(sysdate-3,'yyyymmdd') ";
 			conn = JavaOracle.getConn();
 			conn.setAutoCommit(false);
 			
@@ -678,6 +683,48 @@ public class DaoServiceDefaultImpl implements DaoService {
 		return bln;
 	}
 	
+	@Override
+	public List<String> getFilterKeyWordsList() {
+		List<String> list = new ArrayList<String>();
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement("select key_value from wap_filter");
+			rs = pst.executeQuery();
+			while(rs.next()){
+				String key = new String(rs.getString("key_value").getBytes("GBK"));
+				list.add(key);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		} finally {
+			close(rs, pst, conn);
+		}
+		return list;
+	}
+	
+	String filterHandle(String content) {
+		try {
+			String cnt = content;
+			//cnt.split(RegexUtil.REGEX_IMG)
+			List<String> list = getFilterKeyWordsList();
+			if(list!=null&&!list.isEmpty()){
+				for(String key : list){
+					if(key.equals("xin")) continue;
+					cnt = cnt.replace(key, "<font style=\"color: #ff0000\">"+key+"</font>");
+				}
+			}
+			return cnt;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return content;
+		}
+	}
+	
 	boolean batchExecuteSQLSentence(String[] sqlScript) {
 		boolean bln = true;//执行中
 		
@@ -686,15 +733,21 @@ public class DaoServiceDefaultImpl implements DaoService {
 		ResultSet rs = null;
 		
 		try {
+			Properties property = ConfigPropertyUtil.getConfigProperty("quartz.properties");
+			String className = property.getProperty("org.quartz.dataSource.myDS.driver");
+			String url = property.getProperty("org.quartz.dataSource.myDS.URL");
+			String user = property.getProperty("org.quartz.dataSource.myDS.user");
+			String password = property.getProperty("org.quartz.dataSource.myDS.password");
+			System.out.println("Quartz Database location :"+url+"|"+user+"|"+password);
 			if(sqlScript!=null&&sqlScript.length>0){
-				conn = JavaOracle.getConn();
+				conn = JavaOracle.getConn(className, url, user, password);
 				conn.setAutoCommit(false);
 				
 				pst = conn.prepareStatement("select sysdate from dual");
 				for(String sql : sqlScript){
 					sql = sql.trim();
 					if(sql!=null&&!"".equals(sql)){
-						log.debug("Batch Execution SQL:"+sql);
+						log.info("Batch Execution SQL:"+sql);
 						pst.executeQuery(sql);
 					}
 				}
@@ -720,6 +773,15 @@ public class DaoServiceDefaultImpl implements DaoService {
 		}
 		
 		return bln;
+	}
+	
+	void rollback(Connection conn){
+		try {
+			if(conn != null) conn.rollback();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		}
 	}
 	
 	void close(ResultSet rs, PreparedStatement pst, Connection conn){

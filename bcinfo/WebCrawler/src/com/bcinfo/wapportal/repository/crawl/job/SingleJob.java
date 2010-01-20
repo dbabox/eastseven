@@ -73,8 +73,11 @@ public class SingleJob implements Job {
 				} else if (url.contains("astro.women.sohu.com")) {
 					// TODO 针对星座占卜特殊处理
 					folders = webCrawlerAstro.crawl(channelId.toString(), url);
-				} else if (url.contains("www.moxiu.com") || url.contains("www.izhuti.com")) {
-					// TODO 针对手机主题下载处理
+				} else if (url.contains("www.moxiu.com") 
+						|| url.contains("www.izhuti.com")
+						|| url.contains("soft.tompda.com")
+						|| url.contains("sj.skycn.")) {
+					// TODO 针对手机主题软件下载处理
 					folders = webCrawlerMobileZhuti.crawl(channelId.toString(), url);
 				} else {
 					// TODO 通用频道处理

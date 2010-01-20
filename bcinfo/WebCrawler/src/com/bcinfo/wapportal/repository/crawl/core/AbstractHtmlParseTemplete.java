@@ -397,4 +397,29 @@ public abstract class AbstractHtmlParseTemplete {
 	 */
 	public abstract List<String> checkPageOfLinks(String link);
 	
+	/**
+	 * 取得页面链接名称
+	 * @param link
+	 * @return
+	 */
+	public String getPageName(String link) {
+		String name = null;
+		
+		try {
+			if(link!=null&&!"".equals(link)){
+				link = link.toLowerCase();
+				if(link.lastIndexOf(".")!=-1&&link.lastIndexOf("/")!=-1)
+					name = link.substring(link.lastIndexOf("/")+1,link.lastIndexOf("."));
+				else if(link.lastIndexOf(".")==-1&&link.lastIndexOf("/")!=-1)
+					name = link.substring(link.lastIndexOf("/")+1);
+					
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			//log.error(e);
+			log.info("取得页面链接["+link+"]名称失败");
+		}
+		
+		return name;
+	}
 }

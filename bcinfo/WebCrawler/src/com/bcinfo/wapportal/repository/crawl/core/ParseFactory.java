@@ -3,18 +3,21 @@
  */
 package com.bcinfo.wapportal.repository.crawl.core;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.bcinfo.wapportal.repository.crawl.core.site.ParseDefault;
 import com.bcinfo.wapportal.repository.crawl.core.site.huanqiu.ParseHuanQiu;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCooCook;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseIFeng;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseIZhuti;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseMoxiu;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcladyAstro;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseSkycn;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTianya;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTompad;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseYala;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseZolMobile;
 import com.bcinfo.wapportal.repository.crawl.core.site.pcpop.ParsePcpopMobile;
@@ -38,7 +41,7 @@ public final class ParseFactory {
 
 	private static Logger log = Logger.getLogger(ParseFactory.class);
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	//private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	public static Parse getParseInstance(String url) {
 		
@@ -133,6 +136,16 @@ public final class ParseFactory {
 				////System.out.println(sdf.format(new Date())+" : 创建 "+url+" 的解析类ParseTianya");
 			}
 			return new ParseTianya();
+		} else if (url.contains("soft.tompda.com")) {
+			return new ParseTompad();
+		} else if (url.contains("sj.skycn.com")) {
+			return new ParseSkycn();
+		} else if(url.contains("www.china.com.cn")) {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put(ParseDefault.TAG_NAME, "div");
+			map.put(ParseDefault.ATTRIBUTE_NAME, "id");
+			map.put(ParseDefault.ATTRIBUTE_VALUE, "artibody");
+			return new ParseDefault(map);
 		} else {
 			return null;
 		}

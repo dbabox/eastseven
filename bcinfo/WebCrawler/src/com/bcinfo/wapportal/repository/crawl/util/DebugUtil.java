@@ -3,6 +3,16 @@
  */
 package com.bcinfo.wapportal.repository.crawl.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.TagNameFilter;
@@ -77,5 +87,47 @@ public final class DebugUtil {
 			e.printStackTrace();
 		}
 		return nodeList;
+	}
+	
+	public static boolean downloadFile(String link){
+		boolean bln = false;
+		String filePath = null;
+		InputStream is = null;
+		OutputStream os = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		try{
+			String fileSuffix = link.substring(link.lastIndexOf(".")+1);
+			URL url = new URL(link);
+			URLConnection http = url.openConnection();
+			http.addRequestProperty("Referer", link);
+			
+			is = http.getInputStream();
+			if(is!=null){
+				filePath = "C:/";
+				File file = new File(filePath);
+				if(!file.exists()) file.mkdir();
+				filePath += "pa_file_"+sdf.format(new Date(System.currentTimeMillis()))+"."+fileSuffix;
+				//if(!file.exists()) file.createNewFile();
+				file = new File(filePath);
+				os = new FileOutputStream(file);
+				int bytesRead = 0;
+				byte[] buffer = new byte[8192];
+
+				while ((bytesRead = is.read(buffer, 0, 8192)) != -1) {
+					os.write(buffer, 0, bytesRead);
+				}
+				System.out.println("文件下载后存放于"+filePath);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{
+				if(is!=null) is.close();
+				if(os!=null) os.close();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		return bln;
 	}
 }
