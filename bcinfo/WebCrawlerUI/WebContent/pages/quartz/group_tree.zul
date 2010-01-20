@@ -1,0 +1,19 @@
+<zk>
+	<div height="100%" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.quartz.GroupTreeComposer">
+		<tabbox mold="accordion">
+			<tabs>
+				<tab label="Job Detail Group" />
+				<tab label="Trigger Group" />
+			</tabs>
+			<tabpanels>
+				<tabpanel id="jobGroupPanel" >
+					<tree id="jobGroupTree"/>
+				</tabpanel>
+				<tabpanel id="triGroupPanel" >
+					<tree id="triGroupTree"/>
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+
+	</div>
+</zk>

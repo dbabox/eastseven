@@ -1,0 +1,6 @@
+<?page title="Channel List" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Channel List" border="normal">
+		New Content Here!
+	</window>
+</zk>

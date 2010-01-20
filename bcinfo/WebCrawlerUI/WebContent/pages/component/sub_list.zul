@@ -1,0 +1,20 @@
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div width="100%" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.component.SubscribeComposer">
+		<toolbar>
+			<label value="目的栏目" />
+			<textbox value="" id="folderId"/>
+			<toolbarbutton label="订购" id="add" />
+			<toolbarbutton label="退订" id="del" />
+		</toolbar>
+		<listbox id="listbox" mold="paging" pageSize="30" multiple="true" checkmark="true">
+			<listhead>
+				<listheader label="" width="30px" />
+				<listheader label="序号" width="30px" />
+				<listheader label="运营" width="100px" />
+				<listheader label="频道源" />
+				<listheader label="目的栏目" />
+			</listhead>
+		</listbox>
+	</div>
+</zk>
