@@ -82,6 +82,7 @@ public final class HandleContent {
 			List resourceList = sliptWithImageTag(content);
 			if(resourceList != null){
 				resources = new ArrayList();
+				//int count = 0;
 				for(int i=0;i<resourceList.size();i++){
 					String resContent = (String)resourceList.get(i);
 					Resource resource = null;
@@ -120,6 +121,7 @@ public final class HandleContent {
 							resource = new Resource(i,folder,resContent,type,imgPath);
 							Thread.sleep(1000);
 						}
+						
 					}else{
 						//文字第一段不加换行符
 						//resContent = formatContent(resContent);
@@ -132,19 +134,25 @@ public final class HandleContent {
 						}
 						resource = new Resource(i,folder,resContent,type);
 					}
+					
 					if(resource != null) resources.add(resource);
 				}
-				//下载文件:手机主题或软件
-				if(downloadFile!=null&&!"".equals(downloadFile)){
-					String filePath = oper.downloadFile(downloadFile);
-					Resource resource = new Resource();
-					resource.setFolder(folder);
-					resource.setResourcePath(filePath);
-					resource.setResourceType(ResourceType.SOFTWARE);
-					resource.setResourceContent(downloadFile);
-					resources.add(resource);
-					log.info(" 下载文件:"+filePath);
+			}
+			
+			//下载文件:手机主题或软件
+			if(downloadFile!=null&&!"".equals(downloadFile)){
+				Resource resource = new Resource();
+				String filePath = oper.downloadFile(downloadFile);
+				if(filePath==null){
+					title += "[下载包为空]";
 				}
+				resource.setFolder(folder);
+				resource.setResourcePath(filePath);
+				resource.setResourceType(ResourceType.SOFTWARE);
+				resource.setResourceContent(filePath);
+				resources.add(resource);
+				log.info(" 下载文件:"+filePath);
+				//count++;
 			}
 			if(resources != null){
 				usableFolder = new Folder();
@@ -156,6 +164,7 @@ public final class HandleContent {
 				usableFolder.setResFileName(folder.getResFileName());
 				usableFolder.setOperation(folder.getOperation());
 				usableFolder.setDownloadFile(folder.getDownloadFile());
+				usableFolder.setSendType(folder.getSendType());
 			}
 		}
 		return usableFolder;

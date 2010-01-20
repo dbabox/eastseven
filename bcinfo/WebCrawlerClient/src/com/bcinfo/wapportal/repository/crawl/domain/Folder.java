@@ -25,6 +25,7 @@ public class Folder implements Serializable {
 
 	private String resFileName;
 	private String operation;
+	private String sendType;
 	private String downloadFile;
 
 	private List resources;
@@ -118,6 +119,14 @@ public class Folder implements Serializable {
 		this.downloadFile = downloadFile;
 	}
 
+	public String getSendType() {
+		return sendType;
+	}
+	
+	public void setSendType(String sendType) {
+		this.sendType = sendType;
+	}
+	
 	@Override
 	public String toString() {
 		return "Folder [content=" + content + ", downloadFile=" + downloadFile

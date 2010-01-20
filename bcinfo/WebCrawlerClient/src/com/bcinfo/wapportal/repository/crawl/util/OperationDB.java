@@ -16,13 +16,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -42,8 +41,12 @@ public final class OperationDB {
 	private static final Logger log = Logger.getLogger(OperationDB.class);
 
 	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+	public static final String NEED_CHECK = "wap_page_folder_spcp";
+	public static final String NOT_NEED_CHECK = "wap_page_folder";
 
+	public static final String DEFAULT_FOLDER_TYPE = "1";//只有栏目的格式
+	public static final String MULT_FOLDER_TYPE = "2";//图片资源和栏目混排格式
+	
 	Properties property;
 	String dir = null;
 
@@ -73,8 +76,9 @@ public final class OperationDB {
 		try {
 			for (int i = 0; i < folders.size(); i++) {
 				Folder folder = (Folder) folders.get(i);
-				/*
 				boolean bln = isExsit(folder);
+				if(bln) continue;
+				/*
 				log.info(folder.getTitle()+" is exsit :"+bln+"|operation:"+folder.getOperation());
 				if(String.valueOf(Folder.UPDATE).equals(folder.getOperation())){
 					//TODO 050001单独处理,一个子栏目只保存一条记录
@@ -84,7 +88,11 @@ public final class OperationDB {
 					if(bln) continue;//跳过已经存在的记录
 				}
 				*/
-				boolean bln = save(folder);
+				if(DEFAULT_FOLDER_TYPE.equals(folder.getSendType())){
+					bln = save(folder);
+				}else if(MULT_FOLDER_TYPE.equals(folder.getSendType())){
+					bln = saveAsOtherType(folder);
+				}
 				log.info("添加栏目["+folder.getId()+"]["+folder.getTitle()+"]"+bln);
 				
 				String fileName = folder.getResFileName();
@@ -115,20 +123,25 @@ public final class OperationDB {
 		return isSuccess;
 	}
 
-	@Deprecated
 	public boolean isExsit(Folder folder) throws Exception{
 		boolean bln = false;//默认是不存在的
 		
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " select count(1) from wap_page_folder where wap_folder_id = ? and folder_name = ? ";
+		//select count(1) from wap_page_folder where wap_folder_id = ? and folder_name = ?
+		String sql = " select count(c.folder_id) from( ";
+		sql += " select a.folder_id from wap_page_folder a where a.wap_folder_id = ? and a.folder_name = ? ";
+		sql += " union select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = ? and b.folder_name = ? ";
+		sql += " ) c ";
 		
 		try{
 			conn = JavaOracle.getConn();
 			pst = conn.prepareStatement(sql);
 			pst.setString(1, folder.getId());
 			pst.setString(2, folder.getTitle());
+			pst.setString(3, folder.getId());
+			pst.setString(4, folder.getTitle());
 			rs = pst.executeQuery();
 			if(rs.next()){
 				if(rs.getInt(1) > 0) bln = true;
@@ -145,6 +158,7 @@ public final class OperationDB {
 	}
 	
 	//针对星座占卜，只更新文字内容
+	//由于CCTV的缘故，停止针对星座占卜的自动更新
 	@Deprecated
 	public boolean update(Folder folder) throws Exception {
 		boolean bln = false;
@@ -181,28 +195,36 @@ public final class OperationDB {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean save(Folder folder) throws Exception {
+	public boolean saveAsOtherType(Folder folder) throws Exception {
 		boolean isSuccess = false;
-		if (folder == null) throw new Exception(" folder is null... ");
+		
 		Connection conn = null;
 		PreparedStatement pstFolder = null;
 		PreparedStatement pstResource = null;
 		PreparedStatement pstReFolderRes = null;
+		
 		try {
 			// 1.generate folder
 			conn = JavaOracle.getConn();
 			conn.setAutoCommit(false);
-			//Date date = new Date();
 			String wapFolderId = folder.getId();
+			long resIdForPic = 0;
 			String folderId = wapFolderId + getFolderId(wapFolderId);// 12位
-			String sqlFolder = "insert into wap_page_folder_spcp(folder_id,wap_folder_id,folder_name,folder_index,folder_status,folder_desc,folder_level,create_time) ";
-			sqlFolder += " values(?,?,?,0,0,?,3,sysdate) ";
+			//TODO 无审核直接发布
+			String table = OperationDB.NEED_CHECK;
+			String folder_status = "0";
+			if("10".equals(folder.getOperation())){
+				table = OperationDB.NOT_NEED_CHECK;
+				folder_status = "1";
+			}
+			String sqlFolder = "insert into "+table+"(folder_id,wap_folder_id,folder_name,folder_index,folder_status,folder_desc,folder_level,create_time,PAGE_WORD_SIZE,VISIT_TIME) ";
+			sqlFolder += " values(?,?,?,0,?,?,3,sysdate,255,0) ";
 			pstFolder = conn.prepareStatement(sqlFolder);
 			pstFolder.setString(1, folderId);
 			pstFolder.setString(2, wapFolderId);
 			pstFolder.setString(3, folder.getTitle());
-			pstFolder.setString(4, folder.getTitle());
-			//pstFolder.setString(5, sdf.format(date));
+			pstFolder.setString(4, folder_status);
+			pstFolder.setString(5, folder.getTitle());
 			pstFolder.executeUpdate();
 			pstFolder.clearParameters();
 			pstFolder.close();
@@ -214,14 +236,141 @@ public final class OperationDB {
 			// 3.related 1 and 2
 			String sqlResource = "insert into wap_resource"
 					+ "(res_id,spcp_id,res_type_id,firstname,passname,check_flag,res_status,store_filepath,res_size,res_desc,CREATE_TIME,res_content,DOWN_COUNT,CLICK_SUM,RES_AUTHOR,CORP_NAME,COPYRIGHT) ";
-			sqlResource += " values(?,1,?,?,?,'0','0',?,?,?,sysdate,?,0,0,'web crawler',to_char(sysdate,'yy/mm/dd hh24:mi:ss'),'web crawler') ";
+			sqlResource += " values(?,1,?,?,?,'0',?,?,?,?,?,?,0,0,'web crawler',to_char(sysdate,'yy/mm/dd hh24:mi:ss'),'web crawler') ";
 
-			String sqlReFolderRes = "insert into wap_re_folder_res(folder_id,res_id,order_index) values(?,?,sq_wap_re_folder_res.nextval)";
+			String sqlReFolderRes = "insert into wap_re_folder_res(folder_id,res_id,order_index) values(?,?,0)";
 			pstResource = conn.prepareStatement(sqlResource);
 			List resourceList = folder.getResources();
 			long[] ids = getResId(resourceList.size());
 
-			for (int i = resourceList.size() - 1; i >= 0; i--) {
+			//int i = resourceList.size() - 1; i >= 0; i--
+			//int i = 0; i < resourceList.size(); i++
+			for (int i = 0; i < resourceList.size(); i++) {
+				// TODO 按时间倒序排列
+				long resId = ids[i];
+
+				log.info(" ****** wap_resource.res_id:" + resId + " used " + isUsed(resId));
+
+				Resource resource = (Resource) resourceList.get(i);
+				String path = "";
+				if (resource.getResourceType() == ResourceType.PIC) {
+					path = resource.getResourcePath();
+				}else if(resource.getResourceType() == ResourceType.SOFTWARE){
+					path = resource.getResourcePath();
+				}
+
+				pstResource.setLong(1, resId);
+				pstResource.setLong(2, resource.getResourceType());
+				if(resource.getResourceType()==ResourceType.PIC){
+					resIdForPic = resId;
+				}
+				pstResource.setString(3, folder.getTitle());
+				pstResource.setString(4, folder.getTitle());
+				pstResource.setString(5, folder_status);
+				System.out.println(" ******************************** "+resId+"|"+folder_status);
+				pstResource.setString(6, path);
+				pstResource.setLong(7, resource.getResourceContent().length());
+				pstResource.setString(8, folder.getTitle());
+				//批量操作时，时间都是一样的，下面的赋值是没有意义的
+				//pstResource.setDate(9, new java.sql.Date(System.currentTimeMillis()+i*65432));
+				//时间戳可以
+				pstResource.setTimestamp(9, new Timestamp(System.currentTimeMillis()-i*1000));
+				pstResource.setString(10, resource.getResourceContent());
+				pstResource.addBatch();
+			}
+			pstResource.executeBatch();
+
+			pstReFolderRes = conn.prepareStatement(sqlReFolderRes);
+			for (int j = resourceList.size() - 1; j >= 0 ; j--) {
+				long resId = ids[j];
+				pstReFolderRes.setString(1, folderId);
+				pstReFolderRes.setLong(2, resId);
+				pstReFolderRes.addBatch();
+			}
+			if(resIdForPic!=0){
+				pstReFolderRes.setString(1, wapFolderId);
+				pstReFolderRes.setLong(2, resIdForPic);
+				pstReFolderRes.addBatch();
+			}
+			pstReFolderRes.executeBatch();
+
+			pstResource.clearBatch();
+			pstResource.close();
+
+			pstReFolderRes.clearBatch();
+			pstReFolderRes.close();
+
+			conn.commit();
+			isSuccess = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+			if (conn != null)
+				conn.rollback();
+		} finally {
+			if (pstFolder != null)
+				pstFolder.close();
+			if (pstResource != null)
+				pstResource.close();
+			if (pstReFolderRes != null)
+				pstReFolderRes.close();
+			if (conn != null)
+				conn.close();
+		}
+		
+		return isSuccess;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean save(Folder folder) throws Exception {
+		boolean isSuccess = false;
+		if (folder == null) throw new Exception(" folder is null... ");
+		Connection conn = null;
+		PreparedStatement pstFolder = null;
+		PreparedStatement pstResource = null;
+		PreparedStatement pstReFolderRes = null;
+		try {
+			// 1.generate folder
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			String wapFolderId = folder.getId();
+			String folderId = wapFolderId + getFolderId(wapFolderId);// wapFolderId.len+6位
+			//TODO 无审核直接发布
+			String table = OperationDB.NEED_CHECK;
+			String folder_status = "0";
+			if("10".equals(folder.getOperation())){
+				table = OperationDB.NOT_NEED_CHECK;
+				folder_status = "1";
+			}
+			String sqlFolder = "insert into "+table+"(folder_id,wap_folder_id,folder_name,folder_index,folder_status,folder_desc,folder_level,create_time,PAGE_WORD_SIZE,VISIT_TIME) ";
+			sqlFolder += " values(?,?,?,0,?,?,3,sysdate,255,0) ";
+			pstFolder = conn.prepareStatement(sqlFolder);
+			pstFolder.setString(1, folderId);
+			pstFolder.setString(2, wapFolderId);
+			pstFolder.setString(3, folder.getTitle());
+			pstFolder.setString(4, folder_status);
+			pstFolder.setString(5, folder.getTitle());
+			pstFolder.executeUpdate();
+			pstFolder.clearParameters();
+			pstFolder.close();
+
+			log.info("");
+			log.info(wapFolderId + "|" + folderId + "|" + folder.getTitle());
+			log.info("-----------------------------------------------------------------------------------");
+			// 2.generate resource
+			// 3.related 1 and 2
+			String sqlResource = "insert into wap_resource"
+					+ "(res_id,spcp_id,res_type_id,firstname,passname,check_flag,res_status,store_filepath,res_size,res_desc,CREATE_TIME,res_content,DOWN_COUNT,CLICK_SUM,RES_AUTHOR,CORP_NAME,COPYRIGHT) ";
+			sqlResource += " values(?,1,?,?,?,'0',?,?,?,?,?,?,0,0,'web crawler',to_char(sysdate,'yy/mm/dd hh24:mi:ss'),'web crawler') ";
+
+			String sqlReFolderRes = "insert into wap_re_folder_res(folder_id,res_id,order_index) values(?,?,0)";
+			pstResource = conn.prepareStatement(sqlResource);
+			List resourceList = folder.getResources();
+			long[] ids = getResId(resourceList.size());
+
+			//int i = resourceList.size() - 1; i >= 0; i--
+			//int i = 0; i < resourceList.size(); i++
+			for (int i = 0; i < resourceList.size(); i++) {
 				// TODO 按时间倒序排列
 				long resId = ids[i];
 
@@ -239,19 +388,22 @@ public final class OperationDB {
 				pstResource.setLong(2, resource.getResourceType());
 				pstResource.setString(3, folder.getTitle());
 				pstResource.setString(4, folder.getTitle());
-				pstResource.setString(5, path);
-				pstResource.setLong(6, resource.getResourceContent().length());
-				pstResource.setString(7, folder.getTitle());
-				//date = new Date();
-				//pstResource.setString(8, sdf.format(date));
-				pstResource.setString(8, resource.getResourceContent());
-				// Thread.sleep(5000);
+				pstResource.setString(5, folder_status);
+				System.out.println(" ******************************** "+resId+"|"+folder_status);
+				pstResource.setString(6, path);
+				pstResource.setLong(7, resource.getResourceContent().length());
+				pstResource.setString(8, folder.getTitle());
+				//批量操作时，时间都是一样的，下面的赋值是没有意义的
+				//pstResource.setDate(9, new java.sql.Date(System.currentTimeMillis()+i*65432));
+				//时间戳可以
+				pstResource.setTimestamp(9, new Timestamp(System.currentTimeMillis()-i*1000));
+				pstResource.setString(10, resource.getResourceContent());
 				pstResource.addBatch();
 			}
 			pstResource.executeBatch();
 
 			pstReFolderRes = conn.prepareStatement(sqlReFolderRes);
-			for (int j = resourceList.size() - 1; j >= 0; j--) {
+			for (int j = resourceList.size() - 1; j >= 0 ; j--) {
 				long resId = ids[j];
 
 				pstReFolderRes.setString(1, folderId);
@@ -293,33 +445,38 @@ public final class OperationDB {
 		try {
 			// 判断是否是9位的
 			int length = getFolderIdLength(id);
-			if (length == 0) {
-				folderId = "000001";
-			} else if (length == 9) {
-				folderId = "000001";
-			} else if (length == 12) {
-				String sql = "select lpad(substr(max(folder_id),LENGTH(max(folder_id))-LENGTH(?)+1,LENGTH(max(folder_id)))+1,6,'0') ";//"from wap_page_folder where wap_folder_id=? and length(folder_id)=12";
-				sql += " from( ";
-				sql += " select a.folder_id from wap_page_folder a where a.wap_folder_id = ? and length(a.folder_id)=12 ";
-				sql += " union ";
-				sql += " select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = ? and length(b.folder_id)=12 ";
-				sql += " ) c ";
+			/*if (length == 0) {
+				if(id.length()==9){
+					folderId = "001";
+				}else{
+					folderId = "000001";
+				}
+			} else if (length == 9||length==15) {
+				folderId = "001";
+			} else if (length == 12) {*/
+//				String sql = "select nvl(lpad(substr(max(folder_id),LENGTH(max(folder_id))-LENGTH(?)+1,LENGTH(max(folder_id)))+1,6,'0'),'0') ";//"from wap_page_folder where wap_folder_id=? and length(folder_id)=12";
+//				sql += " from( ";
+//				sql += " select a.folder_id from wap_page_folder a where a.wap_folder_id = ? and length(a.folder_id)=12 ";
+//				sql += " union ";
+//				sql += " select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = ? and length(b.folder_id)=12 ";
+//				sql += " ) c ";
+				String sql = "select lpad(count(folder_id)+1,6,'0') from( select a.folder_id from wap_page_folder a where a.wap_folder_id = ? union select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = ? ) c ";
 				PreparedStatement pst = conn.prepareStatement(sql);
 				pst.setString(1, id);
 				pst.setString(2, id);
-				pst.setString(3, id);
+				//pst.setString(3, id);
 				ResultSet rs = pst.executeQuery();
 				if (rs.next()) {
 					folderId = rs.getString(1);
 					// TODO 栏目去父栏目下六位子栏目，若该父栏目下没有记录，则默认从000001开始
-					if (folderId == null) {
+					if (folderId == null || "".equals(folderId) || "0".equals(folderId)) {
 						folderId = "000001";
 					}
 				}
 				rs.close();
 				pst.close();
 				conn.close();
-			}
+			//}
 			log.info("         6位流水号字符串:" + id + "|FID:" + id + "|ID:" + folderId);
 
 		} catch (SQLException e) {
@@ -463,10 +620,11 @@ public final class OperationDB {
 		long[] primaryKey = new long[length];
 		try {
 			ps = conn.prepareStatement(sqSql);
+			//int i = length - 1; i >= 0; i--
+			//int i=0; i<length;i++
 			for (int i = length - 1; i >= 0; i--) {
 				rs = ps.executeQuery();
-				if (rs.next())
-					primaryKey[i] = rs.getLong(1);
+				if (rs.next()) primaryKey[i] = rs.getLong(1);
 				rs.close();
 			}
 			ps.close();
@@ -613,32 +771,9 @@ public final class OperationDB {
 	//http://www.moxiu.com/down.html?rid=5968872&file=theme/sisdd/f4/bbe/f4bbeccf/moxiu1259849728.sis
 	public static void main(String[] args) {
 		try{
-			URL url = new URL("http://www.izhuti.com/download.php?id=46639");
-			System.out.println("content:"+url.getContent());
-			System.out.println("default port:"+url.getDefaultPort());
-			System.out.println("file:"+url.getFile());
-			System.out.println("host:"+url.getHost());
-			System.out.println("path:"+url.getPath());
-			System.out.println("protocol:"+url.getProtocol());
-			System.out.println("query:"+url.getQuery());
-			System.out.println("ref:"+url.getRef());
-			System.out.println("userInfo:"+url.getUserInfo());
-			System.out.println(" ---------------- URL Connection -------------------- ");
-			URLConnection conn = url.openConnection();
-			System.out.println("content type:"+conn.getContentType());
-			System.out.println("content:"+conn.getContent());
-			Map<String, List<String>> map = conn.getHeaderFields();
-			if(map!=null&&!map.isEmpty()){
-				Set<String> keySet = map.keySet();
-				for(String key : keySet){
-					System.out.println(key+":"+map.get(key));
-				}
-			}
-			System.out.println(" ---------------- HTTP URL Connection -------------------- ");
-			//HttpURLConnection httpConn = (HttpURLConnection)conn.getContent();
-			//HttpURLConnection
-			//InputStream in = url.openStream();
-			//System.out.println(" inputstream : "+in);
+			//http://www.moxiu.com/down.html?rid=6137935&file=theme/sisdd/ce/a1f/cea1f1d6/moxiu1261670130.sis
+			//http://www.moxiu.com/themes/2/2009/1224/6137935.shtml
+			System.out.println(new OperationDB().downloadFile("http://www.moxiu.com/down.html?rid=6137935&file=theme/sisdd/ce/a1f/cea1f1d6/moxiu1261670130.sis"));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
