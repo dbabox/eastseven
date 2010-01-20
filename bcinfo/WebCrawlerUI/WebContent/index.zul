@@ -1,64 +1,49 @@
-<?page title="WebCrawlerUI"?>
-<window border="none" width="100%" height="100%"
-	apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.BorderLayoutComposer">
-	<zscript>
-	java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
-			"yyyy-MM-dd");
-	Object obj = session.getAttribute("user");
-	com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean bean;
-	boolean isAdmin = false;
-	if (obj != null) {
-		bean = (com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean) obj;
-		if (bean.getUserId() == 0L)
-			isAdmin = true;
-	}
-	com.bcinfo.wapportal.repository.crawl.ui.zk.dao.ChannelDao channelDao = new com.bcinfo.wapportal.repository.crawl.ui.zk.dao.ChannelDao();
-	com.bcinfo.wapportal.repository.crawl.dao.AppLogDao dao = new com.bcinfo.wapportal.repository.crawl.dao.AppLogDao();
-	String current = sdf.format(new Date());
-	Long count = dao.getCatchSize(0L, current, current);
-	void logout() {
-		if (session.getAttribute("user") != null) {
-			session.removeAttribute("user");
-			execution.sendRedirect("index.zul");
-		}
-	}
-</zscript>
-	<menubar id="menubar">
-		<menu label="资源">
-			<menupopup>
-				<menuitem label="审核" id="resourceMenuItem" />
-				<menuitem label="发布" id="resourceMenuItemSend" />
-			</menupopup>
-		</menu>
-		<menuitem label="频道" id="channelMenuItem" />
-		<menuitem label="抓取" id="catchMenuItem" />
-		<menu label="订购">
-			<menupopup>
-				<menuitem label="手动" id="mappingMenuItem" />
-				<menuitem label="自动" id="mappingAutoMenuItem"
-					if="${isAdmin }" />
-			</menupopup>
-		</menu>
-		<menuitem label="SPCP" id="spcpMenuItem" />
-		<menuitem label="文件上传" id="uploadMenuItem" if="${isAdmin }" />
-		<menu label="系统" if="${isAdmin }">
-			<menupopup>
-				<menuitem label="用户" />
-				<menuitem label="日志" id="appLogMenuItem" />
-				<menuitem label="Quartz" id="quartzMenuItem" />
-			</menupopup>
-		</menu>
-		<menuitem label="注销" id="logout" onClick="logout()" />
+<?page contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window id="win" height="100%" width="100%" closable="true" border="none" apply="com.bcinfo.wapportal.repository.crawl.ui.zk.pages.MainUI">
+		<borderlayout id="borderlayout">
+			<north>
+				<menubar id="menubar">
+					<menu label="风采后台">
+						<menupopup id="menupopup">
+							<menuitem label="四川1.0" id="sc_1" />
+							<menuitem label="四川2.0" id="sc_2" />
+							<menuseparator />
+							<menuitem label="江西1.0" id="jx_1" />
+							<menuitem label="江西2.0" id="jx_2" />
+						</menupopup>
+					</menu>
+					<menuitem label="资源管理" id="resMenuitem" />
+					<menuitem label="频道管理" id="chlMenuitem" />
+					<menuitem label="抓取配置" id="catMenuitem" />
+					<menuitem label="订购管理" id="subMenuitem" />
+					<menuitem label="SPCP" id="spcpMenuitem" disabled="true"/>
+					<menuitem label="Quartz" id="quartzMenuitem" />
+					<menuitem label="关于" id="aboutMenuitem" />
+				</menubar>
+			</north>
+			<west width="25%" splittable="true" collapsible="true" autoscroll="true" title=" ">
+				<tabbox>
+					<tabs id="tabs"/>
+					<tabpanels id="tabpanels"/>
+				</tabbox>
 
-	</menubar>
-	<!--  -->
-	<div id="contentDiv">
-		登录帐号：${bean.userName } 区域：${bean.localCode }
-		<grid id="grid">
-			<columns>
-				<column label="今日抓取数量" />
-			</columns>
-		</grid>
-	</div>
-
-</window>
+			</west>
+			<center flex="true" autoscroll="true">
+				<tabbox>
+					<tabs id="contentTabs">
+						<tab label="使用说明" selected="true"/>
+					</tabs>
+					<tabpanels id="contentTabpanels" height="100%">
+						<tabpanel>
+							<include src="quick_start.html"></include>
+						</tabpanel>
+					</tabpanels>
+				</tabbox>
+			</center>
+			<south>
+				<include src="info.zul" />
+			</south>
+		</borderlayout>
+	</window>
+</zk>
