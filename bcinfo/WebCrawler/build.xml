@@ -93,6 +93,9 @@
 		<fileset dir="${basedir}/lib/ftp/">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="${basedir}/lib/httpclient/">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	<target name="init" description="初始化目录">
