@@ -5,6 +5,18 @@
 -->
 
 <zk>
+	<listener>
+		<description>Mointor the statistic</description>
+		<listener-class>org.zkoss.zk.ui.util.Statistic</listener-class>
+	</listener>
+	<listener>
+		<description>ZK performance monitor</description>
+		<listener-class>org.zkoss.zkdemo.monitor.PerformanceMeter</listener-class>
+	</listener>
+	<library-property>
+		<name>org.zkoss.monitor.cleartime</name>
+		<value>10000</value>
+	</library-property>
 	<device-config>
 		<device-type>ajax</device-type>
 		<timeout-uri>/pages/timeout.zul</timeout-uri>
