@@ -19,6 +19,7 @@
 					<menuitem label="订购管理" id="subMenuitem" />
 					<menuitem label="SPCP" id="spcpMenuitem" disabled="true"/>
 					<menuitem label="Quartz" id="quartzMenuitem" />
+					<menuitem label="性能监控" href="monitor.zul" target="_blank" />
 					<menuitem label="关于" id="aboutMenuitem" />
 				</menubar>
 			</north>
