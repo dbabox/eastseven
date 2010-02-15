@@ -7,6 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
+import org.htmlparser.Parser;
+import org.htmlparser.Tag;
+import org.htmlparser.filters.AndFilter;
+import org.htmlparser.filters.HasAttributeFilter;
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.util.NodeIterator;
+import org.htmlparser.util.NodeList;
 
 import com.bcinfo.wapportal.repository.crawl.core.AbstractHtmlParseTemplete;
 import com.bcinfo.wapportal.repository.crawl.core.Parse;
@@ -21,12 +30,47 @@ public class ParseIFeng extends AbstractHtmlParseTemplete implements Parse {
 
 	private static final Logger log = Logger.getLogger(ParseIFeng.class);
 	
+	private Parser parser;
+	
+	public ParseIFeng(String url) {
+		try {
+			this.parser = new Parser(url);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.debug(e);
+		}
+	}
+	
+	public ParseIFeng() {
+	}
+	
 	@Override
 	public List<String> checkPageOfLinks(String link) {
-		List<String> links = null;
+		List<String> links = new ArrayList<String>();
+		String pageNumStr = "1";
 		try{
-			links = new ArrayList<String>();
 			links.add(link);
+			if(this.parser==null) this.parser = new Parser(link);
+			NodeFilter filter = new AndFilter(new TagNameFilter("span"), new HasAttributeFilter("class", "slide_org"));
+			NodeList nodeList = this.parser.extractAllNodesThatMatch(filter);
+			if(nodeList!=null && nodeList.size()>0){
+				Node node = nodeList.elements().nextNode();
+				Tag tag = (Tag)node;
+				log.info("∑÷“≥£∫"+tag.getFirstChild().getText());
+				pageNumStr = tag.getFirstChild().getText();
+				int pageNum = Integer.parseInt(pageNumStr);
+				String next = "";
+				for(int index=1;index<pageNum;index++){
+					if(index==1){
+						next = getNextLink(link);
+					}else{
+						next = getNextLink(next);
+					}
+					if(!"".equals(next)){
+						links.add(next);
+					}
+				}
+			}
 		}catch(Exception e){
 			links = new ArrayList<String>();
 			links.add(link);
@@ -35,12 +79,46 @@ public class ParseIFeng extends AbstractHtmlParseTemplete implements Parse {
 		return links;
 	}
 
+	private String getNextLink(String link) {
+		String next = "";
+		try {
+			this.parser = new Parser(link);
+			NodeFilter filter = new AndFilter(new TagNameFilter("div"), new HasAttributeFilter("class", "nextPage"));
+			NodeList nodeList = this.parser.parse(filter);
+			if(nodeList!=null && nodeList.size()>0){
+				Node node = nodeList.elements().nextNode();
+				//System.out.println(node);
+				NodeList list = node.getChildren().extractAllNodesThatMatch(new TagNameFilter("script"));
+				for(NodeIterator iter = list.elements();iter.hasMoreNodes();){
+					String html = iter.nextNode().toHtml();
+					if(html.contains("nextgroup")){
+						next = html.substring(html.indexOf("href=\""), html.indexOf("' + nextgroup + '\">")).replace("href=\"", this.replacement);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.debug(e);
+		}
+		return next;
+	}
+	
 	@Override
 	public String getTargetContent(String link) {
 		String content = null;
 		
 		try{
 			content = this.getPageContent(link, "id", "artical_real");
+			if(content==null||"".equals(content)){
+				if(this.parser==null) this.parser = new Parser(link);
+				this.parser.reset();
+				NodeFilter filter = new AndFilter(new TagNameFilter("dl"), new HasAttributeFilter("class", "slideBigShow"));
+				NodeList nodeList = this.parser.parse(filter);
+				if(nodeList!=null && nodeList.size()>0){
+					content = nodeList.toHtml();
+					content = content.replaceAll("<[dD][lL]\\s+[^>]+>|</[dD][lL]>|<dt>|</dt>|<dd>|</dd>", replacement);
+				}
+			}
 			content = this.commonParseContent(content);
 			
 		}catch(Exception e){
@@ -63,8 +141,8 @@ public class ParseIFeng extends AbstractHtmlParseTemplete implements Parse {
 
 	//TODO TEST
 	public static void main(String[] args) {
-		String link = "http://news.ifeng.com/sports/pinglun/200912/1201_4687_1457658.shtml";
-		ParseIFeng p = new ParseIFeng();
-		//System.out.println(p.parse(link));
+		String link = "http://ent.ifeng.com/photo/star/detail_2010_02/01/332678_0.shtml";
+		ParseIFeng p = new ParseIFeng(link);
+		System.out.println(p.parse(link));
 	}
 }
