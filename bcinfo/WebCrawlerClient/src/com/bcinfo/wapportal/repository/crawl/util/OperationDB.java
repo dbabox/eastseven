@@ -270,7 +270,7 @@ public final class OperationDB {
 				System.out.println(" ******************************** "+resId+"|"+folder_status);
 				pstResource.setString(6, path);
 				pstResource.setLong(7, resource.getResourceContent().length());
-				pstResource.setString(8, folder.getTitle());
+				pstResource.setString(8, "");
 				//批量操作时，时间都是一样的，下面的赋值是没有意义的
 				//pstResource.setDate(9, new java.sql.Date(System.currentTimeMillis()+i*65432));
 				//时间戳可以
@@ -322,7 +322,7 @@ public final class OperationDB {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public boolean save(Folder folder) throws Exception {
+	public synchronized boolean save(Folder folder) throws Exception {
 		boolean isSuccess = false;
 		if (folder == null) throw new Exception(" folder is null... ");
 		Connection conn = null;
@@ -353,7 +353,9 @@ public final class OperationDB {
 			pstFolder.executeUpdate();
 			pstFolder.clearParameters();
 			pstFolder.close();
-
+			
+			//conn.commit();
+			
 			log.info("");
 			log.info(wapFolderId + "|" + folderId + "|" + folder.getTitle());
 			log.info("-----------------------------------------------------------------------------------");
@@ -367,7 +369,7 @@ public final class OperationDB {
 			pstResource = conn.prepareStatement(sqlResource);
 			List resourceList = folder.getResources();
 			long[] ids = getResId(resourceList.size());
-
+			
 			//int i = resourceList.size() - 1; i >= 0; i--
 			//int i = 0; i < resourceList.size(); i++
 			for (int i = 0; i < resourceList.size(); i++) {
@@ -392,7 +394,7 @@ public final class OperationDB {
 				System.out.println(" ******************************** "+resId+"|"+folder_status);
 				pstResource.setString(6, path);
 				pstResource.setLong(7, resource.getResourceContent().length());
-				pstResource.setString(8, folder.getTitle());
+				pstResource.setString(8, "");
 				//批量操作时，时间都是一样的，下面的赋值是没有意义的
 				//pstResource.setDate(9, new java.sql.Date(System.currentTimeMillis()+i*65432));
 				//时间戳可以
@@ -418,8 +420,10 @@ public final class OperationDB {
 			pstReFolderRes.clearBatch();
 			pstReFolderRes.close();
 
+			conn.setAutoCommit(true);
 			conn.commit();
 			isSuccess = true;
+			Thread.sleep(3*1000);
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
@@ -438,50 +442,48 @@ public final class OperationDB {
 		return isSuccess;
 	}
 
-	// 6位流水号字符串
+	// 9位流水号字符串
 	public synchronized String getFolderId(String id) {
-		String folderId = null;
-		Connection conn = JavaOracle.getConn();
+		String folderId = "";
+		String sql = "select seq_commons_folder.nextval from dual";
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
 		try {
-			// 判断是否是9位的
-			int length = getFolderIdLength(id);
-			/*if (length == 0) {
-				if(id.length()==9){
-					folderId = "001";
-				}else{
-					folderId = "000001";
-				}
-			} else if (length == 9||length==15) {
-				folderId = "001";
-			} else if (length == 12) {*/
-//				String sql = "select nvl(lpad(substr(max(folder_id),LENGTH(max(folder_id))-LENGTH(?)+1,LENGTH(max(folder_id)))+1,6,'0'),'0') ";//"from wap_page_folder where wap_folder_id=? and length(folder_id)=12";
-//				sql += " from( ";
-//				sql += " select a.folder_id from wap_page_folder a where a.wap_folder_id = ? and length(a.folder_id)=12 ";
-//				sql += " union ";
-//				sql += " select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = ? and length(b.folder_id)=12 ";
-//				sql += " ) c ";
-				String sql = "select lpad(count(folder_id)+1,6,'0') from( select a.folder_id from wap_page_folder a where a.wap_folder_id = ? union select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = ? ) c ";
-				PreparedStatement pst = conn.prepareStatement(sql);
-				pst.setString(1, id);
-				pst.setString(2, id);
-				//pst.setString(3, id);
-				ResultSet rs = pst.executeQuery();
-				if (rs.next()) {
-					folderId = rs.getString(1);
-					// TODO 栏目去父栏目下六位子栏目，若该父栏目下没有记录，则默认从000001开始
-					if (folderId == null || "".equals(folderId) || "0".equals(folderId)) {
-						folderId = "000001";
-					}
-				}
-				rs.close();
-				pst.close();
-				conn.close();
-			//}
-			log.info("         6位流水号字符串:" + id + "|FID:" + id + "|ID:" + folderId);
-
-		} catch (SQLException e) {
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			rs = pst.executeQuery();
+			if (rs.next()){
+				long val = rs.getLong(1);
+				folderId = String.valueOf(val);
+				int len = folderId.length();
+				String zero = "";
+				for(int i=0;i<8-len;i++) zero += "0";
+				folderId = "9" + zero + val;
+			}
+			log.info("新流水号："+folderId);
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.error(e);
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			if (pst != null)
+				try {
+					pst.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 		}
 		return folderId;
 	}
@@ -492,7 +494,7 @@ public final class OperationDB {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = "";//"select nvl(max(length(folder_id)),0) from wap_page_folder where wap_folder_id = ?";
+		String sql = "";
 		sql += " select nvl(max(length(c.folder_id)),0) ";
 		sql += " from( ";
 		sql += " select a.folder_id from wap_page_folder a where a.wap_folder_id = ? ";
@@ -534,6 +536,52 @@ public final class OperationDB {
 		return length;
 	}
 
+	public boolean isUsed(String folderId) {
+		boolean bln = false;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "";
+		sql += " select count(c.folder_id) ";
+		sql += " from( ";
+		sql += " select a.folder_id from wap_page_folder a where a.wap_folder_id = '"+folderId+"' ";
+		sql += " union ";
+		sql += " select b.folder_id from wap_page_folder_spcp b where b.wap_folder_id = '"+folderId+"' ";
+		sql += " ) c ";
+		try {
+			conn = JavaOracle.getConn();
+			pst = conn.prepareStatement(sql);
+			rs = pst.executeQuery();
+			if (rs.next()) {
+				bln = (rs.getInt(1) > 0);
+				log.info(sql+":"+bln);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error(e);
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			if (pst != null)
+				try {
+					pst.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			if (conn != null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		}
+		return bln;
+	}
+	
 	public boolean isUsed(long id) {
 		boolean bln = false;
 		Connection conn = null;
@@ -737,7 +785,8 @@ public final class OperationDB {
 				filePath = destImgUrl + subDir + "/flying/other/";
 				File file = new File(filePath);
 				if(!file.exists()) file.mkdir();
-				filePath += "pa_file_"+sdf.format(new Date(System.currentTimeMillis()))+"."+fileSuffix;
+				String fileName = "pa_file_"+sdf.format(new Date(System.currentTimeMillis()))+"."+fileSuffix;
+				filePath += fileName;
 				//if(!file.exists()) file.createNewFile();
 				file = new File(filePath);
 				os = new FileOutputStream(file);
@@ -748,6 +797,7 @@ public final class OperationDB {
 					os.write(buffer, 0, bytesRead);
 				}
 				log.info("文件下载后存放于"+filePath);
+				filePath = "http://218.205.231.122/wap/upload/" + subDir + "/flying/other/"+fileName;
 			}
 		}catch(Exception e){
 			e.printStackTrace();
