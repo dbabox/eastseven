@@ -39,7 +39,7 @@ public class WebCrawlerLotteryImpl extends AbstractHtmlParseTemplete implements 
 	 * http://lottery.sports.sohu.com/open/index_gp.shtml
 	 * */
 	@Override
-	public List<FolderBO> crawl(String folderId, String url) {
+	public List<FolderBO> crawl(Long crawlId, String folderId, String url) {
 		List<FolderBO> folders = null;
 		
 		try{
@@ -135,6 +135,6 @@ public class WebCrawlerLotteryImpl extends AbstractHtmlParseTemplete implements 
 		//http://lottery.sports.sohu.com/open/sd.shtml
 		//http://lottery.sports.sohu.com/open/sfc.shtml
 		String url = "http://lottery.sports.sohu.com/open/sd.shtml";
-		new WebCrawlerLotteryImpl().crawl("001", url);
+		new WebCrawlerLotteryImpl().crawl(1L, "001", url);
 	}
 }

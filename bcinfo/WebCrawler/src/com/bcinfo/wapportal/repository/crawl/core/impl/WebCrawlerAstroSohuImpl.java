@@ -24,12 +24,10 @@ import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
 public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 		implements WebCrawler {
 
-	private static final Logger log = Logger
-			.getLogger(WebCrawlerAstroSohuImpl.class);
+	private static final Logger log = Logger.getLogger(WebCrawlerAstroSohuImpl.class);
 
 	@Override
 	public List<String> checkPageOfLinks(String link) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -47,12 +45,10 @@ public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 			content = content.replaceAll(RegexUtil.REGEX_SPAN, replacement);
 			content = content.replaceAll(RegexUtil.REGEX_EM, replacement);
 			content = content.replaceAll("\\[我来说两句\\]", replacement);
-			content = RegexUtil.eliminateString(RegexUtil.REGEX_SCRIPT_START,
-					RegexUtil.REGEX_SCRIPT_END, content);
+			content = RegexUtil.eliminateString(RegexUtil.REGEX_SCRIPT_START, RegexUtil.REGEX_SCRIPT_END, content);
 		} catch (Exception e) {
-			//System.out.println("解析sohu页面[" + link + "]内容失败");
 			if (log.isDebugEnabled()) {
-				log.debug(e);
+				e.printStackTrace();
 			}
 		}
 
@@ -60,7 +56,7 @@ public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 	}
 
 	@Override
-	public List<FolderBO> crawl(String folderId, String url) {
+	public List<FolderBO> crawl(Long crawlId ,String folderId, String url) {
 		List<FolderBO> folders = null;
 
 		try {
@@ -73,7 +69,6 @@ public class WebCrawlerAstroSohuImpl extends AbstractHtmlParseTemplete
 			String title = "";
 			title = RegexUtil.extractContentWithRegex("\\d+年\\d+月\\d+日", content);
 			DaoService dao = new DaoServiceDefaultImpl();
-			//title = dao.getChannelName(Long.parseLong(folderId));
 			
 			if(dao.isExistCrawlResource(Long.parseLong(folderId), title)){
 				log.info("频道["+folderId+"]星座占卜标题["+title+"]已存在");

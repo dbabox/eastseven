@@ -34,18 +34,16 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 	
 	private HtmlParse htmlParse;
 	private FileOperation fileOperation;
-	//private HandleContent handleContent;
 	
 	private Parse parseService;
 	
 	public WebCrawlerDefaultImpl() {
 		this.htmlParse = new HtmlParseDefaultImpl();
 		this.fileOperation = new FileOperation();
-		//this.handleContent = new HandleContent();
 	}
 	
 	@Override
-	public List<FolderBO> crawl(String folderId, String url) {
+	public List<FolderBO> crawl(Long crawlId, String folderId, String url) {
 		List<FolderBO> folders = null;
 		try{
 			//取得可用地址
@@ -61,12 +59,9 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 					String content = parseService.parse(link);
 					String imgPathSet = "";
 					//TODO 记录日志,不管成功与否
-					fileOperation.writeLog(folderId, link);
+					fileOperation.writeLog(crawlId.toString(), link);
 					
 					if(content == null || "".equals(content) || "null".equals(content)){
-						if(log.isDebugEnabled()){
-							//System.out.println("未取得内容： LINK:"+link+" | TITLE:"+title);
-						}
 						continue;
 					}
 					if(content != null){
@@ -144,29 +139,24 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 							//System.out.println("------------------------抓取-------------------------------");
 							//System.out.println(link+" | "+title);
 							
-//							//System.out.println("------------------------格式化文本内容-------------------------------");
+							//System.out.println("------------------------格式化文本内容-------------------------------");
 							//System.out.println("内容                      :"+content);
-//							//System.out.println("图片存放路径  :"+imgPathSet);
+							//System.out.println("图片存放路径  :"+imgPathSet);
 							//System.out.println(" ");
 						}
 						/*2010-01-15：根据运营陈晓强的要求，内容首行不加<br />*/
 						if(content.startsWith(RegexUtil.REGEX_BR)){
 							content = content.replaceFirst(RegexUtil.REGEX_BR, "");
 						}
-						/**/
+						
 						folders.add(new FolderBO(folderId, title, link, content,imgPathSet));
 						
-						//TODO 测试
-						//if(log.isDebugEnabled()) if(count==5) break;
 					}
 					count ++;
 				}
 				
-			}else{
-				//System.out.println(" 抓取地址["+url+"]目前还不能解析... ");
 			}
 		}catch(Exception e){
-			//System.out.println("[目标栏目:"+folderId+" "+url+"]抓取失败");
 			if(log.isDebugEnabled()){
 				e.printStackTrace();
 			}
