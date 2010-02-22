@@ -21,7 +21,7 @@ public interface WebCrawler {
 	 * @param url 爬取地址
 	 * @return 栏目集合
 	 */
-	public List<FolderBO> crawl(String folderId, String url);
+	public List<FolderBO> crawl(Long crawlId, String folderId, String url);
 	
 	
 }

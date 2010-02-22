@@ -36,7 +36,7 @@ public class WebCrawlerMobileZhutiImpl implements WebCrawler {
 	}
 
 	@Override
-	public List<FolderBO> crawl(String folderId, String url) {
+	public List<FolderBO> crawl(Long crawlId, String folderId, String url) {
 		List<FolderBO> folders = null;
 
 		try {
@@ -52,8 +52,9 @@ public class WebCrawlerMobileZhutiImpl implements WebCrawler {
 					String content = parseService.parse(link);
 					String imgPathSet = "";
 					String filePathSet = "";
+					
 					// TODO 记录日志,不管成功与否
-					fileOperation.writeLog(folderId, link);
+					fileOperation.writeLog(crawlId.toString(), link);
 
 					if (content != null && !"".equals(content)) {
 						FolderBO usableFolder = new FolderBO();

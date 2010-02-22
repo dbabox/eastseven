@@ -61,6 +61,7 @@ public class SingleJob implements Job {
 			for (CrawlList obj : list) {
 				List<FolderBO> folders = new ArrayList<FolderBO>();
 
+				Long id = obj.getCrawlId();
 				channelId = obj.getChannelId();
 				url = obj.getCrawlUrl();
 
@@ -69,19 +70,19 @@ public class SingleJob implements Job {
 
 				if (url.contains("lottery.sports.sohu.com")) {
 					// TODO 针对彩票特殊处理
-					folders = webCrawlerLottery.crawl(channelId.toString(), url);
+					folders = webCrawlerLottery.crawl(id, channelId.toString(), url);
 				} else if (url.contains("astro.women.sohu.com")) {
 					// TODO 针对星座占卜特殊处理
-					folders = webCrawlerAstro.crawl(channelId.toString(), url);
+					folders = webCrawlerAstro.crawl(id, channelId.toString(), url);
 				} else if (url.contains("www.moxiu.com") 
 						|| url.contains("www.izhuti.com")
 						|| url.contains("soft.tompda.com")
 						|| url.contains("sj.skycn.")) {
 					// TODO 针对手机主题软件下载处理
-					folders = webCrawlerMobileZhuti.crawl(channelId.toString(), url);
+					folders = webCrawlerMobileZhuti.crawl(id, channelId.toString(), url);
 				} else {
 					// TODO 通用频道处理
-					folders = webCrawler.crawl(channelId.toString(), url);
+					folders = webCrawler.crawl(id, channelId.toString(), url);
 				}
 				if (folders != null && !folders.isEmpty()) {
 					message = "抓取[v:" + version + "]频道[" + channelId + "]地址[" + url + "]共" + folders.size() + "条记录";

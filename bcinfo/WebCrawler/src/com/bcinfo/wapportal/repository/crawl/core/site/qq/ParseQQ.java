@@ -74,6 +74,6 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://sports.qq.com/a/20091130/000761.htm";
 		ParseQQ p = new ParseQQ();
-		//System.out.println(p.parse(link));
+		System.out.println(p.parse(link));
 	}
 }
