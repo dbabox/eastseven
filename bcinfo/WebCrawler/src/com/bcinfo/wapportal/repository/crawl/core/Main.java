@@ -83,7 +83,8 @@ public final class Main {
 					
 					String triName = jobName;
 					Trigger trigger = null;
-					trigger = new SimpleTrigger(triName, folderId, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 60 * 60 * 1000L);
+					//由于线程增多，将1小时执行一次改为2小时执行一次
+					trigger = new SimpleTrigger(triName, folderId, new Date(), null, SimpleTrigger.REPEAT_INDEFINITELY, 2 * 60 * 60 * 1000L);
 					//trigger = new CronTrigger(triName, folderId, "59 1/59 * * * ?");
 					trigger.setDescription(info.getCrawlUrl());
 					
