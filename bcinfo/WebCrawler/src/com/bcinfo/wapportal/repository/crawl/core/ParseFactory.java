@@ -20,6 +20,7 @@ import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTianya;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTompad;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseYala;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseZolMobile;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.Parser3g37;
 import com.bcinfo.wapportal.repository.crawl.core.site.pcpop.ParsePcpopMobile;
 import com.bcinfo.wapportal.repository.crawl.core.site.pcpop.ParsePcpopMovie;
 import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQ;
@@ -146,6 +147,8 @@ public final class ParseFactory {
 			map.put(ParseDefault.ATTRIBUTE_NAME, "id");
 			map.put(ParseDefault.ATTRIBUTE_VALUE, "artibody");
 			return new ParseDefault(map);
+		} else if(url.contains("www.3g37.com")){
+			return new Parser3g37();
 		} else {
 			return null;
 		}
