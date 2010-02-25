@@ -512,7 +512,7 @@ public class DaoServiceDefaultImpl implements DaoService {
 		ResultSet rs = null;
 		
 		try{
-			String sql = " delete from twap_public_crawl_resource a where to_char(a.create_time,'yyyymmdd') < to_char(sysdate-3,'yyyymmdd') ";
+			String sql = " delete from twap_public_crawl_resource a where to_char(a.create_time,'yyyymmdd') < to_char(sysdate-1,'yyyymmdd') ";
 			conn = JavaOracle.getConn();
 			conn.setAutoCommit(false);
 			
