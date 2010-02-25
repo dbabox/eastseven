@@ -54,7 +54,7 @@ public class WebCrawlerMobileZhutiImpl implements WebCrawler {
 					String filePathSet = "";
 					
 					// TODO 记录日志,不管成功与否
-					fileOperation.writeLog(crawlId.toString(), link);
+					fileOperation.writeLog(folderId, link);
 
 					if (content != null && !"".equals(content)) {
 						FolderBO usableFolder = new FolderBO();
