@@ -77,7 +77,8 @@ public class SingleJob implements Job {
 				} else if (url.contains("www.moxiu.com") 
 						|| url.contains("www.izhuti.com")
 						|| url.contains("soft.tompda.com")
-						|| url.contains("sj.skycn.")) {
+						|| url.contains("sj.skycn.")
+						|| url.contains("www.3g37.com")) {
 					// TODO 针对手机主题软件下载处理
 					folders = webCrawlerMobileZhuti.crawl(id, channelId.toString(), url);
 				} else {
