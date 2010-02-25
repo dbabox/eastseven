@@ -27,6 +27,7 @@ import com.bcinfo.wapportal.repository.crawl.job.WeeklyJob;
  *         create time : 2009-10-23 下午12:09:10<br>
  *         只启动一个Job调度，减少数据库并发操作
  */
+@Deprecated
 public class MainSingle {
 
 	private static Logger log = Logger.getLogger(MainSingle.class);
