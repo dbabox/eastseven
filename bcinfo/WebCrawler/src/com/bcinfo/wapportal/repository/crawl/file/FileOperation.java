@@ -20,8 +20,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.iterators.UniqueFilterIterator;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -109,6 +111,7 @@ public final class FileOperation {
 		return bln;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<String> readLog(String folderId) {
 		List<String> logList = null;
 		logPath = getLogPath(folderId);
@@ -126,8 +129,15 @@ public final class FileOperation {
 				logList.add(temp);
 			}
 			br.close();
+			//添加去除重复记录的处理 2010-02-25
+			Iterator<String> iter = new UniqueFilterIterator(logList.iterator());
+			List<String> tempList = new ArrayList<String>();
+			while(iter.hasNext()){
+				tempList.add(iter.next());
+			}
+			logList.clear();
+			logList.addAll(tempList);
 		}catch(Exception e){
-			//System.out.println("读取"+logPath+"失败");
 			if(log.isDebugEnabled()){
 				log.debug(e);
 			}
