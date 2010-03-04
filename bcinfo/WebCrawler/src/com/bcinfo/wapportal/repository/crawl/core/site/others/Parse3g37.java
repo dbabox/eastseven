@@ -26,16 +26,16 @@ import com.bcinfo.wapportal.repository.crawl.core.Parse;
  * 3g37手机主题下载
  */
 
-public class Parser3g37 extends AbstractHtmlParseTemplete implements Parse {
+public class Parse3g37 extends AbstractHtmlParseTemplete implements Parse {
 
-	private static Logger log = Logger.getLogger(Parser3g37.class);
+	private static Logger log = Logger.getLogger(Parse3g37.class);
 	
 	
-	public Parser3g37(String url) {
+	public Parse3g37(String url) {
 		
 	}
 	
-	public Parser3g37() {
+	public Parse3g37() {
 	}
 	
 	@Override
@@ -219,7 +219,7 @@ public class Parser3g37 extends AbstractHtmlParseTemplete implements Parse {
 //		String link="http://www.3g37.com/zhuti/S60V5/87382.html";			//诺基亚S60V5
 //		String link="http://www.3g37.com/SEskin/SE13/201001/86093.html";	//索爱 
 //		String link="http://www.3g37.com/zhuti/sj/86480.html";				//其他
-		Parser3g37 p=new Parser3g37(link);
+		Parse3g37 p=new Parse3g37(link);
 		System.out.println(p.parse(link));
 	}
 
