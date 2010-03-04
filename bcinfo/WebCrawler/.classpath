@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/ftp/commons-net-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/ftp/commons-net-ftp-2.0.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser/filterbuilder.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser/htmllexer.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser/htmlparser.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser/junit.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser/sax2.jar"/>
+	<classpathentry kind="lib" path="lib/htmlparser/thumbelina.jar"/>
+	<classpathentry kind="lib" path="lib/jdbc/oracle9i.jar"/>
+	<classpathentry kind="lib" path="lib/mail/mail.jar"/>
+	<classpathentry kind="lib" path="lib/poi/poi-3.5-beta6-20090622.jar"/>
+	<classpathentry kind="lib" path="lib/quartz/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/quartz/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/quartz/quartz-all-1.6.5.jar" sourcepath="E:/dev/lib/quartz-1.6.5/src"/>
+	<classpathentry kind="lib" path="lib/rss/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/rss/rome-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/jdbc/derbyclient.jar"/>
+	<classpathentry kind="lib" path="lib/quartz/commons-dbcp-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/quartz/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/ant.jar" sourcepath="E:/tools/第三方开源库/apache/apache-ant-1.7.1-src.zip"/>
+	<classpathentry kind="lib" path="lib/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
