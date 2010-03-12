@@ -68,23 +68,32 @@ public class SingleJob implements Job {
 				message = "抓取[v:" + version + "]频道[" + channelId + "]地址[" + url + "]开始";
 				log.info(message);
 
-//				if (url.contains("lottery.sports.sohu.com")) {
-//					// TODO 针对彩票特殊处理
-//					folders = webCrawlerLottery.crawl(id, channelId.toString(), url);
-//				} else if (url.contains("astro.women.sohu.com")) {
-//					// TODO 针对星座占卜特殊处理
-//					folders = webCrawlerAstro.crawl(id, channelId.toString(), url);
-//				} else if (url.contains("www.moxiu.com") 
-//						|| url.contains("www.izhuti.com")
-//						|| url.contains("soft.tompda.com")
-//						|| url.contains("sj.skycn.")
-//						|| url.contains("www.3g37.com")) {
-//					// TODO 针对手机主题软件下载处理
-//					folders = webCrawlerMobileZhuti.crawl(id, channelId.toString(), url);
-//				} else {
-//					// TODO 通用频道处理
-//					folders = webCrawler.crawl(id, channelId.toString(), url);
-//				}
+				if (url.contains("lottery.sports.sohu.com")) {
+					// TODO 针对彩票特殊处理
+					folders = webCrawlerLottery.crawl(id, channelId.toString(), url);
+				} else if (url.contains("astro.women.sohu.com")) {
+					// TODO 针对星座占卜特殊处理
+					folders = webCrawlerAstro.crawl(id, channelId.toString(), url);
+				} else if (url.contains("www.moxiu.com") 
+						|| url.contains("www.izhuti.com")
+						|| url.contains("soft.tompda.com")
+						|| url.contains("sj.skycn.")
+						|| url.contains("www.3g37.com")
+						|| url.contains("travel.21cn.com")
+						|| url.contains("fb.cdqss.com")
+						|| url.contains("pic.dmguo.com")
+						|| url.contains("wangyou.pcgames.com.cn")
+						|| url.contains("www.cocplay.com")
+						|| url.contains("comic.yesky.com")
+						|| url.contains("news.17dm.com")
+				
+				) {
+					// TODO 针对手机主题软件下载处理
+					folders = webCrawlerMobileZhuti.crawl(id, channelId.toString(), url);
+				} else {
+					// TODO 通用频道处理
+					folders = webCrawler.crawl(id, channelId.toString(), url);
+				}
 				if (folders != null && !folders.isEmpty()) {
 					message = "抓取[v:" + version + "]频道[" + channelId + "]地址[" + url + "]共" + folders.size() + "条记录";
 					log.info(message);
