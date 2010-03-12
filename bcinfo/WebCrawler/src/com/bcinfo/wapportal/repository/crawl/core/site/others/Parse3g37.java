@@ -138,8 +138,10 @@ public class Parse3g37 extends AbstractHtmlParseTemplete implements Parse {
 			
 			str=mobileType.split(" + ");
 			mobileType=str[0];
-			
-//			log.debug("mobileType==="+mobileType);
+			//20100225 creat
+			//针对索爱机型
+			str=mobileType.split("收藏提示");
+			mobileType=str[0];
 			
 			
 			parser.reset();
@@ -189,11 +191,11 @@ public class Parse3g37 extends AbstractHtmlParseTemplete implements Parse {
 			if(!"".equals(imgPath)){
 				content+=imgPath+"|";
 			}
-			if(!"".equals(mobileType)){
-				content += this.commonParseContent(mobileType) + "|";
-			}
 			if(!"".equals(downPath)){
-				content += downPath;
+				content += downPath+"|";
+			}
+			if(!"".equals(mobileType)){
+				content += this.commonParseContent(mobileType);
 			}
 			
 		}catch(Exception e){

@@ -18,8 +18,9 @@ import com.bcinfo.wapportal.repository.crawl.util.RegexUtil;
  * create time : 2009-10-14 ÏÂÎç01:01:53
  */
 public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
-
+	
 	private static final Logger log = Logger.getLogger(ParseQQ.class);
+	
 	
 	@Override
 	public String parse(String link) {
@@ -72,7 +73,8 @@ public class ParseQQ extends AbstractHtmlParseTemplete implements Parse {
 
 	//TODO TEST
 	public static void main(String[] args) {
-		String link = "http://sports.qq.com/a/20091130/000761.htm";
+		String link="http://comic.qq.com/a/20080312/000032.htm";
+//		String link = "http://sports.qq.com/a/20091130/000761.htm";
 		ParseQQ p = new ParseQQ();
 		System.out.println(p.parse(link));
 	}

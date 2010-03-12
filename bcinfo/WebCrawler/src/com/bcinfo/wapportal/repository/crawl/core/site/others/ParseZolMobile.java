@@ -73,6 +73,6 @@ public class ParseZolMobile extends AbstractHtmlParseTemplete implements Parse {
 		//http://mobile.zol.com.cn/156/1566229.html
 		String url = "http://mobile.zol.com.cn/156/1566229.html";
 		ParseZolMobile p = new ParseZolMobile();
-		//System.out.println(p.parse(url));
+		System.out.println(p.parse(url));
 	}
 }
