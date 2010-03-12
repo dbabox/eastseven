@@ -102,9 +102,10 @@ public class ParseSina extends AbstractHtmlParseTemplete implements Parse {
 	//TODO TEST
 	public static void main(String[] args) {
 		//System.out.println("start");
-		String link = "http://tech.sina.com.cn/d/2009-12-03/10003645879.shtml";
+//		String link = "http://tech.sina.com.cn/d/2009-12-03/10003645879.shtml";
+		String link="http://eat.sina.com.cn/art/2010-03-03/110344346.shtml";
 		ParseSina p = new ParseSina();
-		//System.out.println(p.parse(link));
+		System.out.println(p.parse(link));
 		//System.out.println("done");
 	}
 }

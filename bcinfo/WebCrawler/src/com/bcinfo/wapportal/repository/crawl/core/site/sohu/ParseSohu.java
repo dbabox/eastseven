@@ -76,6 +76,6 @@ public class ParseSohu extends AbstractHtmlParseTemplete implements Parse {
 	public static void main(String[] args) {
 		String link = "http://sports.sohu.com/20091201/n268575103.shtml";
 		ParseSohu p = new ParseSohu();
-		//System.out.println(p.parse(link));
+		System.out.println(p.parse(link));
 	}
 }

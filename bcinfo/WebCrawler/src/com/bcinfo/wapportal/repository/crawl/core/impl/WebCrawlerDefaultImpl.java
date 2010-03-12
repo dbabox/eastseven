@@ -112,6 +112,8 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 											}else if(originUrl.startsWith("attachment")){
 												//环球网图片地址是统一存放在http://himg2.huanqiu.com/目录下的
 												originUrl = "http://himg2.huanqiu.com/" + originUrl;
+											}else if(link.contains(".cdqss.com")){
+												originUrl = "http://fb.cdqss.com" + originUrl;
 											}else{
 												//TOM
 												originUrl = CrawlerUtil.addLinkHeader(originUrl, httpHeader);

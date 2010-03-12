@@ -92,8 +92,8 @@ public class ParsePcpopMobile extends AbstractHtmlParseTemplete implements Parse
 		//http://www.pcpop.com/doc/0/468/468713.shtml 分页A[在本页阅读全文]
 		//http://www.pcpop.com/doc/0/466/466595.shtml 分页B[第二页内容是参数信息，不管]
 		//http://www.pcpop.com/doc/0/468/468094.shtml
-		//String link = "http://www.pcpop.com/doc/0/466/466595.shtml";
-		//ParsePcpopMobile p = new ParsePcpopMobile();
-		//System.out.println(p.parse(link));
+		String link = "http://www.pcpop.com/doc/0/468/468094.shtml";
+		ParsePcpopMobile p = new ParsePcpopMobile();
+		System.out.println(p.parse(link));
 	}
 }
