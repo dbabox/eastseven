@@ -10,11 +10,17 @@ import org.apache.log4j.Logger;
 
 import com.bcinfo.wapportal.repository.crawl.core.site.ParseDefault;
 import com.bcinfo.wapportal.repository.crawl.core.site.huanqiu.ParseHuanQiu;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.Parse17DM;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCdqss;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCocPlay;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseComic_Yesky;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCooCook;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseCosPlay;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseIFeng;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseIZhuti;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseMoxiu;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePcladyAstro;
+import com.bcinfo.wapportal.repository.crawl.core.site.others.ParsePicDmguo;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseSkycn;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTianya;
 import com.bcinfo.wapportal.repository.crawl.core.site.others.ParseTompad;
@@ -28,6 +34,7 @@ import com.bcinfo.wapportal.repository.crawl.core.site.qq.ParseQQForum;
 import com.bcinfo.wapportal.repository.crawl.core.site.sina.ParseSina;
 import com.bcinfo.wapportal.repository.crawl.core.site.sohu.ParseSohu;
 import com.bcinfo.wapportal.repository.crawl.core.site.tom.ParseTom;
+import com.bcinfo.wapportal.repository.crawl.core.site.travel21cn.ParseTravel_21cn;
 import com.bcinfo.wapportal.repository.crawl.core.site.wangyi.Parse163;
 import com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet.ParseNewsCn;
 import com.bcinfo.wapportal.repository.crawl.core.site.xinhuanet.ParseXinHuaNet;
@@ -94,7 +101,31 @@ public final class ParseFactory {
 			return new ParseDefault(map);
 		} else if(url.contains("www.3g37.com")){
 			return new Parse3g37();
-		} else {
+		} else if(url.contains("travel.21cn.com")){
+			return new ParseTravel_21cn();
+		}else if(url.contains("fb.cdqss.com")){
+			return new ParseCdqss();
+		}else if(url.contains("pic.dmguo.com")){
+			return new ParsePicDmguo();
+		}else if(url.contains("wangyou.pcgames.com.cn")){
+			return new ParseCosPlay();
+		}else if(url.contains("www.cocplay.com")){
+			return new ParseCocPlay();
+		}else if(url.contains("comic.yesky.com")){
+			return new ParseComic_Yesky();
+		}else if(url.contains("news.17dm.com")){
+			return new Parse17DM();
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		else{
 			return null;
 		}
 
