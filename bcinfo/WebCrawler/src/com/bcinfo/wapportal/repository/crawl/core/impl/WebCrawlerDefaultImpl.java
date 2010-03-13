@@ -77,7 +77,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 							cnt = cnt.trim();
 							if(cnt.length()>0){
 								if(!cnt.startsWith("<")){
-									cnt = RegexUtil.REGEX_BR + "　" + cnt;
+									cnt = RegexUtil.REGEX_BR + cnt;
 								}else{
 									//TODO 下载图片，并替换文本中的图片地址
 									String httpHeader = CrawlerUtil.extractLinkHeader(link);//顶级地址
@@ -112,8 +112,6 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 											}else if(originUrl.startsWith("attachment")){
 												//环球网图片地址是统一存放在http://himg2.huanqiu.com/目录下的
 												originUrl = "http://himg2.huanqiu.com/" + originUrl;
-											}else if(link.contains(".cdqss.com")){
-												originUrl = "http://fb.cdqss.com" + originUrl;
 											}else{
 												//TOM
 												originUrl = CrawlerUtil.addLinkHeader(originUrl, httpHeader);
@@ -121,7 +119,7 @@ public class WebCrawlerDefaultImpl implements WebCrawler {
 										}
 										imgPathSet += originUrl+",";//数据库保存实际的图片链接地址
 										//TODO 格式化原IMG标签，只保留src属性
-										img = "<img src="+originUrl+" alt=\"pic\" \\>";
+										img = "<img src=\""+originUrl+"\" alt=\"pic\" />";
 										cnt = cnt.replace(inputHTML, img);
 
 										if(log.isDebugEnabled()){
