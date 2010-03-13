@@ -1,6 +1,6 @@
-///**
-// * 
-// */
+/**
+ * 
+ */
 package com.bcinfo.wapportal.repository.crawl.job;
 
 import java.text.SimpleDateFormat;
@@ -23,13 +23,13 @@ import com.bcinfo.wapportal.repository.crawl.dao.impl.DaoServiceDefaultImpl;
 import com.bcinfo.wapportal.repository.crawl.domain.bo.FolderBO;
 import com.bcinfo.wapportal.repository.crawl.domain.internal.AppLog;
 import com.bcinfo.wapportal.repository.crawl.domain.po.CrawlList;
-//
-///**
-// * @author dongq
-// * 
-// *         create time : 2009-10-23 下午12:05:20<br>
-// *         单调度任务，一次加载全部抓取地址<br>
-// */
+
+/**
+ * @author dongq
+ * 
+ *         create time : 2009-10-23 下午12:05:20<br>
+ *         单调度任务，一次加载全部抓取地址<br>
+ */
 public class SingleJob implements Job {
 
 	private static Logger log = Logger.getLogger(SingleJob.class);
@@ -79,14 +79,6 @@ public class SingleJob implements Job {
 						|| url.contains("soft.tompda.com")
 						|| url.contains("sj.skycn.")
 						|| url.contains("www.3g37.com")
-						|| url.contains("travel.21cn.com")
-						|| url.contains("fb.cdqss.com")
-						|| url.contains("pic.dmguo.com")
-						|| url.contains("wangyou.pcgames.com.cn")
-						|| url.contains("www.cocplay.com")
-						|| url.contains("comic.yesky.com")
-						|| url.contains("news.17dm.com")
-				
 				) {
 					// TODO 针对手机主题软件下载处理
 					folders = webCrawlerMobileZhuti.crawl(id, channelId.toString(), url);
