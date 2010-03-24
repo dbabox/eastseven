@@ -357,20 +357,28 @@ public class ResourceComposer extends GenericForwardComposer {
 	
 	//¹Ø¼ü×Ö¼ì²é
 	private boolean checkKeyWords(String title, String content){
-		boolean bln = false;
-
+		boolean titleBln = false;
+		boolean cntBln = false;
 		try {
+			/*
 			if(title!=null&&!"".equals(title)){
 				if(!title.contains(StaticVariable.KEY_REFERENCE_SUBSTANCE)) bln = true;
 			}
 			if(content!=null&&!"".equals(content)){
 				if(!content.contains(StaticVariable.KEY_REFERENCE_SUBSTANCE)) bln = true;
 			}
+			*/
+			titleBln = !title.contains(StaticVariable.KEY_REFERENCE_SUBSTANCE);
+			cntBln = !content.contains(StaticVariable.KEY_REFERENCE_SUBSTANCE);
+			System.out.println("");
+			System.out.println("title:" + titleBln);
+			System.out.println("content:" + cntBln);
+			System.out.println("");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return bln;
+		return titleBln&&cntBln;
 	}
 	
 	private boolean saveResourceBean(ResourceBean resourceBean) {
