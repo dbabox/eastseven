@@ -60,7 +60,7 @@ public class SubscribeDao extends Dao {
 		Connection conn = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String sql = " select a.mapping_id,a.channel_id,(select t.channel_name from twap_public_channel t where t.channel_id = a.channel_id) channel_name,decode(a.local_code,'028','四川','0791','江西','未知') local_code,a.local_channel_id,a.user_id,to_char(a.create_time,'yyyy-mm-dd') create_time from twap_public_channel_mapping a where a.user_id = ? and exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid ) ";
+		String sql = " select a.mapping_id,a.channel_id,(select t.channel_name from twap_public_channel t where t.channel_id = a.channel_id) channel_name,decode(a.local_code,'028','四川','0791','江西','0000','中央','未知') local_code,a.local_channel_id,a.user_id,to_char(a.create_time,'yyyy-mm-dd') create_time from twap_public_channel_mapping a where a.user_id = ? and exists(select 1 from twap_public_channel b where a.channel_id = b.channel_id start with b.channel_id = ? connect by prior b.channel_id = b.channel_pid ) ";
 		
 		try{
 			conn = OracleUtil.getConnection();
@@ -166,11 +166,7 @@ public class SubscribeDao extends Dao {
 				pst.setLong(1, bean.getChannelId());
 				pst.setLong(2, bean.getUserId());
 				
-				if("四川".equals(bean.getLocalCode())){
-					pst.setString(3, "028");
-				}else if("江西".equals(bean.getLocalCode())){
-					pst.setString(3, "0791");
-				}
+				pst.setString(3, "0000");
 				
 				pst.setString(4, bean.getLocalFolderId());
 				pst.addBatch();

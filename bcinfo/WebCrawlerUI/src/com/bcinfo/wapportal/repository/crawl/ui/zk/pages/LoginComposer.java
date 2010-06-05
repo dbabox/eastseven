@@ -36,6 +36,12 @@ public class LoginComposer extends GenericForwardComposer {
 		super.doAfterCompose(comp);
 		location = (String)arg.get("location");
 		System.out.println(" location : "+location);
+		if(!this.requestScope.isEmpty()) {
+			for(Object key : this.requestScope.keySet()) {
+				System.out.println(" servlet username : " + key + " - " + this.requestScope.get(key));
+			}
+		}
+		System.out.println(this.application.getNativeContext());
 	}
 	
 	public void onOK$pwdtb(){

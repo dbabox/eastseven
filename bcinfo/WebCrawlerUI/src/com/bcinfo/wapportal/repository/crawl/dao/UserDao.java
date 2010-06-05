@@ -17,6 +17,25 @@ import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
  */
 public class UserDao {
 
+	public String getUserName(Long userId) throws Exception {
+		String userName = "";
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = "select a.user_name from twap_public_user a where a.user_id = ?";
+		conn = JavaOracle.getConn();
+		pst = conn.prepareStatement(sql);
+		pst.setLong(1, userId);
+		rs = pst.executeQuery();
+		if(rs.next()) userName = rs.getString("user_name");
+		
+		if(rs != null) rs.close();
+		if(pst != null) pst.close();
+		if(conn != null) conn.close();
+		
+		return userName;
+	}
+	
 	public Long getLoginUserId(String userName, String password){
 		Long userId = null;
 		

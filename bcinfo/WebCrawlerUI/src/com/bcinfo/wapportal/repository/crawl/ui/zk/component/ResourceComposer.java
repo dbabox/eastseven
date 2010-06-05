@@ -211,6 +211,8 @@ public class ResourceComposer extends GenericForwardComposer {
 	//±£´æ
 	public void onClick$save() {
 		this.resourceBean = (ResourceBean)selected.getValue();
+		this.resourceBean.setTitle(this.title.getValue());
+		this.resourceBean.setContent(this.fck.getValue());
 		boolean bln = checkKeyWords(resourceBean);
 		if(bln){
 			bln = saveResourceBean(this.resourceBean);
@@ -229,6 +231,8 @@ public class ResourceComposer extends GenericForwardComposer {
 	//ÉóºËÍ¨¹ý
 	public void onClick$pass(){
 		this.resourceBean = (ResourceBean)selected.getValue();
+		this.resourceBean.setTitle(this.title.getValue());
+		this.resourceBean.setContent(this.fck.getValue());
 		boolean bln = checkKeyWords(resourceBean);
 		if(bln){
 			this.resourceBean.setStatus("1");
@@ -288,6 +292,7 @@ public class ResourceComposer extends GenericForwardComposer {
 	@SuppressWarnings("unchecked")
 	public void onClick$sendAll() {
 		Map<String, Object> map = new HashMap<String, Object>();
+		System.out.println(session.getAttribute("user"));
 		if(session.getAttribute("user")==null){
 			map.put("location", "local");
 			Window login = (Window)Executions.createComponents("pages/login/login.zul", parentComp, map);
