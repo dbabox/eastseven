@@ -1,14 +1,18 @@
 package com.bcinfo.wapportal.repository.crawl.ui.servlet;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.zkoss.zk.ui.Session;
+import org.zkoss.zk.ui.http.WebManager;
 
-import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
+import com.bcinfo.wapportal.repository.crawl.ui.zk.dao.UserDao;
+import com.bcinfo.wapportal.repository.crawl.ui.zk.domain.UserBean;
 
 /**
  * 
@@ -31,17 +35,20 @@ public class LoginServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String userName = request.getParameter("userName");
-		String password = request.getParameter("password");
 		
-		Long userId = new UserDao().getLoginUserId(userName, password);
+		Session zkSession = WebManager.getSession(this.getServletContext(), request);
+		System.out.println(zkSession);
 		
-		if(userId!=null){
+		UserBean user = new UserDao().getUser(userName);
+		
+		if(user.getUserId()!=null){
+			
+			System.out.println(user);
 			log.info("ÓÃ»§"+userName+"µÇÂ¼");
-			request.getSession().setAttribute("userId", userId);
-			this.getServletContext().setAttribute("userId", userId);
-			request.getRequestDispatcher("channel.jsp").forward(request, response);
+			zkSession.setAttribute("user", user);
+			response.sendRedirect("index.zul");
 		}else{
-			response.sendRedirect("login.jsp");
+			response.sendRedirect("pages/login/login.zul");
 		}
 	}
 

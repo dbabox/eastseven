@@ -19,6 +19,11 @@ import com.bcinfo.wapportal.repository.crawl.dao.util.JavaOracle;
  */
 public class FtpConfigDao {
 
+	/**
+	 * 取得FTP主机信息
+	 * @param code 区域编号
+	 * @return Map[ftp_host,ftp_user,ftp_password,ftp_dir,ftp_port]
+	 */
 	public Map<String, String> getFtpConfig(String code){
 		Map<String, String> ftp = null;
 		Connection conn = null;

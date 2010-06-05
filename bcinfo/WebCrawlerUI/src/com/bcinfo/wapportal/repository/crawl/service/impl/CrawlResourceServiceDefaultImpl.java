@@ -22,6 +22,7 @@ import org.jdom.output.XMLOutputter;
 
 import com.bcinfo.wapportal.repository.crawl.dao.ChannelMappingDao;
 import com.bcinfo.wapportal.repository.crawl.dao.CrawlResourceDao;
+import com.bcinfo.wapportal.repository.crawl.dao.UserDao;
 import com.bcinfo.wapportal.repository.crawl.domain.ChannelMapping;
 import com.bcinfo.wapportal.repository.crawl.domain.CrawlResource;
 import com.bcinfo.wapportal.repository.crawl.file.ConfigPropertyUtil;
@@ -82,7 +83,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 					if(operation==1){
 						operation = 10;
 					}
-					generateResourceFile(mapping, resource, operation, "1");
+					generateResourceFile(mapping, resource, operation, "1", "admin");
 				}
 			}
 			bln = true;
@@ -124,6 +125,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			String sendType = (String)map.get("sendType");
 			//取对照表数据
 			List<ChannelMapping> mappingList = this.channelMappingDao.getChannelMappingList(userId, Long.parseLong(channelId));
+			String userName = new UserDao().getUserName(userId);
 			for(ChannelMapping mapping : mappingList){
 				System.out.println(mapping);
 				//取得资源
@@ -131,12 +133,12 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 					resId = Long.parseLong(resourceIds[i]);
 					resource = this.crawlResourceDao.getCrawlResourceDetail(resId);
 					if("0".equals(resource.getStatus())){
-						System.out.println(resource);
+						log.warn(resource.getTitle() + " 未审核");
 						continue;
 					}
-					System.out.println(resource);
+					log.debug(resource.getTitle());
 					//生成资源包文件XML,默认操作为INSERT
-					generateResourceFile(mapping, resource, INSERT, sendType);
+					generateResourceFile(mapping, resource, INSERT, sendType, userName);
 				}
 			}
 			
@@ -151,12 +153,22 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	}
 
 	//生成资源包
-	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource, int operation, String sendType){
+	public Boolean generateResourceFile(ChannelMapping mapping, CrawlResource resource, int operation, String sendType, String userName){
 		boolean bln = false;
 		try{
 			log.debug("生成资源包:"+resource);
 			//生成资源内容XML文件
-			String localFileName = generateXMLFile(localFileDir, resource.getContent(), resource.getTitle(), resource.getLink(), mapping.getLocalChannelId(), resource.getImgPathSet(), resource.getFilePathSet(), resource.getCreateTime(), operation, sendType);
+			String localFileName = generateXMLFile(localFileDir, 
+													resource.getContent(), 
+													resource.getTitle(), 
+													resource.getLink(), 
+													mapping.getLocalChannelId(), 
+													resource.getImgPathSet(), 
+													resource.getFilePathSet(), 
+													resource.getCreateTime(), 
+													operation, 
+													sendType, 
+													userName);
 			System.out.println("生成资源内容XML文件:"+localFileName);
 			
 			//TODO 暂时将生成的文件包FTP到地方服务器上
@@ -166,6 +178,11 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 				String remote = ftp.getRemoteDir()+localFileName;
 				boolean isOk = ftp.uploadFile(local, remote);
 				System.out.println(" FTP: "+local+" 到 "+remote);
+				
+				//TODO 添加Socket发送方法，测试
+				//boolean socketSend = new SocketClientService().send(new File(local), mapping.getLocalCode());
+				//System.out.println("TEST : Socket Client Send is " + socketSend);
+				
 				if(isOk){
 					
 					//删除生成的XML文件
@@ -206,7 +223,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 	 * @param sendType
 	 * @return
 	 */
-	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPathSet, String filePathSet, String date, int operation, String sendType){
+	private String generateXMLFile(String filePath,String content, String title, String link, String localChannelId, String imgPathSet, String filePathSet, String date, int operation, String sendType, String userName){
 		String fileName = null;
 		try{
 			
@@ -250,6 +267,9 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			Element eSendType = new Element("sendType");
 			eSendType.setText(sendType);
 			
+			Element eUserName = new Element("userName");
+			eUserName.setText(userName);
+			
 			root.addContent(eLocalChannelId);
 			root.addContent(eTitle);
 			root.addContent(eLink);
@@ -259,6 +279,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			root.addContent(eFilePath);
 			root.addContent(eOperation);
 			root.addContent(eSendType);
+			root.addContent(eUserName);
 			
 			XMLOutputter outputter = new XMLOutputter();
 			Format format = Format.getPrettyFormat();

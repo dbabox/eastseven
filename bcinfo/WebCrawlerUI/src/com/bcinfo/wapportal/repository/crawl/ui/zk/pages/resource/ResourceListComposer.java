@@ -215,6 +215,7 @@ public class ResourceListComposer extends GenericForwardComposer {
 				alert("长时间未操作，请重新登录");
 				Executions.sendRedirect("/pages/index.zul");
 			}
+			System.out.println(user + "在发布资源");
 			int size = resourceListboxPaging.getPageSize();
 			List<String> list = new ArrayList<String>();
 			for (int row = 0; row < size; row++) {

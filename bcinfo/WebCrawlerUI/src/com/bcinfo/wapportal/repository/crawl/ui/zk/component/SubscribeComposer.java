@@ -117,11 +117,7 @@ public class SubscribeComposer extends GenericForwardComposer {
 	}
 	
 	public void onClick$add() {
-		//alert("folder:"+folderId.getValue()+"|channel:"+channelBean.getChannelId()+"_"+channelBean.getChannelName());
 		if(folderId.getValue()!=null&&!"".equals(folderId.getValue())){
-			if(folderId.getValue().length()!=6){
-				alert("请尽量填写一个六位的栏目号");
-			}
 			subscribeBean = new SubscribeBean();
 			subscribeBean.setChannelName(channelBean.getChannelName());
 			subscribeBean.setChannelId(channelBean.getChannelId());
