@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: 手机频道
+Bundle-SymbolicName: com.bcinfo.crawl.channel.mobile
+Bundle-Version: 1.0.0
+Bundle-Activator: com.bcinfo.crawl.channel.mobile.Activator
+Bundle-Vendor: Dongq
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: com.bcinfo.crawl.dao.log.service,
+ com.bcinfo.crawl.dao.service,
+ org.osgi.framework;version="1.3.0"
+Require-Bundle: com.springsource.org.apache.commons.logging;bundle-version="1.1.1",
+ com.bcinfo.crawl.domain;bundle-version="1.0.0",
+ com.bcinfo.crawl.utils;bundle-version="1.0.0",
+ com.springsource.org.htmlparser;bundle-version="1.6.0",
+ com.springsource.org.apache.commons.lang;bundle-version="2.4.0",
+ com.springsource.org.apache.commons.collections;bundle-version="3.2.1"

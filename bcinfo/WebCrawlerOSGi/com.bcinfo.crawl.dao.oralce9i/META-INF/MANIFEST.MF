@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Crawler DAO with Oralce9i
+Bundle-SymbolicName: com.bcinfo.crawl.dao.oralce9i
+Bundle-Version: 1.0.0
+Bundle-Activator: com.bcinfo.crawl.dao.oralce9i.Activator
+Bundle-Vendor: Dongq
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: com.bcinfo.crawl.dao.service,
+ org.osgi.framework;version="1.3.0"
+Require-Bundle: com.springsource.org.apache.commons.logging;bundle-version="1.1.1",
+ com.springsource.oracle.jdbc;bundle-version="10.2.0",
+ com.bcinfo.crawl.domain;bundle-version="1.0.0"
