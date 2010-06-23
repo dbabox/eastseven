@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sites>
+	<site>
+		<name>新华网</name>
+		<url>http://www.xinhuanet.com/world/tt.htm</url>
+		<charset>UTF-8</charset>
+		<channelId>2</channelId>
+		<channelName>国际新闻</channelName>
+		<pageSuffix><![CDATA[world/\d{4}-\d{2}/\d{2}/c_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=div_currpage]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=Content]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1721000</frequency>
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.xinhuanet.com/society/</url>
+		<charset>UTF-8</charset>
+		<channelId>4</channelId><!-- 频道ID -->
+		<channelName>社会新闻</channelName>
+		<pageSuffix><![CDATA[society/\d{4}-\d{2}/\d{2}/c_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=div_currpage]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=Content]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1731000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.sc.xinhuanet.com/</url>
+		<charset>GB2312</charset>
+		<channelId>5</channelId><!-- 频道ID -->
+		<channelName>四川新闻</channelName>
+		<pageSuffix><![CDATA[.sc.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=div_currpage]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=xhw]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1741000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.jx.xinhuanet.com/news/society/</url>
+		<charset>GB2312</charset>
+		<channelId>941</channelId><!-- 频道ID -->
+		<channelName>江西新闻</channelName>
+		<pageSuffix><![CDATA[.jx.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[class=xilanwz-x]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1751000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.jx.xinhuanet.com/news/focus/</url>
+		<charset>GB2312</charset>
+		<channelId>941</channelId><!-- 频道ID -->
+		<channelName>江西新闻</channelName>
+		<pageSuffix><![CDATA[.jx.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[class=xilanwz-x]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1761000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.xinhuanet.com/tech/index.htm</url>
+		<charset>UTF-8</charset>
+		<channelId>122</channelId><!-- 频道ID -->
+		<channelName>科技新闻</channelName>
+		<pageSuffix><![CDATA[tech/\d{4}-\d{2}/\d{2}/c_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=div_currpage]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=Content]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1771000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+		<site>
+		<name>新华网</name>
+		<url>http://www.xinhuanet.com/finance/</url>
+		<charset>UTF-8</charset>
+		<channelId>585</channelId><!-- 频道ID -->
+		<channelName>金融理财</channelName>
+		<pageSuffix><![CDATA[finance/\d{4}-\d{2}/\d{2}/c_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=div_currpage]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=Content]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1781000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+</sites>

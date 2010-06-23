@@ -32,6 +32,8 @@ public class Site implements Serializable {
 	private String datePattern;
 	private boolean realTime = true;
 
+	private long frequency = 60 * 60 * 1000;
+
 	private boolean debug = true;
 
 	public String getName() {
@@ -99,7 +101,7 @@ public class Site implements Serializable {
 	}
 
 	public String getPageSelector() {
-		return pageSelector;
+		return pageSelector.trim();
 	}
 
 	public void setPageSelector(String pageSelector) {
@@ -130,15 +132,23 @@ public class Site implements Serializable {
 		this.datePattern = datePattern;
 	}
 
+	public long getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(long frequency) {
+		this.frequency = frequency;
+	}
+
 	@Override
 	public String toString() {
 		return "Site [channelId=" + channelId + ", channelName=" + channelName
 				+ ", charset=" + charset + ", contentSelector="
 				+ contentSelector + ", datePattern=" + datePattern + ", debug="
 				+ debug + ", deployTimeSelector=" + deployTimeSelector
-				+ ", name=" + name + ", pageSelector=" + pageSelector
-				+ ", pageSuffix=" + pageSuffix + ", realTime=" + realTime
-				+ ", url=" + url + "]";
+				+ ", frequency=" + frequency + ", name=" + name
+				+ ", pageSelector=" + pageSelector + ", pageSuffix="
+				+ pageSuffix + ", realTime=" + realTime + ", url=" + url + "]";
 	}
 
 }

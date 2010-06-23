@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sites>
+	<site>
+		<name>新浪</name>
+		<url>http://ent.sina.com.cn/review/media/film/more.html</url>
+		<charset>GB2312</charset>
+		<channelId>1321</channelId><!-- 频道ID -->
+		<channelName>影评世界</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1810000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>搜狐</name>
+		<url>http://yule.sohu.com/dypst/</url>
+		<charset>GB2312</charset>
+		<channelId>1321</channelId><!-- 频道ID -->
+		<channelName>影评世界</channelName>
+		<pageSuffix><![CDATA[\d{4}\d{2}\d{2}/n\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[select[name=gotopage]>option]]></pageSelector>
+		<contentSelector><![CDATA[div[id=contentText]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyyMMdd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1820000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>搜狐</name>
+		<url>http://yule.sohu.com/guowaidongtai.shtml</url>
+		<charset>GB2312</charset>
+		<channelId>1322</channelId><!-- 频道ID -->
+		<channelName>电影资讯</channelName>
+		<pageSuffix><![CDATA[\d{4}\d{2}\d{2}/n\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[select[name=gotopage]>option]]></pageSelector>
+		<contentSelector><![CDATA[div[id=contentText]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyyMMdd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1830000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>搜狐</name>
+		<url>http://yule.sohu.com/guoneidianying.shtml</url>
+		<charset>GB2312</charset>
+		<channelId>1322</channelId><!-- 频道ID -->
+		<channelName>电影资讯</channelName>
+		<pageSuffix><![CDATA[\d{4}\d{2}\d{2}/n\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[select[name=gotopage]>option]]></pageSelector>
+		<contentSelector><![CDATA[div[id=contentText]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyyMMdd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1840000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+</sites>

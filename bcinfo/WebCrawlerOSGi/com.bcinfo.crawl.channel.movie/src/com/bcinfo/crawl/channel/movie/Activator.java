@@ -15,6 +15,7 @@ import com.bcinfo.crawl.channel.movie.service.SiteParser;
 import com.bcinfo.crawl.dao.log.service.CrawlerLogService;
 import com.bcinfo.crawl.dao.service.WebCrawlerDao;
 import com.bcinfo.crawl.domain.model.Site;
+import com.bcinfo.crawl.utils.SiteUtil;
 
 public class Activator implements BundleActivator {
 
@@ -23,9 +24,9 @@ public class Activator implements BundleActivator {
 	private ScheduledExecutorService scheduled = null;
 	
 	public List<Site> getSites() throws Exception {
-		Site site = null;
 		List<Site> sites = new ArrayList<Site>();
-		
+		/*
+		Site site = null;
 		site = new Site();
 		site.setName(Site.SINA);
 		site.setChannelId(1321L);
@@ -45,20 +46,6 @@ public class Activator implements BundleActivator {
 		site.setChannelName("影评世界");
 		site.setCharset("GB2312");
 		site.setUrl("http://yule.sohu.com/dypst/");
-		site.setRealTime(true);
-		site.setDebug(false);
-		site.setPageSuffix("\\d{4}\\d{2}\\d{2}/n\\d+.shtml");
-		site.setPageSelector("select[name=gotopage]>option");
-		site.setDatePattern("yyyyMMdd");
-		site.setContentSelector("div[id=contentText]");
-		sites.add(site);
-		
-		site = new Site();
-		site.setUrl("http://yule.sohu.com/guoneidianying.shtml");
-		site.setName(Site.SOHU);
-		site.setChannelId(1321L);
-		site.setChannelName("影评世界");
-		site.setCharset("GB2312");
 		site.setRealTime(true);
 		site.setDebug(false);
 		site.setPageSuffix("\\d{4}\\d{2}\\d{2}/n\\d+.shtml");
@@ -94,7 +81,9 @@ public class Activator implements BundleActivator {
 		site.setDatePattern("yyyyMMdd");
 		site.setContentSelector("div[id=contentText]");
 		sites.add(site);
-		
+		*/
+		String configPath = "conf/com.bcinfo.crawl.channel.movie.xml";
+		sites.addAll(new SiteUtil().getSites(configPath));
 		return sites;
 	}
 	
@@ -107,13 +96,14 @@ public class Activator implements BundleActivator {
 		
 		CrawlerLogService crawlerLogService = (CrawlerLogService)context.getService(context.getServiceReference(CrawlerLogService.class.getName()));
 		WebCrawlerDao webCrawlerDao = (WebCrawlerDao)context.getService(context.getServiceReference(WebCrawlerDao.class.getName()));
+		int index = 1;
 		for(Site site : sites) {
 			SiteParser siteParser = new SiteParser();
 			siteParser.setSite(site);
 			siteParser.setWebCrawlerDao(webCrawlerDao);
 			siteParser.setCrawlerLogService(crawlerLogService);
-			scheduled.scheduleAtFixedRate(siteParser, 0, 1, TimeUnit.HOURS);
-			Thread.sleep(10 * 1000);
+			scheduled.scheduleAtFixedRate(siteParser, index, site.getFrequency(), TimeUnit.SECONDS);
+			index++;
 		}
 		
 	}

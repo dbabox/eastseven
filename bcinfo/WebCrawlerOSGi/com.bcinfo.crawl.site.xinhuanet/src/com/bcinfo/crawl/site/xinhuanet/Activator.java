@@ -14,6 +14,7 @@ import org.osgi.framework.BundleContext;
 import com.bcinfo.crawl.dao.log.service.CrawlerLogService;
 import com.bcinfo.crawl.dao.service.WebCrawlerDao;
 import com.bcinfo.crawl.domain.model.Site;
+import com.bcinfo.crawl.utils.SiteUtil;
 
 public class Activator implements BundleActivator {
 
@@ -23,6 +24,7 @@ public class Activator implements BundleActivator {
 
 	public List<Site> getSites() {
 		List<Site> sites = new ArrayList<Site>();
+		/*
 		Site site = null;
 		boolean debug = false;
 		site = new Site();
@@ -121,50 +123,9 @@ public class Activator implements BundleActivator {
 		site.setContentSelector("div[id=Content]>p");
 		site.setName(Site.XIN_HUA_NET);
 		sites.add(site);
-		
-		/*
-		site = new Site();
-		site.setChannelId(123L);
-		site.setChannelName("原创评论");
-		site.setUrl("http://www.xinhuanet.com/comments/ycpl.htm");
-		site.setPageSuffix("comments/\\d{4}-\\d{2}/\\d{2}/c_\\d+.htm");
-		site.setDatePattern("yyyy-MM/dd");
-		site.setCharset("UTF-8");
-		site.setDebug(debug);
-		site.setRealTime(true);
-		site.setPageSelector("div[id=div_currpage]>a");
-		site.setContentSelector("div[id=Content]>p");
-		site.setName(Site.XIN_HUA_NET);
-		sites.add(site);
-		
-		site = new Site();
-		site.setChannelId(123L);
-		site.setChannelName("媒体时评");
-		site.setUrl("http://www.xinhuanet.com/comments/mtsp.htm");
-		site.setPageSuffix("comments/\\d{4}-\\d{2}/\\d{2}/c_\\d+.htm");
-		site.setDatePattern("yyyy-MM/dd");
-		site.setCharset("UTF-8");
-		site.setDebug(debug);
-		site.setRealTime(true);
-		site.setPageSelector("div[id=div_currpage]>a");
-		site.setContentSelector("div[id=Content]>p");
-		site.setName(Site.XIN_HUA_NET);
-		sites.add(site);
-		
-		site = new Site();
-		site.setChannelId(123L);
-		site.setChannelName("社会杂谈");
-		site.setUrl("http://www.xinhuanet.com/comments/shsp.htm");
-		site.setPageSuffix("comments/\\d{4}-\\d{2}/\\d{2}/c_\\d+.htm");
-		site.setDatePattern("yyyy-MM/dd");
-		site.setCharset("UTF-8");
-		site.setDebug(debug);
-		site.setRealTime(true);
-		site.setPageSelector("div[id=div_currpage]>a");
-		site.setContentSelector("div[id=Content]>p");
-		site.setName(Site.XIN_HUA_NET);
-		sites.add(site);
 		*/
+		String configPath = "conf/com.bcinfo.crawl.site.xinhuanet.xml";
+		sites.addAll(new SiteUtil().getSites(configPath));
 		return sites;
 	}
 	
@@ -183,7 +144,7 @@ public class Activator implements BundleActivator {
 			siteParser.setWebCrawlerDao(webCrawlerDao);
 			siteParser.setCrawlerLogService(crawlerLogService);
 			int start = (index==1) ? 0 : index;
-			scheduled.scheduleAtFixedRate(siteParser, start, 60, TimeUnit.MINUTES);
+			scheduled.scheduleAtFixedRate(siteParser, start, site.getFrequency(), TimeUnit.SECONDS);
 			index++;
 		}
 		
