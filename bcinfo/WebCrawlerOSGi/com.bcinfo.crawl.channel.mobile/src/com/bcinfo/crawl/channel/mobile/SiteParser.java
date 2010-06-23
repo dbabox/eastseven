@@ -60,7 +60,7 @@ public class SiteParser implements Runnable {
 	}
 	
 	public synchronized void crawlSiteStart() {
-		log.info("抓取"+site.getChannelName()+"["+site.getUrl()+"]"+"开始");
+		log.info("抓取["+site.getChannelName()+"]["+site.getUrl()+"]"+"开始");
 		try {
 			currentDate = new SimpleDateFormat(site.getDatePattern()).format(new Date());
 			parser = new Parser();
@@ -78,7 +78,10 @@ public class SiteParser implements Runnable {
 					
 					if(StringUtils.isEmpty(link) || StringUtils.isEmpty(title)) continue;
 					if(!StringUtils.isEmpty(site.getPageSuffix()))
-						if(!Pattern.compile(site.getPageSuffix()).matcher(link).find()) continue;
+						if(!Pattern.compile(site.getPageSuffix()).matcher(link).find()) {
+							if(site.isDebug()) System.out.println("抓取["+site.getChannelName()+"]["+site.getUrl()+"]["+link+"]");
+							continue;
+						}
 					
 					if(site.isRealTime()) {
 						if(!link.contains(currentDate)) continue;
@@ -112,6 +115,8 @@ public class SiteParser implements Runnable {
 					boolean bln = webCrawlerDao.saveBatch(list.toArray(), null);
 					log.info("抓取"+site.getChannelName()+"["+site.getUrl()+"]保存入库["+list.size()+"]["+bln+"]");
 				}
+			} else {
+				log.warn("没有抓取["+site.getChannelName()+"]["+site.getUrl()+"]到任何链接");
 			}
 			
 		} catch (Exception e) {

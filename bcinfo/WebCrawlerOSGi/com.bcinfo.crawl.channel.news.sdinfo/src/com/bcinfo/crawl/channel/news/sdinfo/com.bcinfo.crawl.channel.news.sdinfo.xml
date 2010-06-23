@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sites>
+  <site>
+    <name>齐鲁热线</name>
+    <url>http://news.sdinfo.net/sdxw/sdyw/default.shtml</url>
+    <charset>GB2312</charset>
+    <channelId>981</channelId><!-- 频道ID -->
+    <channelName>山东新闻</channelName>
+    <pageSuffix><![CDATA[sdyw/\d+.shtml]]></pageSuffix>
+    <pageSelector><![CDATA[div[id=pager]>ul>li>a]]></pageSelector>
+    <contentSelector><![CDATA[div[id=tbcontent]>p]]></contentSelector>
+    <deployTimeSelector><![CDATA[div[class=title]>span]]></deployTimeSelector>
+    <datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+    <realTime>true</realTime>
+    <frequency>1800000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+    <debug>false</debug>
+  </site>
+  <site>
+    <name>齐鲁热线</name>
+    <url>http://news.sdinfo.net/sdxw/jnxw/default.shtml</url>
+    <charset>GB2312</charset>
+    <channelId>982</channelId><!-- 频道ID -->
+    <channelName>济南新闻</channelName>
+    <pageSuffix><![CDATA[jnxw/\d+.shtml]]></pageSuffix>
+    <pageSelector><![CDATA[div[id=pager]>ul>li>a]]></pageSelector>
+    <contentSelector><![CDATA[div[id=tbcontent]>p]]></contentSelector>
+    <deployTimeSelector><![CDATA[div[class=title]>span]]></deployTimeSelector>
+    <datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+    <realTime>true</realTime>
+    <frequency>1900000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+    <debug>false</debug>
+  </site>
+  <site>
+    <name>齐鲁热线</name>
+    <url>http://news.sdinfo.net/sdxw/qdxw/default.shtml</url>
+    <charset>GB2312</charset>
+    <channelId>983</channelId><!-- 频道ID -->
+    <channelName>青岛新闻</channelName>
+    <pageSuffix><![CDATA[qdxw/\d+.shtml]]></pageSuffix>
+    <pageSelector><![CDATA[div[id=pager]>ul>li>a]]></pageSelector>
+    <contentSelector><![CDATA[div[id=tbcontent]>p]]></contentSelector>
+    <deployTimeSelector><![CDATA[div[class=title]>span]]></deployTimeSelector>
+    <datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+    <realTime>true</realTime>
+    <frequency>2000000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+    <debug>false</debug>
+  </site>
+  <site>
+    <name>齐鲁热线</name>
+    <url>http://news.sdinfo.net/sdxw/gdxw/default.shtml</url>
+    <charset>GB2312</charset>
+    <channelId>1082</channelId><!-- 频道ID -->
+    <channelName>山东各地</channelName>
+    <pageSuffix><![CDATA[gdxw/\d+.shtml]]></pageSuffix>
+    <pageSelector><![CDATA[div[id=pager]>ul>li>a]]></pageSelector>
+    <contentSelector><![CDATA[div[id=tbcontent]>p]]></contentSelector>
+    <deployTimeSelector><![CDATA[div[class=title]>span]]></deployTimeSelector>
+    <datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+    <realTime>true</realTime>
+    <frequency>2100000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+    <debug>false</debug>
+  </site>
+</sites>

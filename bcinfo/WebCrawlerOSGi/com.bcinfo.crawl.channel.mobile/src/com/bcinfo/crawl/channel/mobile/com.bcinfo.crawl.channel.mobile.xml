@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sites>
+	<site>
+		<name>腾讯</name>
+		<url>http://digi.tech.qq.com/l/mobile/02new/list20100329144655.htm
+		</url>
+		<charset>GB2312</charset>
+		<channelId>282</channelId><!-- 频道ID -->
+		<channelName>手机新闻</channelName>
+		<pageSuffix><![CDATA[\d{4}\d{2}\d{2}/\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=ArtPLink]>ul>li>a]]>
+		</pageSelector>
+		<contentSelector><![CDATA[div[id=Cnt-Main-Article-QQ]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyyMMdd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1811000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/market/qbgd/roll/index.html</url>
+		<charset>GB2312</charset>
+		<channelId>283</channelId><!-- 频道ID -->
+		<channelName>手机行情</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1821000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>腾讯</name>
+		<url>http://digi.tech.qq.com/l/mobile/02show/list20100329164413.htm
+		</url>
+		<charset>GB2312</charset>
+		<channelId>284</channelId><!-- 频道ID -->
+		<channelName>手机导购</channelName>
+		<pageSuffix><![CDATA[\d{4}\d{2}\d{2}/\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=ArtPLink]>ul>li>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=Cnt-Main-Article-QQ]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyyMMdd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1831000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/preview/roll/index.html</url>
+		<charset>GB2312</charset>
+		<channelId>285</channelId><!-- 频道ID -->
+		<channelName>手机测评</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1841000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/photos/NOKIA.html</url>
+		<charset>GB2312</charset>
+		<channelId>286</channelId><!-- 频道ID -->
+		<channelName>手机图赏</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>false</realTime>
+		<frequency>1851000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/photos/MOTO.html</url>
+		<charset>GB2312</charset>
+		<channelId>286</channelId><!-- 频道ID -->
+		<channelName>手机图赏</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>false</realTime>
+		<frequency>1852000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/photos/SEmoblie.html</url>
+		<charset>GB2312</charset>
+		<channelId>286</channelId><!-- 频道ID -->
+		<channelName>手机图赏</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>false</realTime>
+		<frequency>1853000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/photos/SAMSUNG.html</url>
+		<charset>GB2312</charset>
+		<channelId>286</channelId><!-- 频道ID -->
+		<channelName>手机图赏</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>false</realTime>
+		<frequency>1854000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+	<site>
+		<name>新浪</name>
+		<url>http://tech.sina.com.cn/mobile/photos/others.html</url>
+		<charset>GB2312</charset>
+		<channelId>286</channelId><!-- 频道ID -->
+		<channelName>手机图赏</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
+		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
+		<realTime>false</realTime>
+		<frequency>1855000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+
+</sites>

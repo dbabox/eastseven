@@ -61,6 +61,7 @@ public class SiteParser implements Runnable {
 		this.site = site;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public synchronized void crawlSiteStart() {
 		log.info("抓取["+site.getChannelName()+"]["+site.getUrl()+"]"+"开始");
 		try {
@@ -110,6 +111,18 @@ public class SiteParser implements Runnable {
 					}
 					
 				}
+				
+				//剔除重复对象
+				if(!list.isEmpty()) {
+					List<Resource> _list = new ArrayList<Resource>();
+					for(Iterator<Resource> iter = new UniqueFilterIterator(list.iterator()); iter.hasNext(); ) {
+						_list.add(iter.next());
+					}
+					list.clear();
+					list.addAll(_list);
+				}
+				
+				
 				if(!site.isDebug()&&!list.isEmpty()) {
 					boolean bln = webCrawlerDao.saveBatch(list.toArray(), null);
 					log.info("抓取["+site.getChannelName()+"]["+site.getUrl()+"]保存入库["+list.size()+"]["+bln+"]");

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sites>
+	<site>
+		<name>站点名称</name>
+		<url>站点地址</url>
+		<charset>字符编码集</charset>
+		<channelId>0</channelId><!-- 频道ID -->
+		<channelName>频道名称</channelName>
+		<pageSuffix><![CDATA[资源地址后缀，多数网站的地址为日期加文件后缀]]></pageSuffix>
+		<pageSelector><![CDATA[分页标签获取表达式，必须符合标准CSS Selector语法，默认是去a标签集]]></pageSelector>
+		<contentSelector><![CDATA[正文内容获取表达式，必须符合标准CSS Selector语法]]></contentSelector>
+		<deployTimeSelector><![CDATA[资源发布时间获取表达式，必须符合标准CSS Selector语法，该属性在pageSuffix属性中没有包含日期时使用]]></deployTimeSelector>
+		<datePattern><![CDATA[日期格式，必须是符合Java语法的日期格式表达式]]></datePattern>
+		<realTime>boolean，true表示当天，false表示任何时间</realTime>
+		<frequency></frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>boolean，调试用属性，默认为false，当为true时，不会将数据保存到数据库中</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.xinhuanet.com/world/tt.htm
+		</url>
+		<charset>UTF-8</charset>
+		<channelId>2</channelId><!-- 频道ID -->
+		<channelName>国际新闻</channelName>
+		<pageSuffix><![CDATA[world/\d{4}-\d{2}/\d{2}/c_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[div[id=div_currpage]>a]]>
+		</pageSelector>
+		<contentSelector><![CDATA[div[id=Content]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]>
+		</deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1721000</frequency><!-- 抓取频率，默认为1小时，单位为毫秒 -->
+		<debug>false</debug>
+	</site>
+</sites>

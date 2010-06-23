@@ -14,6 +14,7 @@ import org.osgi.framework.BundleContext;
 import com.bcinfo.crawl.dao.log.service.CrawlerLogService;
 import com.bcinfo.crawl.dao.service.WebCrawlerDao;
 import com.bcinfo.crawl.domain.model.Site;
+import com.bcinfo.crawl.utils.SiteUtil;
 
 public class Activator implements BundleActivator {
 
@@ -23,6 +24,7 @@ public class Activator implements BundleActivator {
 
 	public List<Site> getSites() {
 		List<Site> sites = new ArrayList<Site>();
+		/*
 		Site site = null;
 		
 		site = new Site();
@@ -84,7 +86,9 @@ public class Activator implements BundleActivator {
 		site.setContentSelector("div[id=tbcontent]>p");
 		site.setName(Site.SD_INFO);
 		sites.add(site);
-		
+		*/
+		String configPath = "conf/com.bcinfo.crawl.channel.news.sdinfo.xml";
+		sites.addAll(new SiteUtil().getSites(configPath));
 		return sites;
 	}
 	
@@ -96,13 +100,14 @@ public class Activator implements BundleActivator {
 		
 		CrawlerLogService crawlerLogService = (CrawlerLogService)context.getService(context.getServiceReference(CrawlerLogService.class.getName()));
 		WebCrawlerDao webCrawlerDao = (WebCrawlerDao)context.getService(context.getServiceReference(WebCrawlerDao.class.getName()));
+		int index = 1;
 		for(Site site : getSites()) {
 			SiteParser siteParser = new SiteParser();
 			siteParser.setSite(site);
 			siteParser.setWebCrawlerDao(webCrawlerDao);
 			siteParser.setCrawlerLogService(crawlerLogService);
-			scheduled.scheduleAtFixedRate(siteParser, 0, 1, TimeUnit.HOURS);
-			//siteParser.start();
+			scheduled.scheduleAtFixedRate(siteParser, index, site.getFrequency(), TimeUnit.SECONDS);
+			index++;
 		}
 		
 	}
