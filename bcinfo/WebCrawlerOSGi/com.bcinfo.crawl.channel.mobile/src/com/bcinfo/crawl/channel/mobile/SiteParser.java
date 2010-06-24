@@ -23,6 +23,10 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.OptionTag;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import com.bcinfo.crawl.dao.log.service.CrawlerLogService;
 import com.bcinfo.crawl.dao.service.WebCrawlerDao;
@@ -37,7 +41,7 @@ import com.bcinfo.crawl.utils.RegexUtil;
  * 
  *         create time : 2010-6-21 ÉÏÎç09:56:58
  */
-public class SiteParser implements Runnable {
+public class SiteParser implements Runnable, Job {
 	private static final Log log = LogFactory.getLog(SiteParser.class);
 
 	private final String replacement = "";
@@ -247,4 +251,13 @@ public class SiteParser implements Runnable {
 		crawlSiteStart();
 	}
 
+	@Override
+	public void execute(JobExecutionContext context) throws JobExecutionException {
+		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+		setSite((Site)jobDataMap.get("site"));
+		setWebCrawlerDao((WebCrawlerDao)jobDataMap.get("webCrawlerDao"));
+		setCrawlerLogService((CrawlerLogService)jobDataMap.get("crawlerLogService"));
+		run();
+		log.info("["+site.getChannelId()+"."+site.getChannelName()+"-"+site.getName()+"]["+site.getUrl()+"]"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(context.getNextFireTime()));
+	}
 }

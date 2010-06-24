@@ -3,9 +3,12 @@
  */
 package com.bcinfo.crawl.channel.news.sdinfo;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -23,6 +26,10 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.OptionTag;
 import org.htmlparser.util.NodeIterator;
 import org.htmlparser.util.NodeList;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import com.bcinfo.crawl.dao.log.service.CrawlerLogService;
 import com.bcinfo.crawl.dao.service.WebCrawlerDao;
@@ -37,12 +44,12 @@ import com.bcinfo.crawl.utils.RegexUtil;
  * 
  *         create time : 2010-6-22 上午09:16:11
  */
-public class SiteParser implements Runnable {
+public class SiteParser implements Runnable, Job {
 
 	private static final Log log = LogFactory.getLog(SiteParser.class);
 
 	private final String replacement = "";
-	private String currentDate = "";
+	//private String currentDate = "";
 	private Parser parser;
 	private Site site;
 	private CrawlerLogService crawlerLogService = null;
@@ -63,7 +70,7 @@ public class SiteParser implements Runnable {
 	public synchronized void crawlSiteStart() {
 		log.info("抓取"+site.getChannelName()+"["+site.getUrl()+"]"+"开始");
 		try {
-			currentDate = new SimpleDateFormat(site.getDatePattern()).format(new Date());
+			//currentDate = new SimpleDateFormat(site.getDatePattern()).format(new Date());
 			parser = new Parser();
 			parser.setURL(site.getUrl());
 			parser.setEncoding(site.getCharset());
@@ -78,21 +85,30 @@ public class SiteParser implements Runnable {
 					String title = linkTag.getLinkText().trim();
 					
 					if(StringUtils.isEmpty(link) || StringUtils.isEmpty(title)) continue;
+					if(link.equals("http://news.sdinfo.net/sdyw/933517.shtml")) continue;
+					if(!isValid(link, title)) continue;
 					if(!StringUtils.isEmpty(site.getPageSuffix()))
 						if(!Pattern.compile(site.getPageSuffix()).matcher(link).find()) continue;
 					
-					if(site.isRealTime()) {
-						Parser _parser = new Parser(link);
-						_parser.setEncoding(site.getCharset());
-						NodeList _nodeList = _parser.extractAllNodesThatMatch(new CssSelectorNodeFilter(site.getDeployTimeSelector()));
-						if(_nodeList != null && _nodeList.size() > 0) {
-							if(!_nodeList.toHtml().trim().contains(currentDate)) continue;
-						}
-					}
-					
+//					if(site.isRealTime()) {
+//						Parser _parser = null;
+//						try {
+//							_parser = new Parser(link);
+//						} catch (Exception e) {
+//							//e.printStackTrace();
+//							log.info("[错误]["+title+"]["+link+"]");
+//						}
+//						if(_parser == null) continue;
+//						_parser.setEncoding(site.getCharset());
+//						NodeList _nodeList = _parser.extractAllNodesThatMatch(new CssSelectorNodeFilter(site.getDeployTimeSelector()));
+//						if(_nodeList != null && _nodeList.size() > 0) {
+//							if(!_nodeList.toHtml().trim().contains(currentDate)) continue;
+//						}
+//					}
+					if(site.isDebug()) log.info("[调试]["+title+"]["+link+"]");
 					CrawlerLog crawlerLog = new CrawlerLog(site.getChannelId(), link);
 					if(crawlerLogs.contains(crawlerLog)) {
-						log.info("[有了]["+title+"]["+link+"]");
+						if(site.isDebug()) log.info("[有了]["+title+"]["+link+"]");
 						continue;
 					}
 					log.info("["+site.getChannelName()+"-处理中..."+index+"]["+title+"]["+link+"]");
@@ -130,8 +146,10 @@ public class SiteParser implements Runnable {
 	@SuppressWarnings("unchecked")
 	public synchronized void crawlPageContent(Resource resource) {
 		//log.info("抓取资源["+resource.getTitle()+"]开始");
+		if(resource.getLink().equals("http://news.sdinfo.net/sdyw/933517.shtml")) return;
 		String content = "";
 		try {
+			
 			parser.reset();
 			parser.setURL(resource.getLink());
 			parser.setEncoding(site.getCharset());
@@ -199,11 +217,10 @@ public class SiteParser implements Runnable {
 			
 			resource.setContent(content);
 			
+			if(!site.isDebug()) this.crawlerLogService.save(new CrawlerLog(site.getChannelId(), resource.getLink()));
 		} catch (Exception e) {
 			log.warn("抓取资源["+resource.getTitle()+"]["+resource.getLink()+"]失败");
 			e.printStackTrace();
-		} finally {
-			if(!site.isDebug()) this.crawlerLogService.save(new CrawlerLog(site.getChannelId(), resource.getLink()));
 		}
 		//log.info("抓取资源["+resource.getTitle()+"]结束");
 	}
@@ -231,7 +248,7 @@ public class SiteParser implements Runnable {
 		                 .replaceAll("\\r", replacement)
 			             .replaceAll("\\r\\n", replacement)
 			             .replaceAll("\\n", replacement);
-		
+		content = content.replaceAll("<[pP]\\s+>", RegexUtil.BR);
 		scanner = new Scanner(content);
 		scanner.useDelimiter(RegexUtil.BR);
 		content = "";
@@ -243,10 +260,51 @@ public class SiteParser implements Runnable {
 		content = content.replaceFirst(RegexUtil.BR, replacement);
 		return content;
 	}
+
+	public boolean isValid(String link, String title) {
+		boolean valid = false;
+		InputStream input = null;
+		try {
+			input = new URL(link).openStream();
+			input.close();
+			valid = true;
+		} catch (MalformedURLException e) {
+			//e.printStackTrace();
+		} catch (IOException e) {
+			//e.printStackTrace();
+			log.warn("["+site.getChannelName()+"]["+site.getChannelId()+"]抓取资源["+title+"]["+link+"]不存在");
+		} finally {
+			try {
+				if(input != null)
+				input.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return valid;
+	}
 	
 	@Override
 	public void run() {
 		crawlSiteStart();
 	}
 
+	@Override
+	public void execute(JobExecutionContext context) throws JobExecutionException {
+		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+		setSite((Site)jobDataMap.get("site"));
+		setWebCrawlerDao((WebCrawlerDao)jobDataMap.get("webCrawlerDao"));
+		setCrawlerLogService((CrawlerLogService)jobDataMap.get("crawlerLogService"));
+		run();
+		log.info("["+site.getChannelId()+"."+site.getChannelName()+"-"+site.getName()+"]["+site.getUrl()+"]"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(context.getNextFireTime()));
+	}
+	
+	public static void main(String[] args) {
+		try {
+			URL url = new URL("http://news.sdinfo.net/sdyw/933517.shtml");
+			System.out.println(url.openStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
