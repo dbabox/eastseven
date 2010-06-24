@@ -17,4 +17,5 @@ Require-Bundle: com.springsource.org.apache.commons.collections;bundle-version="
  com.bcinfo.crawl.domain;bundle-version="1.0.0",
  com.bcinfo.crawl.utils;bundle-version="1.0.0",
  com.springsource.oracle.jdbc;bundle-version="10.2.0",
- com.bcinfo.crawl.dao.oralce9i;bundle-version="1.0.0"
+ com.bcinfo.crawl.dao.oralce9i;bundle-version="1.0.0",
+ com.springsource.org.quartz;bundle-version="1.6.2"
