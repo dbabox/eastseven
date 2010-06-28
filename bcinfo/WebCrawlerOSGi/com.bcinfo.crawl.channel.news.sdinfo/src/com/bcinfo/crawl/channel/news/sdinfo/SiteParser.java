@@ -111,7 +111,8 @@ public class SiteParser implements Runnable, Job {
 						if(site.isDebug()) log.info("[有了]["+title+"]["+link+"]");
 						continue;
 					}
-					log.info("["+site.getChannelName()+"-处理中..."+index+"]["+title+"]["+link+"]");
+					String name = site.getChannelId()+"-"+site.getName()+"-"+site.getChannelName();
+					log.info("["+name+"-处理中..."+index+"]["+title+"]["+link+"]");
 					Resource resource = new Resource();
 					resource.setSite(site);
 					resource.setLink(link);
@@ -144,9 +145,10 @@ public class SiteParser implements Runnable, Job {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public synchronized void crawlPageContent(Resource resource) {
+	public synchronized void crawlPageContent(Resource resource) throws Exception {
 		//log.info("抓取资源["+resource.getTitle()+"]开始");
 		if(resource.getLink().equals("http://news.sdinfo.net/sdyw/933517.shtml")) return;
+		
 		String content = "";
 		try {
 			
@@ -189,6 +191,7 @@ public class SiteParser implements Runnable, Job {
 			
 			//循环分页内容
 			for(String link : pageLinks) {
+				if(!isValid(link, resource.getTitle())) continue;
 				parser.reset();
 				parser.setURL(link);
 				parser.setEncoding(site.getCharset());
