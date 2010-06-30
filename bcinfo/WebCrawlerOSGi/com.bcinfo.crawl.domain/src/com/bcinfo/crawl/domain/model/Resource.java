@@ -6,7 +6,6 @@ package com.bcinfo.crawl.domain.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author dongq
@@ -119,8 +118,9 @@ public class Resource implements Serializable {
 	}
 
 	public boolean isEmpty() {
-		return (title == null && "".equals(title))
-				|| (content == null && "".equals(content));
+		if(title == null || "".equals(title)) return true;
+		if(content == null || "".equals(content)) return true;
+		return false;
 	}
 
 	@Override

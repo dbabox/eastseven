@@ -31,9 +31,8 @@ public class Site implements Serializable {
 	private String deployTimeSelector;
 	private String datePattern;
 	private boolean realTime = true;
-
+	private String imageAddress = "";
 	private long frequency = 60 * 60 * 1000;
-
 	private boolean debug = true;
 
 	public String getName() {
@@ -138,6 +137,14 @@ public class Site implements Serializable {
 
 	public void setFrequency(long frequency) {
 		this.frequency = frequency;
+	}
+
+	public String getImageAddress() {
+		return imageAddress;
+	}
+
+	public void setImageAddress(String imageAddress) {
+		this.imageAddress = imageAddress;
 	}
 
 	@Override
