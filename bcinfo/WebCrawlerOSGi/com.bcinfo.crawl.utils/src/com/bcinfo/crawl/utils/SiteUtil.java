@@ -74,6 +74,11 @@ public final class SiteUtil {
 				site.setFrequency(Long.parseLong(siteElement.getChild("frequency").getText()));
 			if(StringUtils.isNotEmpty(siteElement.getChild("debug").getText()))
 				site.setDebug(Boolean.valueOf(siteElement.getChild("debug").getText()));
+			
+			if(siteElement.getChild("imageAddress") != null 
+					&& StringUtils.isNotEmpty(siteElement.getChild("imageAddress").getText()))
+				site.setImageAddress(siteElement.getChild("imageAddress").getText());
+			
 			sites.add(site);
 		}
 		return sites;
