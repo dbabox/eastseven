@@ -180,7 +180,7 @@ public class SiteParser implements Runnable, Job {
 				if(nodeList != null && nodeList.size() > 0) content += nodeList.toHtml().trim();
 			}
 			
-			content = content.toLowerCase();
+			//content = content.toLowerCase();
 			
 			//»•Õ‚¡¥
 			content = content.replaceAll(RegexUtil.A, replacement);

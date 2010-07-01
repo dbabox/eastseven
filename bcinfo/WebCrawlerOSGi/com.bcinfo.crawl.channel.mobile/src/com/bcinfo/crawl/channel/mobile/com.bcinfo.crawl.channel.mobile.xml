@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sites>
-<!-- 
+<!--  -->
 
 	<site>
 		<name>腾讯</name>
@@ -10,8 +10,7 @@
 		<channelId>282</channelId>
 		<channelName>手机新闻</channelName>
 		<pageSuffix><![CDATA[\d{4}\d{2}\d{2}/\d+.htm]]></pageSuffix>
-		<pageSelector><![CDATA[div[id=ArtPLink]>ul>li>a]]>
-		</pageSelector>
+		<pageSelector><![CDATA[div[id=ArtPLink]>ul>li>a]]></pageSelector>
 		<contentSelector><![CDATA[div[id=Cnt-Main-Article-QQ]]]></contentSelector>
 		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
 		<datePattern><![CDATA[yyyyMMdd]]></datePattern>
@@ -26,7 +25,7 @@
 		<channelId>283</channelId>
 		<channelName>手机行情</channelName>
 		<pageSuffix><![CDATA[\d{4}-\d{2}-\d{2}/\d+.shtml]]></pageSuffix>
-		<pageSelector><![CDATA[span[id=_function_code_page]>p>a]]></pageSelector>
+		<pageSelector><![CDATA[span[class=pagebox_num]>a]]></pageSelector>
 		<contentSelector><![CDATA[div[id=artibody]>p]]></contentSelector>
 		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
 		<datePattern><![CDATA[yyyy-MM-dd]]></datePattern>
@@ -125,7 +124,7 @@
 		<frequency>1855000</frequency>
 		<debug>false</debug>
 	</site>
- -->
+
 	 <site>
 		<name>新浪</name>
 		<url>http://tech.sina.com.cn/mobile/market/evaluate.html</url>
