@@ -20,6 +20,8 @@ import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.CssSelectorNodeFilter;
 import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.filters.TagNameFilter;
+import org.htmlparser.tags.ImageTag;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.OptionTag;
 import org.htmlparser.util.NodeIterator;
@@ -73,7 +75,7 @@ public abstract class AbstractSiteParser implements ISiteParser {
 			parser = new Parser();
 			parser.setURL(site.getUrl());
 			parser.setEncoding(site.getCharset());
-			NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(LinkTag.class));
+			NodeList nodeList = parser.extractAllNodesThatMatch(new TagNameFilter("a"));//new NodeClassFilter(LinkTag.class)
 			if(nodeList != null && nodeList.size() > 0) {
 				List<CrawlerLog> crawlerLogs = this.crawlerLogService.get(site.getChannelId());
 				List<Resource> list = new ArrayList<Resource>();
@@ -212,7 +214,7 @@ public abstract class AbstractSiteParser implements ISiteParser {
 				if(nodeList != null && nodeList.size() > 0) content += nodeList.toHtml().trim();
 			}
 			
-			content = content.toLowerCase();
+			//content = content.toLowerCase();
 			
 			//»•Õ‚¡¥
 			content = content.replaceAll(RegexUtil.A, replacement);
@@ -233,7 +235,7 @@ public abstract class AbstractSiteParser implements ISiteParser {
 			content = hook(content);
 			content = format(content);
 			
-			extractImageLink(content, resource);
+			content = extractImageLink(content, resource);
 			
 			resource.setContent(content);
 			
@@ -294,18 +296,55 @@ public abstract class AbstractSiteParser implements ISiteParser {
 		content = "";
 		while(scanner.hasNext()) {
 			String line = scanner.next().replaceAll("\n", "");
-			//System.out.println("format["+line+"]");
 			if(StringUtils.isNotEmpty(line)) content += RegexUtil.BR + line + "\n";
 		}
+		
+		content = content.replaceAll(RegexUtil.DIV, replacement);
+		
 		return content;
 	}
 	
-	public void extractImageLink(String content, Resource resource) {
+	public String extractImageLink(String content, Resource resource) {
 		Matcher matcher = Pattern.compile(RegexUtil.IMG).matcher(content);
+		List<String> oldList = new ArrayList<String>();
 		while(matcher.find()) {
 			String inputHTML = content.substring(matcher.start(), matcher.end());
+			if(site.isDebug()) System.out.println("OLD : "+inputHTML);
+			oldList.add(inputHTML);
+			try {
+				parser.reset();
+				parser.setInputHTML(inputHTML);
+				NodeList nodeList = parser.extractAllNodesThatMatch(new NodeClassFilter(ImageTag.class));
+				if(nodeList != null && nodeList.size() > 0) {
+					for(NodeIterator iter = nodeList.elements(); iter.hasMoreNodes(); ) {
+						Node node = iter.nextNode();
+						if(node instanceof ImageTag) {
+							ImageTag imageTag = (ImageTag)node;
+							String oldSrc = imageTag.getImageURL();
+							if(!oldSrc.startsWith("http://")) {
+								oldSrc = site.getImageAddress() + oldSrc;
+							}
+							inputHTML = "<img src=\""+oldSrc+"\" alt=\"pic\" />";
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if(site.isDebug()) System.out.println("NEW : "+inputHTML);
 			resource.getImages().add(inputHTML);
+			
 		}
+		
+		if(!resource.getImages().isEmpty()) {
+			int index = 0;
+			for(String old : oldList) {
+				String _new = resource.getImages().get(index);
+				content = content.replace(old, _new);
+				index++;
+			}
+		}
+		return content;
 	}
 	
 	@Override
