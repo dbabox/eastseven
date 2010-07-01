@@ -83,6 +83,8 @@ public class SiteParser implements Runnable, Job {
 					String link = linkTag.extractLink().trim();
 					String title = linkTag.getLinkText().trim();
 					
+					if(site.isDebug()) log.info("[É¸Ñ¡]["+title+"]["+link+"]");
+					
 					if(StringUtils.isEmpty(link) || StringUtils.isEmpty(title)) continue;
 					if(!StringUtils.isEmpty(site.getPageSuffix()))
 						if(!Pattern.compile(site.getPageSuffix()).matcher(link).find()) continue;
@@ -294,6 +296,7 @@ public class SiteParser implements Runnable, Job {
 		                 .replaceAll(RegexUtil.CENTER, replacement)
 		                 .replaceAll(RegexUtil.P_END, replacement)
 		                 .replaceAll(RegexUtil.DIV, replacement)
+		                 .replaceAll(RegexUtil.IFRAME, replacement).replaceAll(RegexUtil.B, replacement)
 		                 .replaceAll(RegexUtil.U, replacement)
 		                 .replaceAll("\\(ÔðÈÎ±à¼­.*?\\)", replacement)
 		                 .replaceAll("<select\\s+[^>]+>.*?</select>", replacement)
