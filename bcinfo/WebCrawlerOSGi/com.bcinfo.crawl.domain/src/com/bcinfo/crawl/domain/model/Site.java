@@ -20,16 +20,16 @@ public class Site implements Serializable {
 	public static final String XIN_HUA_NET = "新华网";
 	public static final String SD_INFO = "齐鲁热线";
 
-	private String name;
-	private String url;
+	private String name = "";
+	private String url = "";
 	private String charset = "UTF-8";
-	private Long channelId;
-	private String channelName;
+	private Long channelId = 0L;
+	private String channelName = "";
 	private String pageSuffix = "shtml";
-	private String pageSelector;
-	private String contentSelector;
-	private String deployTimeSelector;
-	private String datePattern;
+	private String pageSelector = "";
+	private String contentSelector = "";
+	private String deployTimeSelector = "";
+	private String datePattern = "";
 	private boolean realTime = true;
 	private String imageAddress = "";
 	private long frequency = 60 * 60 * 1000;
