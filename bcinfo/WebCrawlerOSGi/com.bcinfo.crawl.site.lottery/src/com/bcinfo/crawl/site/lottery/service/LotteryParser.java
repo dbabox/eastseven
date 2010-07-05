@@ -3,6 +3,9 @@
  */
 package com.bcinfo.crawl.site.lottery.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlparser.Node;
@@ -73,6 +76,7 @@ public final class LotteryParser implements ParsePageService, Runnable {
 			
 			if(nodeList != null && nodeList.size() > 0) {
 				Node[] nodes = nodeList.toNodeArray();
+				content += "开奖日期："+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"\n<br />";
 				content += "开奖号码：";
 				for(Node node : nodes) {
 					Bullet li = (Bullet)node;
