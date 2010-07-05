@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sites>
+	<!--  -->
 	<site>
 		<name>新华网</name>
-		<!-- http://www.xinhuanet.com/employment/zcwh.htm -->
-		<url><![CDATA[http://search.news.cn/mb/xinhuanet/search/?styleurl=http://www.xinhuanet.com/employment/static/style/zhichang.css&nodetype=3&nodeid=116304]]></url>
-		<charset>UTF-8</charset>
-		<channelId>1362</channelId>
-		<channelName>职场关系</channelName>
-		<pageSuffix><![CDATA[\d{4}-\d{2}/\d{2}/c_\d+.htm]]></pageSuffix>
-		<pageSelector><![CDATA[div[id=div_currpage]>a]]></pageSelector>
-		<contentSelector><![CDATA[div[id=Content]>p]]></contentSelector>
+		<url>http://www.jx.xinhuanet.com/news/society/</url>
+		<charset>GB2312</charset>
+		<channelId>941</channelId>
+		<channelName>江西新闻</channelName>
+		<pageSuffix><![CDATA[.jx.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[class=xilanwz-x]>p]]></contentSelector>
 		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
 		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
-		<realTime>false</realTime>
-		<frequency>1981000</frequency>
+		<realTime>true</realTime>
+		<frequency>1751000</frequency>
+		<debug>true</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.jx.xinhuanet.com/news/focus/</url>
+		<charset>GB2312</charset>
+		<channelId>941</channelId>
+		<channelName>江西新闻</channelName>
+		<pageSuffix><![CDATA[.jx.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
+		<contentSelector><![CDATA[div[class=xilanwz-x]>p]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1761000</frequency>
 		<debug>true</debug>
 	</site>
 </sites>
