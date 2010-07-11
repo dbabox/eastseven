@@ -123,7 +123,7 @@ public class WebCrawlerDaoImpl implements WebCrawlerDao {
 			conn.setAutoCommit(false);
 			
 			if(isExist(resource, conn)) {
-				log.warn("资源：" + resource.getTitle() + "已经存在");
+				//log.warn("资源：" + resource.getTitle() + "已经存在");
 				conn.setAutoCommit(true);
 				conn.close();
 				return false;
