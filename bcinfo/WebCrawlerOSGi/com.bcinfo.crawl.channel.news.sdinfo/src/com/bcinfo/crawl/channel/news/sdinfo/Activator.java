@@ -37,7 +37,7 @@ public class Activator implements BundleActivator {
 		CrawlerLogService crawlerLogService = (CrawlerLogService)context.getService(context.getServiceReference(CrawlerLogService.class.getName()));
 		WebCrawlerDao webCrawlerDao = (WebCrawlerDao)context.getService(context.getServiceReference(WebCrawlerDao.class.getName()));
 		
-		scheduler = StdSchedulerFactory.getDefaultScheduler();
+		scheduler = new StdSchedulerFactory().getScheduler();
 		scheduler.start();
 		int index = 1;
 		for(Site site : getSites()) {

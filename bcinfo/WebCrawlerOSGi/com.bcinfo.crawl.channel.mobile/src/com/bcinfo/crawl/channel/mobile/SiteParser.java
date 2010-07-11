@@ -93,7 +93,7 @@ public class SiteParser implements Runnable, Job {
 					
 					CrawlerLog crawlerLog = new CrawlerLog(site.getChannelId(), link);
 					if(crawlerLogs.contains(crawlerLog)) {
-						log.info("[有了]["+title+"]["+link+"]");
+						if(site.isDebug()) log.info("[有了]["+title+"]["+link+"]");
 						continue;
 					}
 					log.info("["+site.getChannelName()+"-处理中..."+index+"]["+title+"]["+link+"]");

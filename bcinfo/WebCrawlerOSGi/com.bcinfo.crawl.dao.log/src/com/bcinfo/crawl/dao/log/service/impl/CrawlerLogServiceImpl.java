@@ -39,8 +39,9 @@ public class CrawlerLogServiceImpl implements CrawlerLogService {
 			pst = conn.prepareStatement(sql);
 			pst.setLong(  1, crawlerLog.getChannelId());
 			pst.setString(2, crawlerLog.getUrl());
-			int update = pst.executeUpdate();
-			log.info("日志保存:" + update);
+			//int update = 
+			pst.executeUpdate();
+			//log.info("日志保存:" + update);
 			conn.commit();
 			bln = true;
 		} catch (Exception e) {
