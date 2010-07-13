@@ -12,9 +12,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import com.bcinfo.crawl.dao.log.database.DatabaseConnection;
+import com.bcinfo.crawl.dao.log.server.JettyServer;
 import com.bcinfo.crawl.dao.log.service.CrawlerDataAccessService;
+import com.bcinfo.crawl.dao.log.service.CrawlerLogMonitor;
 import com.bcinfo.crawl.dao.log.service.CrawlerLogService;
 import com.bcinfo.crawl.dao.log.service.impl.CrawlerDataAccessServiceImpl;
+import com.bcinfo.crawl.dao.log.service.impl.CrawlerLogMonitorImpl;
 import com.bcinfo.crawl.dao.log.service.impl.CrawlerLogServiceImpl;
 
 public class Activator implements BundleActivator {
@@ -28,6 +31,10 @@ public class Activator implements BundleActivator {
 		log.info(CrawlerLogService.class.getName() + "发布");
 		context.registerService(CrawlerDataAccessService.class.getName(), new CrawlerDataAccessServiceImpl(), null);
 		log.info(CrawlerDataAccessService.class.getName() + "发布");
+		context.registerService(CrawlerLogMonitor.class.getName(), new CrawlerLogMonitorImpl(), null);
+		log.info(CrawlerLogMonitor.class.getName() + "发布");
+		
+		JettyServer.start();
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -36,6 +43,7 @@ public class Activator implements BundleActivator {
 			log.info(CrawlerLogService.class.getName() + "注销");
 			log.info(CrawlerDataAccessService.class.getName() + "注销");
 		}
+		JettyServer.stop();
 	}
 
 	private void init() {
