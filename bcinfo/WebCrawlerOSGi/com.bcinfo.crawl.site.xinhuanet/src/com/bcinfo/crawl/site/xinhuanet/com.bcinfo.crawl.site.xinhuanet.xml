@@ -3,28 +3,59 @@
 	<!--  -->
 	<site>
 		<name>新华网</name>
-		<url>http://www.jx.xinhuanet.com/news/society/</url>
+		<url>http://www.sd.xinhuanet.com/news/jryw.htm</url>
 		<charset>GB2312</charset>
-		<channelId>941</channelId>
-		<channelName>江西新闻</channelName>
-		<pageSuffix><![CDATA[.jx.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<channelId>981</channelId>
+		<channelName>山东新闻</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
 		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
-		<contentSelector><![CDATA[div[class=xilanwz-x]>p]]></contentSelector>
+		<contentSelector><![CDATA[table[id=myTable]]]></contentSelector>
 		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
 		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
 		<realTime>true</realTime>
 		<frequency>1751000</frequency>
 		<debug>true</debug>
 	</site>
+	<!--  -->
 	<site>
 		<name>新华网</name>
-		<url>http://www.jx.xinhuanet.com/news/focus/</url>
+		<url>http://www.sd.xinhuanet.com/jnpd/news/jnxw.htm</url>
 		<charset>GB2312</charset>
-		<channelId>941</channelId>
-		<channelName>江西新闻</channelName>
-		<pageSuffix><![CDATA[.jx.*?/\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<channelId>982</channelId>
+		<channelName>济南新闻</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
 		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
-		<contentSelector><![CDATA[div[class=xilanwz-x]>p]]></contentSelector>
+		<contentSelector><![CDATA[table[id=myTable]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1761000</frequency>
+		<debug>true</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.sd.xinhuanet.com/news/qdxw.htm</url>
+		<charset>GB2312</charset>
+		<channelId>983</channelId>
+		<channelName>青岛新闻</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
+		<contentSelector><![CDATA[table[id=myTable]]]></contentSelector>
+		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
+		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
+		<realTime>true</realTime>
+		<frequency>1761000</frequency>
+		<debug>true</debug>
+	</site>
+	<site>
+		<name>新华网</name>
+		<url>http://www.sd.xinhuanet.com/sd/sdgs.htm</url>
+		<charset>GB2312</charset>
+		<channelId>1082</channelId>
+		<channelName>山东各地</channelName>
+		<pageSuffix><![CDATA[\d{4}-\d{2}/\d{2}/content_\d+.htm]]></pageSuffix>
+		<pageSelector><![CDATA[p[class=pagelink]>a]]></pageSelector>
+		<contentSelector><![CDATA[table[id=myTable]]]></contentSelector>
 		<deployTimeSelector><![CDATA[]]></deployTimeSelector>
 		<datePattern><![CDATA[yyyy-MM/dd]]></datePattern>
 		<realTime>true</realTime>

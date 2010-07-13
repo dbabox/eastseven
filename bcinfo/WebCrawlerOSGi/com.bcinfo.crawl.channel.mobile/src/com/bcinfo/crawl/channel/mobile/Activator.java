@@ -36,7 +36,9 @@ public class Activator implements BundleActivator {
 		log.info("手机频道抓取程序启动");
 		CrawlerLogService crawlerLogService = (CrawlerLogService)context.getService(context.getServiceReference(CrawlerLogService.class.getName()));
 		WebCrawlerDao webCrawlerDao = (WebCrawlerDao)context.getService(context.getServiceReference(WebCrawlerDao.class.getName()));
-		scheduler = new StdSchedulerFactory().getScheduler();
+		StdSchedulerFactory factory = new StdSchedulerFactory();
+		factory.initialize(getClass().getResourceAsStream("quartz.properties"));
+		scheduler = factory.getScheduler();
 		scheduler.start();
 		int index = 1;
 		for(Site site : getSites()) {
