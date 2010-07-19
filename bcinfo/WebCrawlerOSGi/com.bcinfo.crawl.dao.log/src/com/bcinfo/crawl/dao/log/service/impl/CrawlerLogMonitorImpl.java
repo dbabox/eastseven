@@ -73,7 +73,7 @@ public class CrawlerLogMonitorImpl implements CrawlerLogMonitor {
 			while(rs.next()) {
 				
 				String url = rs.getString("URL");
-				String date = sdf.format(new Date(rs.getDate("CREATE_TIME").getTime()));
+				String date = sdf.format(new Date(rs.getTimestamp("CREATE_TIME").getTime()));
 				displayMsg += "\n" + index+"."+date+" : "+url;
 				index++;
 			}
@@ -103,7 +103,7 @@ public class CrawlerLogMonitorImpl implements CrawlerLogMonitor {
 			while(rs.next()) {
 				
 				String url = rs.getString("URL");
-				String date = sdf.format(new Date(rs.getDate("CREATE_TIME").getTime()));
+				String date = sdf.format(new Date(rs.getTimestamp("CREATE_TIME").getTime()));
 				displayMsg += "\n" + index+"."+date+" : "+url;
 				index++;
 			}
@@ -132,7 +132,7 @@ public class CrawlerLogMonitorImpl implements CrawlerLogMonitor {
 				Map<String, String> e = new HashMap<String, String>();
 				String channelId = String.valueOf(rs.getLong("CHANNEL_ID"));
 				String url = rs.getString("URL");
-				String date = sdf.format(new Date(rs.getDate("CREATE_TIME").getTime()));
+				String date = sdf.format(new Date(rs.getTimestamp("CREATE_TIME").getTime()));
 				e.put("channelId", channelId);
 				e.put("url", url);
 				e.put("date", date);
@@ -163,7 +163,7 @@ public class CrawlerLogMonitorImpl implements CrawlerLogMonitor {
 			while(rs.next()) {
 				Map<String, String> e = new HashMap<String, String>();
 				String url = rs.getString("URL");
-				String date = sdf.format(new Date(rs.getDate("CREATE_TIME").getTime()));
+				String date = sdf.format(new Date(rs.getTimestamp("CREATE_TIME").getTime()));
 				e.put("channelId", String.valueOf(channelId));
 				e.put("url", url);
 				e.put("date", date);
@@ -201,6 +201,47 @@ public class CrawlerLogMonitorImpl implements CrawlerLogMonitor {
 		}
 		
 		return channelIds;
+	}
+	
+	@Override
+	public long getCrawlerLogCountOfAll() {
+		long count = 0;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		final String sql = "SELECT count(1) log_size FROM CRAWLER_LOG";
+		try {
+			conn = DatabaseConnection.getConnection();
+			pst = conn.prepareStatement(sql);
+			rs = pst.executeQuery();
+			if(rs.next()) count = rs.getLong("log_size");
+		} catch (Exception e) {
+			log.error(e);
+		} finally {
+			close(conn, pst, rs);
+		}
+		return count;
+	}
+	
+	@Override
+	public long getCrawlerLogCount(long channelId) {
+		long count = 0;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		final String sql = "SELECT count(1) log_size FROM CRAWLER_LOG WHERE CHANNEL_ID = ?";
+		try {
+			conn = DatabaseConnection.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setLong(1, channelId);
+			rs = pst.executeQuery();
+			if(rs.next()) count = rs.getLong("log_size");
+		} catch (Exception e) {
+			log.error(e);
+		} finally {
+			close(conn, pst, rs);
+		}
+		return count;
 	}
 	
 	private void close(Connection conn, PreparedStatement pst, ResultSet rs) {
