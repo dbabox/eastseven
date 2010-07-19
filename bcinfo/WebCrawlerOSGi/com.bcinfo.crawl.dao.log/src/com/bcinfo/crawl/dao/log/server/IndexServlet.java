@@ -42,15 +42,15 @@ public class IndexServlet extends HttpServlet {
 		resp.setStatus(HttpServletResponse.SC_OK);
 		resp.getWriter().write("<strong>首页</strong>");
 		resp.getWriter().write("<br />" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		resp.getWriter().write("<br />共抓取记录："+this.monitor.getCrawlerLogCountOfAll());
 		resp.getWriter().write("<br />");
-		resp.getWriter().write("<br /><a href='crawlerLog.html?method=list&channelId='>all</a>  ");
 		resp.getWriter().write("  <a href='crawlerLog.html?method=del&channelId='>delete</a>");
 		List<String> channelIds = monitor.getChannelIds();
 		if(!channelIds.isEmpty()) {
 			for(String channelId : channelIds) {
 				String link = "<br />";
-				link += "<a href='crawlerLog.html?method=list&channelId="+channelId+"'>"+channelId+"</a>  ";
-				link += "  <a href='crawlerLog.html?method=del&channelId="+channelId+"'>delete</a>";
+				link += "<a href='crawlerLog.html?method=list&channelId="+channelId+"'>"+channelId+"</a> --";
+				link += "  --<a href='crawlerLog.html?method=del&channelId="+channelId+"'>delete["+this.monitor.getCrawlerLogCount(Long.parseLong(channelId))+"]</a>";
 				resp.getWriter().write(link);
 			}
 		}

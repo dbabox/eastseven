@@ -39,5 +39,9 @@ public interface CrawlerLogMonitor {
 	
 	public List<Map<String, String>> getCrawlerLogs(long channelId);
 	
+	public long getCrawlerLogCountOfAll();
+	
+	public long getCrawlerLogCount(long channelId);
+	
 	public List<String> getChannelIds();
 }
