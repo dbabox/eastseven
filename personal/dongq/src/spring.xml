@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="58.213.123.141" />
+	</bean>
+
+	<!-- this is a template message that we can pre-load with default state -->
+	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from" value="dongq@flying-it.com" />
+		<property name="subject" value="文本内容测试" />
+	</bean>
+	<!--  
+	<bean id="mimeMessage" class="org.springframework.mail.javamail.MimeMailMessage">
+		<property name="from" value="dongq@flying-it.com" />
+		<property name="subject" value="带附件的测试" />
+	</bean>
+		<property name="mimeMessage" ref="mimeMessage" />
+	-->
+	<bean id="mailDemo" class="org.dongq.mail.MailDemo">
+		<property name="mailSender" ref="mailSender" />
+		<property name="templateMessage" ref="templateMessage" />
+	</bean>
+
+</beans>
