@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DemoImpl
+Bundle-SymbolicName: dongq.cfx.impl
+Bundle-Version: 1.0.0
+Bundle-Vendor: dongq
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: dongq.cfx.service,
+ org.osgi.framework;version="1.3.0"
+Service-Component: OSGI-INF/component.xml 
