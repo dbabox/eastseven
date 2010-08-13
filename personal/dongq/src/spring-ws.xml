@@ -1,0 +1,22 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://cxf.apache.org/jaxws 
+http://cxf.apache.org/schema/jaxws.xsd">
+
+	<bean id="client" class="org.dongq.webservices.Client">
+		<property name="dongqService" ref="dongqService"></property>
+	</bean>
+
+	<bean id="dongqService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+		<property name="serviceInterface" value="dongq.cfx.service.DongqService" />
+		<property name="wsdlDocumentUrl" value="http://localhost:9090/dongq?wsdl" />
+		<property name="namespaceUri" value="http://service.cfx.dongq/"/>
+		<property name="serviceName" value="DongqService" />
+		<property name="portName" value="DongqServicePort" />
+		
+	</bean>
+
+</beans>
