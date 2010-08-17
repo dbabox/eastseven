@@ -6,17 +6,20 @@ package org.dongq.database;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.dongq.database.model.Column;
+import org.dongq.database.model.ColumnType;
 import org.dongq.database.model.Table;
 
 /**
  * @author dongq
  * 
- *         create time : 2010-8-8 上午11:00:00
+ *         create time : 2010-8-8 上午11:00:00<br>
+ *         
  */
 public final class DatabaseDemo {
 
@@ -66,25 +69,9 @@ public final class DatabaseDemo {
 		}
 		
 		System.out.println(tables);
-		//建表
+		//建表脚本
 		if(!tables.isEmpty()) {
-			String parentCatalog = null;
-			String parentSchema = "HR";
-			String parentTable = null;
-			String foreignCatalog = null;
-			String foreignSchema = "HR";
-			String foreignTable = null;
-//			String script = "script";
-//			String tableScript = "table.sql";
-//			File file = new File(script);
-//			file.mkdir();
-//			File tableScriptFile = new File(script+"/"+tableScript);
 			for(Table table : tables) {
-				parentTable = table.getName();
-				rs = databaseMetaData.getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable);
-				while(rs.next()) {
-					System.out.println(rs.getString("PKTABLE_NAME") + "." + rs.getString("PKCOLUMN_NAME") + "<-->" + rs.getString("FKTABLE_NAME") + "." + rs.getString("FKCOLUMN_NAME"));
-				}
 				String createTableScript = "create table "+table.getName()+"(\n";
 				int index = 1;
 				for(Column col : table.getColumns()) {
@@ -99,19 +86,41 @@ public final class DatabaseDemo {
 			}
 		}
 		
-		
-		//外键关系
-		String parentCatalog = null;
-		String parentSchema = "HR";
-		String parentTable = null;
-		String foreignCatalog = null;
-		String foreignSchema = "HR";
-		String foreignTable = null;
-		rs = databaseMetaData.getCrossReference(parentCatalog, parentSchema, parentTable, foreignCatalog, foreignSchema, foreignTable);
-		while(rs.next()) {
-			System.out.println(rs.getString("PKTABLE_NAME") + "." + rs.getString("PKCOLUMN_NAME") + "<-->" + rs.getString("FKTABLE_NAME") + "." + rs.getString("FKCOLUMN_NAME"));
+		//表数据
+		if(!tables.isEmpty()) {
+			for(Table table : tables) {
+				System.out.println(table.getName() + "表数据：");
+				String sql = "select * from " + table.getName();
+				PreparedStatement pst = conn.prepareStatement(sql);
+				ResultSet _rs = pst.executeQuery();
+				while(_rs.next()) {
+					String insertSQL = "insert into " + table.getName() + "(";
+					String data = "";
+					for(Column col : table.getColumns()) {
+						insertSQL += "," + col.getName();
+						Object value = _rs.getObject(col.getName());
+						if(value == null || "null".equals(value)) {
+							data += ",null";
+						} else if(col.getType().equals(ColumnType.CHAR)
+								|| col.getType().equals(ColumnType.VARCHAR)
+								|| col.getType().equals(ColumnType.VARCHAR2)) {
+							data += ",'" + _rs.getObject(col.getName()) + "'";
+						} else if(col.getType().equals(ColumnType.DATE)) {
+							data += ",to_date('" + _rs.getObject(col.getName()) + "','yyyy-mm-dd')";
+						} else {
+							data += "," + _rs.getObject(col.getName());
+						}
+					}
+					insertSQL = insertSQL.replaceFirst(",", "") + ") values(";
+					insertSQL += data.replaceFirst(",", "");
+					insertSQL += ");";
+					System.out.println(insertSQL);
+				}
+				
+				_rs.close();
+				pst.close();
+			}
 		}
-		
 		
 		if(rs != null) rs.close();
 		conn.close();

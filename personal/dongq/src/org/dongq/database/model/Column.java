@@ -12,7 +12,7 @@ public class Column {
 
 	public static final int NULL = 0;
 	public static final int NOT_NULL = 1;
-	
+
 	private String name;
 	private String type;
 	private int size;
@@ -63,7 +63,8 @@ public class Column {
 
 	@Override
 	public String toString() {
-		return "Column [name=" + name + "]";
+		return "Column [name=" + name + ", type=" + type + ", size=" + size
+				+ ", nullable=" + nullable + "]";
 	}
 
 }
