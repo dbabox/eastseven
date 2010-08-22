@@ -13,7 +13,7 @@ public final class ColumnType {
 	
 	public static final String DATE     = "DATE";
 	
-	public static final String TIMESTAMP = "TIMESTAMP(6)";
+	public static final String TIMESTAMP = "TIMESTAMP";
 	
 	public static final String CHAR     = "CHAR";
 	
