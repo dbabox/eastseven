@@ -17,7 +17,17 @@ public class Folder extends WapSiteFolder implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private Folder parent = null;
+
 	private Set<Folder> children = new HashSet<Folder>();
+
+	public Folder getParent() {
+		return parent;
+	}
+
+	public void setParent(Folder parent) {
+		this.parent = parent;
+	}
 
 	public Set<Folder> getChildren() {
 		return children;
@@ -38,17 +48,16 @@ public class Folder extends WapSiteFolder implements Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		Folder folder = (Folder) obj;
-		return this.getFolderId().longValue() == folder.getFolderId().longValue();
+		return this.getFolderId().longValue() == folder.getFolderId()
+				.longValue();
 	}
 
 	@Override
 	public String toString() {
-		return "ChannelBean [" +
-				"getFolderId()=" + getFolderId() + 
-				", getFolderName()=" + getFolderName() + 
-				", getStatus()=" + getStatus() + 
-				", getFolderLevel()=" + getFolderLevel() + 
-				", getParentFolder()=" + getParentFolder() + "]";
+		return "Folder [parent=" + parent + ", children=" + children
+				+ ", getFolderId()=" + getFolderId() + ", getFolderName()="
+				+ getFolderName() + ", getParentFolder()=" + getParentFolder()
+				+ "]";
 	}
 
 }
