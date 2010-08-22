@@ -14,8 +14,15 @@ import com.bcinfo.webcrawler.model.Folder;
  */
 public interface FolderDao {
 
+	public Folder getRoot() throws Exception;
+	
+	public List<Folder> getAllFolderWithOrder() throws Exception;
+	
 	public List<Folder> getFolders(Long parent) throws Exception;
 	
 	public Long getChildCount(Long parent) throws Exception;
 	
+	public Boolean hasChild(Long parent) throws Exception;
+	
+	public int getDepth() throws Exception;
 }

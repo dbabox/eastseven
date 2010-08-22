@@ -3,6 +3,8 @@
  */
 package com.bcinfo.webcrawler.service.impl;
 
+import java.util.List;
+
 import com.bcinfo.webcrawler.dao.FolderDao;
 import com.bcinfo.webcrawler.model.Folder;
 import com.bcinfo.webcrawler.service.FolderService;
@@ -20,10 +22,17 @@ public class FolderServiceImpl implements FolderService {
 		this.folderDao = folderDao;
 	}
 	
+    private Folder root = null;
+	
 	public Folder initFolderTree() throws Exception {
-		Folder root = new Folder();
-		root.setFolderId(0L);
-		root.setFolderName("root");
+		root = folderDao.getRoot();
+		List<Folder> all = folderDao.getAllFolderWithOrder();
+		//int levels = folderDao.getDepth();
+		
+		for(Folder folder : all) {
+			addFolder(folder);
+		}
+		/*
 		for(long index = 1; index < 11; index ++) {
 			Folder folder = new Folder();
 			folder.setFolderId(index);
@@ -39,8 +48,12 @@ public class FolderServiceImpl implements FolderService {
 			folder.setParentFolder(0L);
 			root.addChild(folder);
 		}
-		
+		*/
 		return root;
 	}
 
+	private void addFolder(Folder folder) throws Exception {
+		if(root.equals(folder)) return;
+		
+	}
 }
