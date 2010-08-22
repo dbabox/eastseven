@@ -46,6 +46,7 @@ public final class DatabaseTools {
 	
 	private static boolean isGenerateTable = true;
 	private static boolean isGenerateDate = false;
+	private static boolean showScript = false;
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -76,6 +77,7 @@ public final class DatabaseTools {
 			
 			isGenerateDate = Boolean.parseBoolean(config.getProperty("jdbc.generate.data.script"));
 			isGenerateTable = Boolean.parseBoolean(config.getProperty("jdbc.generate.table.script"));
+			showScript = Boolean.parseBoolean(config.getProperty("jdbc.show.script"));
 			
 			Class.forName(className);
 			
@@ -110,8 +112,6 @@ public final class DatabaseTools {
 		List<Table> tables = getTables(databaseMetaData);
 		
 		if(tables.isEmpty()) return;
-		
-		System.out.println(tables);
 		
 		if(isGenerateTable) generateTableScript(tables);
 		if(isGenerateDate) generateDataScript(tables, conn);
@@ -148,7 +148,7 @@ public final class DatabaseTools {
 				Column column = new Column(colName);
 				column.setNullable(colNullable);
 				column.setSize(colSize);
-				column.setType(colType);
+				column.setType(colType.replaceAll("\\(\\d+\\)", ""));
 				table.getColumns().add(column);
 			}
 			tables.add(table);
@@ -158,32 +158,62 @@ public final class DatabaseTools {
 		return tables;
 	}
 	
+	/**
+	 * 生成建表脚本
+	 * @param tables
+	 * @throws Exception
+	 */
 	private void generateTableScript(List<Table> tables) throws Exception {
-		String script = "";
+		String create = "";
+		String drop = "";
+		
 		for(Table table : tables) {
 			String createTableScript = "create table "+table.getName()+"(\n";
+			drop += "drop table "+table.getName()+";\n";
 			int index = 1;
 			for(Column col : table.getColumns()) {
-				createTableScript += "  "+col.getName()+"  ";
-				createTableScript += col.getType() + ("DATE".equalsIgnoreCase(col.getType()) ? " " : " ("+col.getSize()+")  ");
-				createTableScript += (col.getNullable()==Column.NOT_NULL?" NOT NULL":" ");
-				createTableScript += (index != table.getColumns().size()) ? ",\n" : "\n";
+				String column = "  " + col.getName() + "  ";
+				
+				column += col.getType();
+				
+				if(!ColumnType.DATE.equalsIgnoreCase(col.getType()) && !col.getType().toUpperCase().startsWith(ColumnType.TIMESTAMP) && col.getSize() > 0) {
+					column += "("+col.getSize()+") ";
+				}
+				
+				//column += (col.getNullable() == Column.NOT_NULL ? " NOT NULL" : " ");
+				column += (index != table.getColumns().size()) ? ",\n" : "\n";
+
+				createTableScript += column;
 				index++;
 			}
 			createTableScript += ");\n";
-			System.out.println("table script :"+createTableScript);
-			script += createTableScript + "\n";
+			if(showScript) System.out.println(createTableScript);
+			create += createTableScript + "\n";
 		}
-		File file = new File(schema + ".sql");
+		
+		File file = new File(schema.toLowerCase() + "-drop.sql");
 		if(!file.exists()) file.createNewFile();
-		FileOutputStream out = new FileOutputStream(file, true);
-		out.write(script.getBytes());
+		FileOutputStream out = new FileOutputStream(file, false);
+		out.write(drop.getBytes());
+		
+		file = new File(schema.toLowerCase() + "-create.sql");
+		if(!file.exists()) file.createNewFile();
+		out = new FileOutputStream(file, false);
+		out.write(create.getBytes());
+		
 		out.close();
+		
 	}
 	
+	/**
+	 * 表数据
+	 * @param tables
+	 * @param conn
+	 * @throws Exception
+	 */
 	private void generateDataScript(List<Table> tables, Connection conn) throws Exception {
 		for(Table table : tables) {
-			
+			String dataSet = "";
 			String sql = "select * from " + table.getName();
 			PreparedStatement pst = conn.prepareStatement(sql);
 			ResultSet _rs = pst.executeQuery();
@@ -204,28 +234,35 @@ public final class DatabaseTools {
 						
 					} else if(col.getType().equals(ColumnType.DATE)) {
 						data += ",to_date('" + value + "','yyyy-mm-dd hh24:mi:ss')";
-					} else if(col.getType().equals(ColumnType.TIMESTAMP)) {
-						//System.out.println(ColumnType.TIMESTAMP + " = " + value);
+					} else if(col.getType().contains(ColumnType.TIMESTAMP)) {
 						TIMESTAMP timestamp = (TIMESTAMP)value;
 						Date date = new Date(timestamp.dateValue().getTime());
 						data += ",to_date('" + sdf.format(date) + "','yyyy-mm-dd hh24:mi:ss')";
 					} else {
 						data += "," + value;
 					}
-					//data += "," + value;
 				}
 				insertSQL = insertSQL.replaceFirst(",", "") + ") values(";
 				insertSQL += data.replaceFirst(",", "");
 				insertSQL += ");";
-				System.out.println(insertSQL);
+				if(showScript) System.out.println(insertSQL);
+				dataSet += insertSQL + "\n";
 				count ++;
 			}
-			System.out.println(table.getName() + "表数据：" + count);
+			dataSet += "commit;\n";
+			System.out.println(table.getName() + " has " + count + " rows data");
 			_rs.close();
 			pst.close();
+			
+			File file = new File(table.getName().toLowerCase() + "-data.sql");
+			if(!file.exists()) file.createNewFile();
+			FileOutputStream out = new FileOutputStream(file, false);
+			out.write(dataSet.getBytes());
+			out.close();
 		}
 	}
 	
+	@Deprecated
 	public static void main(String[] args) throws Exception {
 		
 		
