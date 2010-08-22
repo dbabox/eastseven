@@ -1,0 +1,43 @@
+<?page title="Auto Generated index.zul"?>
+<window id="index" height="100%" width="100%" closable="true"
+	border="none" apply="com.bcinfo.webcrawler.ui.IndexComposer">
+
+	<borderlayout id="borderlayout">
+		<north>
+			<menubar id="menubar">
+				<menuitem label="资源管理" id="resMenuitem" />
+				<menuitem label="频道管理" id="chlMenuitem" />
+				<menuitem label="抓取配置" id="catMenuitem" />
+				<menuitem label="订购管理" id="subMenuitem" />
+				<menuitem label="性能监控" href="monitor.zul" target="_blank" />
+				<menuitem label="关于" id="aboutMenuitem" />
+			</menubar>
+		</north>
+		<west width="25%" splittable="true" collapsible="true"
+			autoscroll="true" title=" ">
+			<tabbox>
+				<tabs id="tabs" />
+				<tabpanels id="tabpanels" />
+			</tabbox>
+
+		</west>
+		<center flex="true" autoscroll="true">
+			<tabbox>
+				<tabs id="contentTabs">
+					<tab label="使用说明" selected="true" />
+				</tabs>
+				<tabpanels id="contentTabpanels" height="100%">
+					<tabpanel>
+						<label value="You are using: ${desktop.webApp.version}" />
+					</tabpanel>
+				</tabpanels>
+			</tabbox>
+		</center>
+		<south>
+			<div>
+				<label value="You are using: ${desktop.webApp.version}" />
+			</div>
+		</south>
+	</borderlayout>
+	
+</window>

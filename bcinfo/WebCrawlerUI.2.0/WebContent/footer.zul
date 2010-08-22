@@ -1,0 +1,12 @@
+<?page title="footer" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Timer demo" border="normal">
+		<label id="now" />
+		<timer id="timer" delay="1000" repeats="true"
+			onTimer="now.setValue(new Date().toString())" />
+		<separator bar="true" />
+		<button label="Stops timer" onClick="timer.stop()" />
+		<button label="Starts timer" onClick="timer.start()" />
+	</window>
+
+</zk>
