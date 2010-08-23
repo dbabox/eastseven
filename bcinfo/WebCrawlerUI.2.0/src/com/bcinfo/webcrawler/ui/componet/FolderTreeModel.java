@@ -27,37 +27,37 @@ public class FolderTreeModel extends AbstractTreeModel {
 	public FolderTreeModel(Object root) {
 		super(root);
 		folderService = (FolderService)SpringUtil.getBean("folderService");
-		try {
-			folders.addAll(folderService.initFolderTree().getChildren());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		folders = folderService.getTopFolders(root);
 	}
 
 	public Object getChild(Object parent, int index) {
+		Folder child = null;
 		if(parent instanceof Folder) {
 			Folder folder = (Folder)parent;
-			return folder.getChildren().iterator().next();
+			child = folderService.getChild(folder, index);
 		} else {
-			return folders.get(index);
+			child = folders.get(index);
 		}
+		return child;
 	}
 
 	public int getChildCount(Object parent) {
+		int count = 0;
 		if(parent instanceof Folder) {
 			Folder folder = (Folder)parent;
-			return folder.getChildren().size();
+			count = folderService.getChildCount(folder);
 		} else {
-			return folders.size();
+			count = folders.size();
 		}
+		return count;
 	}
 
 	public boolean isLeaf(Object parent) {
 		if(parent instanceof Folder) {
 			Folder folder = (Folder)parent;
-			return folder.isLeaf();
+			return folderService.isLeaf(folder);
 		}
-		return false;
+		return true;
 	}
 
 	

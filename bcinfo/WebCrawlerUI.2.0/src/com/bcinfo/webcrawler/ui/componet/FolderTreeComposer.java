@@ -44,7 +44,6 @@ public class FolderTreeComposer extends GenericForwardComposer {
 
 	@Override
 	public ComponentInfo doBeforeCompose(Page page, Component parent, ComponentInfo compInfo) {
-		System.out.println("doBeforeCompose:parent-" + parent);
 		tabs = (Tabs) parent.getFellowIfAny("contentTabs");
 		tabpanels = (Tabpanels) parent.getFellowIfAny("contentTabpanels");
 		this.parentComp = parent;
@@ -54,7 +53,6 @@ public class FolderTreeComposer extends GenericForwardComposer {
 	@Override
 	public void doBeforeComposeChildren(Component comp) throws Exception {
 		super.doBeforeComposeChildren(comp);
-		System.out.println("doBeforeComposeChildren:comp-" + comp);
 	}
 
 	@Override
@@ -67,12 +65,11 @@ public class FolderTreeComposer extends GenericForwardComposer {
 		}
 
 		channelTree = new Tree();
-		channelTree.setModel(new FolderTreeModel(0L));
+		channelTree.setModel(new FolderTreeModel(-1L));
 		channelTree.setTreeitemRenderer(new FolderTreeitemRenderer());
 		channelTree.addEventListener(Events.ON_SELECT, new EventListenerImpl(cmd));
+		
 		channelTree.setParent(comp);
-		System.out.println("tabs:" + tabs);
-		System.out.println("tabs:" + this.tabpanels);
 	}
 
 	class EventListenerImpl implements EventListener {
