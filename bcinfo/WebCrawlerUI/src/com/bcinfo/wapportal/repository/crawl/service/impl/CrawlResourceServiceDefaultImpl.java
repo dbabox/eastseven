@@ -128,6 +128,7 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 			String userName = new UserDao().getUserName(userId);
 			for(ChannelMapping mapping : mappingList){
 				System.out.println(mapping);
+				List<CrawlResource> resources = new ArrayList<CrawlResource>();
 				//取得资源
 				for(int i=0;i<resourceIds.length;i++){
 					resId = Long.parseLong(resourceIds[i]);
@@ -139,6 +140,12 @@ public class CrawlResourceServiceDefaultImpl implements CrawlResourceService {
 					log.debug(resource.getTitle());
 					//生成资源包文件XML,默认操作为INSERT
 					generateResourceFile(mapping, resource, INSERT, sendType, userName);
+					resources.add(resource);
+				}
+				//TODO 记录资源使用情况
+				if(!resources.isEmpty()) {
+					this.crawlResourceDao.saveResources(resources, userName);
+					System.out.println("\n"+userName + "发布了"+resources.size()+"条资源，已经记录在案，以备统计之用\n");
 				}
 			}
 			
