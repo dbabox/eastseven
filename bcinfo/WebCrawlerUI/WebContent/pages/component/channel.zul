@@ -10,7 +10,7 @@
 		<button id="del" label="删除频道" />
 		<tree id="tree" checkmark="true" fixedLayout="true">
 			<treecols>
-				<treecol label="编号" width="100px" />
+				<treecol label="编号" width="45%" />
 				<treecol label="频道名称" />
 			</treecols>
 		</tree>
