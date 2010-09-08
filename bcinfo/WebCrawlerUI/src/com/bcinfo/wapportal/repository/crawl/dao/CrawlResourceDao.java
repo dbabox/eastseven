@@ -26,6 +26,41 @@ import com.bcinfo.wapportal.repository.crawl.domain.CrawlResource;
  */
 public class CrawlResourceDao {
 
+	public void saveResources(List<CrawlResource> resources, String userName) {
+		
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String sql = " insert into TWAP_PUBLIC_CRAWL_RESOURCE_STA(RES_ID,CHANNEL_ID,RES_TITLE,RES_LINK,RES_CONTENT) " +
+				"values(SEQ_TWAP_PUBLIC_CRAWL_RESOURCE.Nextval,?,?,?,?) ";
+		try {
+			conn = JavaOracle.getConn();
+			conn.setAutoCommit(false);
+			pst = conn.prepareStatement(sql);
+			for(CrawlResource resource : resources){
+				pst.setLong(1, resource.getChannelId());
+				pst.setString(2, resource.getTitle());
+				pst.setString(3, resource.getLink());
+				pst.setString(4, userName);
+				pst.addBatch();
+			}
+			pst.executeBatch();
+			conn.commit();
+			conn.setAutoCommit(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(conn!=null){
+				try {
+					conn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} finally {
+			close(conn, pst, rs);
+		}
+	}
+	
 	public Boolean updateCrawlResourceStatus(String[] resIds){
 		Boolean bln = false;
 		Connection conn = null;
