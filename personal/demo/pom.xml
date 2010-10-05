@@ -15,8 +15,8 @@
   </properties>
 
   <scm>
-  	<connection>http://eastseven.googlecode.com/svn/trunk/</connection>
-  	<developerConnection>https://eastseven.googlecode.com/svn/trunk/</developerConnection>
+  	<connection>http://eastseven.googlecode.com/svn/trunk/personal/demo</connection>
+  	<developerConnection>https://eastseven.googlecode.com/svn/trunk/personal/demo</developerConnection>
   	<url>https://eastseven.googlecode.com/svn/personal/demo/pom.xml</url>
   </scm>
   <dependencies>
