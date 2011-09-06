@@ -1,0 +1,17 @@
+<?page title="Analytics"?>
+<!-- 
+	录入试题，选择试题，生成问卷，填写问卷，统计并导出
+-->
+<window title="${desktop.webApp.version}" border="normal"
+	apply="org.dongq.analytics.ui.IndexComposer" height="100%">
+	<menubar>
+		<menuitem label="上传问卷" upload="true" id="file"/>
+		<menuitem label="下载问卷模板" id="download"/>
+		<menuitem label="问卷" id="open"/>
+		<menuitem label="答题" id="answer"/>
+		<menuitem label="关于" id="about" />
+	</menubar>
+	<div id="mainDiv">
+		<include src="questionnaire_grid.zul"/>
+	</div>
+</window>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE database SYSTEM "http://db.apache.org/torque/dtd/database.dtd">
+<database name="analytics">
+	<table name="responder_property">
+		<column name="responder_property_id" type="BIGINT" primaryKey="true" />
+		<column name="responder_property_key" type="VARCHAR" size="100" />
+		<column name="responder_property_display" type="VARCHAR" size="100" />
+		<column name="responder_property_value" type="SMALLINT" />
+		<column name="version" type="BIGINT" />
+	</table>
+	<table name="responder_properties">
+		<column name="responder_id" type="BIGINT"/>
+		<column name="responder_property_id" type="BIGINT"/>
+		<column name="version" type="BIGINT"/>
+		
+		<foreign-key foreignTable="responder">
+			<reference foreign="responder_id" local="responder_id"/>
+		</foreign-key>
+		
+		<foreign-key foreignTable="responder_property">
+			<reference foreign="responder_property_id" local="responder_property_id"/>
+		</foreign-key>
+	</table>
+	<table name="responder">
+		<column name="responder_id" type="BIGINT" primaryKey="true" />
+		<column name="responder_name" type="VARCHAR" size="100" />
+		<column name="version" type="BIGINT" />
+	</table>
+	<table name="question_option">
+		<column name="option_group_id" type="BIGINT"/>
+		<column name="option_key" type="BIGINT"/>
+		<column name="option_value" type="VARCHAR" size="50"/>
+		<column name="version" type="BIGINT" />
+	</table>
+	<table name="question">
+		<column name="question_id" type="BIGINT" primaryKey="true" />
+		<column name="title" type="VARCHAR" size="4000" />
+		<column name="content" type="VARCHAR" size="4000" />
+		<column name="option_group_id" type="BIGINT" />
+		<column name="version" type="BIGINT" />
+		<column name="type" type="SMALLINT" />
+	</table>
+	<!-- 
+	<table name="questionnaire">
+		<column name="questionnaire_id" type="BIGINT" />
+		<column name="question_id" type="BIGINT" />
+	</table>
+	<table name="questionnaire_paper">
+		<column name="paper_id" type="BIGINT" primaryKey="true" />
+		<column name="title" type="VARCHAR" size="4000" />
+		<column name="responder_id" type="BIGINT" />
+		<column name="questionnaire_id" type="BIGINT" />
+		<column name="sign_date" type="DATE"/>
+		
+		<foreign-key foreignTable="responder">
+			<reference foreign="responder_id" local="responder_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="questionnaire">
+			<reference foreign="questionnaire_id" local="questionnaire_id"/>
+		</foreign-key>
+	</table>
+	<table name="questionnaire_paper_answer">
+		<column name="paper_id" type="BIGINT" />
+		<column name="answer_key" type="SMALLINT" />
+		<column name="answer_value" type="SMALLINT" />
+	</table>
+	 -->
+</database>
