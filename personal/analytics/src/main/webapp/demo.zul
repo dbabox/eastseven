@@ -1,0 +1,11 @@
+<?page title="Questionnaire Demo" contentType="text/html;charset=UTF-8"?>
+
+<zk>
+	<zscript>
+		String no = (String)execution.getAttribute("no");
+		String pwd = (String)execution.getAttribute("pwd");
+	</zscript>
+	<include src="index.jsp">
+	</include>
+
+</zk>
