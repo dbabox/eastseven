@@ -1,0 +1,34 @@
+<?page title="Analytics"?>
+<!-- 
+	录入试题，选择试题，生成问卷，填写问卷，统计并导出
+-->
+<window id="main" title="${desktop.webApp.version}" border="normal"
+	apply="org.dongq.analytics.ui.IndexComposer" height="100%">
+	<menubar>
+		<menu label="问卷上传">
+			<menupopup>
+				<menuitem label="封闭式" id="uploadClose" />
+				<menuitem label="开放式" id="uploadOpen" visible="false"/>
+			</menupopup>
+		</menu>
+		<menu label="模板下载">
+			<menupopup>
+				<menuitem label="封闭式" id="downloadClose" />
+				<menuitem label="开放式" id="downloadOpen" visible="false"/>
+			</menupopup>
+		</menu>
+		<menuitem label="关于" id="about" />
+	</menubar>
+	<div id="mainDiv" height="100%">
+		<tabbox height="100%">
+			<tabs>
+				<tab label="封闭式" />
+				<tab label="开放式" />
+			</tabs>
+			<tabpanels>
+				<tabpanel><include src="questionnaire_grid.zul" /></tabpanel>
+				<tabpanel><include src="questionnaire_open.zul" /></tabpanel>
+			</tabpanels>
+		</tabbox>
+	</div>
+</window>
