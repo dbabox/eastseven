@@ -18,24 +18,10 @@ public class DbHelper {
 
 	final static Log logger = LogFactory.getLog(DbHelper.class);
 	
-	public static String driver = "org.apache.derby.jdbc.EmbeddedDriver";
+	public static String driver = "org.hsqldb.jdbcDriver";
 	public static String url = "jdbc:derby:database";
 	
 	static {
-		/*
-		try {
-			Configuration config = new PropertiesConfiguration(new File("src/main/resources/jdbc.properties"));
-			driver = config.getString("db.driver");
-			url = config.getString("db.url");
-			url = url.replace(config.getString("db.name"), config.getString("db.path")).replace("true", "false");
-		} catch (ConfigurationException e) {
-			//e.printStackTrace();
-			logger.info("读取jdbc配置文件失败");
-		}
-		
-		 */
-		logger.debug(driver);
-		logger.debug(url);
 		DbUtils.loadDriver(driver);
 	}
 	
