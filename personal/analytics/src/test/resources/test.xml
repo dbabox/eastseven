@@ -51,7 +51,7 @@
 				<property name="database" value="HSQL" />
 			</bean>
 		</property>
-		<property name="persistenceUnitName" value="org.dongq.analytics.model" />
+		<property name="persistenceUnitName" value="org.dongq.analytics.model.*" />
 	</bean>
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
