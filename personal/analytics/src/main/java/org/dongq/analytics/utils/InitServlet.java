@@ -53,6 +53,9 @@ public class InitServlet extends HttpServlet {
 				
 				int start = new DbServer(file).getServer().start();
 				logger.info("HsqlDb Server is starting..." + start);
+				
+				DbHelper.driver = file.getString("db.classDriver");
+				DbHelper.url = file.getString("db.url");
 			}
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
