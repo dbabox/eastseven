@@ -15,6 +15,7 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zk.ui.util.GenericForwardComposer;
+import org.zkoss.zkplus.spring.SpringUtil;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
@@ -36,12 +37,17 @@ public class UploadComposer extends GenericForwardComposer {
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		service = new QuestionnairePaperServiceImpl();
 		logger.debug(comp);
 		logger.debug(arg.get("type"));
 		
 		type = (String)arg.get("type");
 		String title = "open".equals(type) ? "开放式问卷上传" : "封闭式问卷上传";
+		
+		if("open".equals(type)) {
+			service = (QuestionnairePaperService)SpringUtil.getBean("excelParseService");
+		} else {
+			service = new QuestionnairePaperServiceImpl();
+		}
 		
 		Window win = (Window)comp;
 		win.setTitle(title);
